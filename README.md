@@ -39,11 +39,11 @@ Configure the test runner as follows:
           # Choose: "all", "playmode", "editmode"
           TEST_MODE: all                
           
-          # Optional: Folder of your project, leave blank for "./"
+          # Optional: Path to your project, leave blank for "./"
           UNITY_PROJECT_PATH: relative/path/to/your/project
 
-          # Optional: Artifacts folder, leave blank for "artifacts"
-          ARTIFACTS_FOLDER: store/artifacts/here
+          # Optional: Artifacts path, leave blank for "artifacts"
+          ARTIFACTS_PATH: store/artifacts/here
 ```
 
 You use the id to **upload the artifacts** like so:

@@ -5,10 +5,10 @@ LICENSE_FILE_PATH=UnityLicenseFile.ulf
 UNITY_PROJECT_PATH=$GITHUB_WORKSPACE/$UNITY_PROJECT_PATH
 
 # Set the artifacts path
-if [ -z "$ARTIFACTS_FOLDER" ]; then
-  ARTIFACTS_FOLDER=artifacts
+if [ -z "$ARTIFACTS_PATH" ]; then
+  ARTIFACTS_PATH=artifacts
 fi
-ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_FOLDER
+FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
 # Set the modes for testing
 case $TEST_MODE in
@@ -62,8 +62,8 @@ echo "###########################"
 echo "#    Artifacts folder     #"
 echo "###########################"
 echo ""
-echo "Creating \"$ARTIFACTS_PATH\" if it does not exist."
-mkdir -p $ARTIFACTS_PATH
+echo "Creating \"$FULL_ARTIFACTS_PATH\" if it does not exist."
+mkdir -p $FULL_ARTIFACTS_PATH
 
 echo ""
 echo "###########################"
@@ -89,7 +89,7 @@ if [ $EDIT_MODE = true ]; then
       -projectPath "$UNITY_PROJECT_PATH" \
       -runTests \
       -testPlatform editmode \
-      -testResults "$ARTIFACTS_PATH/editmode-results.xml"
+      -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml"
 
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
@@ -123,7 +123,7 @@ if [ $PLAY_MODE = true ]; then
       -projectPath "$UNITY_PROJECT_PATH" \
       -runTests \
       -testPlatform playmode \
-      -testResults "$ARTIFACTS_PATH/playmode-results.xml"
+      -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml"
 
   # Catch exit code
   PLAY_MODE_EXIT_CODE=$?
@@ -157,8 +157,8 @@ if [ $EDIT_MODE = true ]; then
   echo "#    Edit Mode Results    #"
   echo "###########################"
   echo ""
-  cat "$ARTIFACTS_PATH/editmode-results.xml"
-  cat "$ARTIFACTS_PATH/editmode-results.xml" | grep test-run | grep Passed
+  cat "$FULL_ARTIFACTS_PATH/editmode-results.xml"
+  cat "$FULL_ARTIFACTS_PATH/editmode-results.xml" | grep test-run | grep Passed
 fi
 
 if [ $PLAY_MODE = true ]; then
@@ -167,8 +167,8 @@ if [ $PLAY_MODE = true ]; then
   echo "#    Edit Mode Results    #"
   echo "###########################"
   echo ""
-  cat "$ARTIFACTS_PATH/playmode-results.xml"
-  cat "$ARTIFACTS_PATH/playmode-results.xml" | grep test-run | grep Passed
+  cat "$FULL_ARTIFACTS_PATH/playmode-results.xml"
+  cat "$FULL_ARTIFACTS_PATH/playmode-results.xml" | grep test-run | grep Passed
 fi
 
 #
@@ -176,7 +176,7 @@ fi
 #
 
 # Set resulting name as output variable
-echo ::set-output name=artifactsPath::$ARTIFACTS_PATH
+echo ::set-output name=artifactsPath::$FULL_ARTIFACTS_PATH
 
 #
 # Exit
