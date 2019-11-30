@@ -176,7 +176,7 @@ fi
 #
 
 # Set resulting name as output variable
-echo ::set-output name=artifactsPath::$FULL_ARTIFACTS_PATH
+echo ::set-output name=artifactsPath::$ARTIFACTS_PATH
 
 #
 # Exit

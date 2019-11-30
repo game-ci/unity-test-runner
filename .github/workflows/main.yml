@@ -78,7 +78,7 @@ jobs:
           path: ${{ steps.playMode.outputs.artifactsPath }}
 
   testRunnerInEachModeSeparately:
-    name: Test each mode sequentially # don't try this at home (it's much slower)
+    name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
     runs-on: ubuntu-latest
     steps:
       # Checkout repository (required to test local actions)
