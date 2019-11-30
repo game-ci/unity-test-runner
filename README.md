@@ -11,3 +11,56 @@ action from the
 collection. 
 
 Requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
+
+## Usage
+
+Create or edit the file called `.github/workflows/activation.yml` and add a job to it.
+
+```yaml
+name: Test project
+on: [push]
+jobs:
+  testRunnerInAllModes:
+    name: Test all modes ✨
+    runs-on: ubuntu-latest
+    steps:
+```
+
+Configure the test runner as follows:
+
+```yaml
+      # Configure test runner
+      - name: Run tests
+        id: myTestStep
+        uses: webbertakken/unity-test-runner@v1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+          # Choose: "all", "playmode", "editmode"
+          TEST_MODE: all                
+          
+          # Optional: Folder of your project, leave blank for "./"
+          UNITY_PROJECT_PATH: relative/path/to/your/project
+
+          # Optional: Artifacts folder, leave blank for "artifacts"
+          ARTIFACTS_FOLDER: store/artifacts/here
+```
+
+You use the id to **upload the artifacts** like so:
+
+```yaml
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v1
+        with:
+          name: Test results
+          path: ${{ steps.myTestStep.outputs.artifactsPath }}
+```
+
+Commit and push your workflow definition.
+
+## More actions
+
+Visit 
+[Unity Actions](https://github.com/webbertakken/unity-actions) 
+to find related actions for Unity.

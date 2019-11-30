@@ -1,0 +1,13 @@
+name: 'Unity - Test runner'
+author: Webber Takken <webber@takken.io>
+description: 'Run tests for any Unity project.'
+inputs: {}
+outputs:
+  artifactsPath:
+    description: 'Path where the artifacts are stored'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'box'
+  color: 'gray-dark'
