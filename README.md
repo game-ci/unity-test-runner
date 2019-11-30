@@ -1,6 +1,4 @@
-# unity-test-runner
-Run tests 
-
+# Unity - Test runner
 [![Actions status](https://github.com/WebberTakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)](https://github.com/WebberTakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)
 
 [Github Action](https://github.com/features/actions)
