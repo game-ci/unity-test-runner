@@ -8,9 +8,7 @@ This is a recommended step to prepare your pipeline for using the
 [Build](https://github.com/webbertakken/unity-actions#build)
 action from the 
 [Unity Actions](https://github.com/webbertakken/unity-actions) 
-collection. 
-
-Requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
+collection. This action also requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
 
 ## Documentation
 
