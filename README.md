@@ -1,5 +1,5 @@
 # Unity - Test runner
-[![Actions status](https://github.com/WebberTakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)](https://github.com/WebberTakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)
+[![Actions status](https://github.com/webbertakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)](https://github.com/webbertakken/unity-test-runner/actions?query=branch%3Amaster+workflow%3A%22Actions+%F0%9F%98%8E%22)
 
 [Github Action](https://github.com/features/actions)
 to run tests for any Unity project.
