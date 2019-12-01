@@ -18,7 +18,7 @@ collection repository for workflow documentation and reference implementation.
 
 ## Usage
 
-Create or edit the file called `.github/workflows/activation.yml` and add a job to it.
+Create or edit the file called `.github/workflows/main.yml` and add a job to it.
 
 ```yaml
 name: Test project
