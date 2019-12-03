@@ -1,14 +1,21 @@
 # Unity - Test runner
 [![Actions status](https://github.com/webbertakken/unity-test-runner/workflows/Actions%20%F0%9F%98%8E/badge.svg)](https://github.com/webbertakken/unity-test-runner/actions?query=branch%3Amaster+workflow%3A%22Actions+%F0%9F%98%8E%22)
 
-[Github Action](https://github.com/features/actions)
-to run tests for any Unity project.
+---
+
+GitHub Action to 
+[run tests](https://github.com/marketplace/actions/unity-test-runner) 
+for any Unity project. 
+
+Part of the 
+[Unity Actions](https://github.com/webbertakken/unity-actions) 
+collection.
+
+---
 
 This is a recommended step to prepare your pipeline for using the 
 [Build](https://github.com/webbertakken/unity-actions#build)
-action from the 
-[Unity Actions](https://github.com/webbertakken/unity-actions) 
-collection. This action also requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
+action. This action also requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
 
 ## Documentation
 
