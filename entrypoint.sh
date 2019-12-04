@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 # Set the license file path
-LICENSE_FILE_PATH=UnityLicenseFile.ulf
 UNITY_PROJECT_PATH=$GITHUB_WORKSPACE/$UNITY_PROJECT_PATH
 
 # Set the artifacts path
@@ -26,29 +25,6 @@ case $TEST_MODE in
     PLAY_MODE=true
     ;;
 esac
-
-# Copy license file from Github variables
-echo "$UNITY_LICENSE" | tr -d '\r' > $LICENSE_FILE_PATH
-echo "$UNITY_LICENSE" | tr -d '\r' > /root/.local/share/unity3d/Unity/Unity_lic.ulf
-# TODO - test if this line has any effect
-echo "$UNITY_LICENSE" | tr -d '\r' > /root/.local/share/unity3d/Unity/Unity_v2019.x.ulf
-
-##
-## Activate license
-##
-echo "Requesting activation"
-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' \
-  /opt/Unity/Editor/Unity \
-    -batchmode \
-    -nographics \
-    -logFile /dev/stdout \
-    -quit \
-    -manualLicenseFile $LICENSE_FILE_PATH
-# This is expected to always exit with code 1 (both success and failure).
-# Convert to exit code 0 by echoing the current exit code.
-echo $?
-# Exit code is now 0
-
 
 # The following tests are 2019 mode (requires Unity 2019.2.11f1 or later)
 # Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html

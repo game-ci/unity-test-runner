@@ -15,7 +15,6 @@ jobs:
         id: allTests
         uses: ./
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           TEST_MODE: all
           UNITY_PROJECT_PATH: unity-project-with-correct-tests
           # Test implicit ARTIFACTS_PATH, by not setting it
@@ -40,7 +39,6 @@ jobs:
         id: editMode
         uses: ./
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           TEST_MODE: editmode
           UNITY_PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
@@ -65,7 +63,6 @@ jobs:
         id: playMode
         uses: ./
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           TEST_MODE: playmode
           UNITY_PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
@@ -89,7 +86,6 @@ jobs:
       - name: Tests in editmode 📝
         uses: ./
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           TEST_MODE: editmode
           UNITY_PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
@@ -98,7 +94,6 @@ jobs:
       - name: Tests in playmode 📺
         uses: ./
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           TEST_MODE: playmode
           UNITY_PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/playmode
