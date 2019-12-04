@@ -45,8 +45,6 @@ Configure the test runner as follows:
         id: myTestStep
         uses: webbertakken/unity-test-runner@v1
         env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
           # Choose: "all", "playmode", "editmode"
           TEST_MODE: all                
           
