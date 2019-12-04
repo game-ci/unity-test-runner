@@ -10,6 +10,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
 
+      # Activate license
+      - name: Activate Unity
+        uses: webbertakken/unity-activate@v1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
       # Configure test runner
       - name: Run tests
         id: allTests
@@ -33,6 +39,12 @@ jobs:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
         uses: actions/checkout@v1
+
+      # Activate license
+      - name: Activate Unity
+        uses: webbertakken/unity-activate@v1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       # Configure test runner
       - name: Run tests
@@ -58,6 +70,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v1
 
+      # Activate license
+      - name: Activate Unity
+        uses: webbertakken/unity-activate@v1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
       # Configure test runner
       - name: Run tests
         id: playMode
@@ -81,6 +99,12 @@ jobs:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
         uses: actions/checkout@v1
+
+      # Activate license
+      - name: Activate Unity
+        uses: webbertakken/unity-activate@v1
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
       # Configure first test runner
       - name: Tests in editmode 📝
