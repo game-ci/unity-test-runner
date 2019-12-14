@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Set the license file path
-UNITY_PROJECT_PATH=$GITHUB_WORKSPACE/$UNITY_PROJECT_PATH
+UNITY_PROJECT_PATH=$GITHUB_WORKSPACE/$PROJECT_PATH
 
 # Set the artifacts path
 if [ -z "$ARTIFACTS_PATH" ]; then
