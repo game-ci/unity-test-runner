@@ -43,13 +43,13 @@ Configure the test runner as follows:
       # Configure test runner
       - name: Run tests
         id: myTestStep
-        uses: webbertakken/unity-test-runner@v1
+        uses: webbertakken/unity-test-runner@v1.1
         env:
           # Choose: "all", "playmode", "editmode"
-          TEST_MODE: all                
+          TEST_MODE: all
           
           # Optional: Path to your project, leave blank for "./"
-          UNITY_PROJECT_PATH: relative/path/to/your/project
+          PROJECT_PATH: relative/path/to/your/project
 
           # Optional: Artifacts path, leave blank for "artifacts"
           ARTIFACTS_PATH: store/artifacts/here
