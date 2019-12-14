@@ -24,7 +24,7 @@ jobs:
         uses: ./
         env:
           TEST_MODE: all
-          UNITY_PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: unity-project-with-correct-tests
           # Test implicit ARTIFACTS_PATH, by not setting it
 
       # Upload artifacts
@@ -54,7 +54,7 @@ jobs:
         uses: ./
         env:
           TEST_MODE: editmode
-          UNITY_PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
 
       # Upload artifacts
@@ -84,7 +84,7 @@ jobs:
         uses: ./
         env:
           TEST_MODE: playmode
-          UNITY_PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
 
       # Upload artifacts
@@ -113,7 +113,7 @@ jobs:
         uses: ./
         env:
           TEST_MODE: editmode
-          UNITY_PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/editmode
 
       # Configure second test runner
@@ -121,7 +121,7 @@ jobs:
         uses: ./
         env:
           TEST_MODE: playmode
-          UNITY_PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: unity-project-with-correct-tests
           ARTIFACTS_PATH: artifacts/playmode
 
       # Upload combined artifacts
