@@ -140,7 +140,7 @@ fi
 if [ $PLAY_MODE = true ]; then
   echo ""
   echo "###########################"
-  echo "#    Edit Mode Results    #"
+  echo "#    Play Mode Results    #"
   echo "###########################"
   echo ""
   cat "$FULL_ARTIFACTS_PATH/playmode-results.xml"
