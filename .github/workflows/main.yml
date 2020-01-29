@@ -10,24 +10,39 @@ jobs:
   testRunnerInAllModes:
     name: Test all modes ✨
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2018.4.15f1
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          lfs: true
 
-      # Activate license
-      - name: Activate Unity
-        uses: webbertakken/unity-activate@v1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      # Enable caching
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
 
       # Configure test runner
       - name: Run tests
         id: allTests
         uses: ./
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
         env:
           TEST_MODE: all
-          PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: ${{ matrix.projectPath }}
           # Test implicit ARTIFACTS_PATH, by not setting it
 
       # Upload artifacts
@@ -40,24 +55,39 @@ jobs:
   testRunnerInEditMode:
     name: Test edit mode 📝
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2018.4.15f1
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          lfs: true
 
-      # Activate license
-      - name: Activate Unity
-        uses: webbertakken/unity-activate@v1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      # Enable caching
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
 
       # Configure test runner
       - name: Run tests
         id: editMode
         uses: ./
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
         env:
           TEST_MODE: editmode
-          PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: ${{ matrix.projectPath }}
           ARTIFACTS_PATH: artifacts/editmode
 
       # Upload artifacts
@@ -70,24 +100,39 @@ jobs:
   testRunnerInPlayMode:
     name: Test play mode 📺
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2018.4.15f1
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          lfs: true
 
-      # Activate license
-      - name: Activate Unity
-        uses: webbertakken/unity-activate@v1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      # Enable caching
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
 
       # Configure test runner
       - name: Run tests
         id: playMode
         uses: ./
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
         env:
           TEST_MODE: playmode
-          PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: ${{ matrix.projectPath }}
           ARTIFACTS_PATH: artifacts/editmode
 
       # Upload artifacts
@@ -100,31 +145,48 @@ jobs:
   testRunnerInEachModeSeparately:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2018.4.15f1
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          lfs: true
 
-      # Activate license
-      - name: Activate Unity
-        uses: webbertakken/unity-activate@v1
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+      # Enable caching
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
 
       # Configure first test runner
       - name: Tests in editmode 📝
         uses: ./
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
         env:
           TEST_MODE: editmode
-          PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: ${{ matrix.projectPath }}
           ARTIFACTS_PATH: artifacts/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
         uses: ./
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
         env:
           TEST_MODE: playmode
-          PROJECT_PATH: unity-project-with-correct-tests
+          PROJECT_PATH: ${{ matrix.projectPath }}
           ARTIFACTS_PATH: artifacts/playmode
 
       # Upload combined artifacts
