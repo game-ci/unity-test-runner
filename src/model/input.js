@@ -18,6 +18,7 @@ class Input {
     const testMode = getInput('testMode') || 'all';
     const rawProjectPath = getInput('testMode') || '.';
     const rawArtifactsPath = getInput('testMode') || 'artifacts';
+    const customParameters = getInput('customParameters') || '';
 
     // Validate input
     if (!includes(this.testModes, testMode)) {
@@ -42,6 +43,7 @@ class Input {
       projectPath,
       testMode,
       artifactsPath,
+      customParameters,
     };
   }
 }

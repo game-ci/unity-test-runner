@@ -14,6 +14,11 @@ echo "Using project path \"$UNITY_PROJECT_PATH\"."
 echo "Using build path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
+#
+# Display custom parameters
+#
+echo "Using custom parameters \"$CUSTOM_PARAMETERS\"."
+
 # Set the modes for testing
 case $TEST_MODE in
   editmode)
@@ -76,7 +81,8 @@ if [ $EDIT_MODE = true ]; then
       -projectPath "$UNITY_PROJECT_PATH" \
       -runTests \
       -testPlatform editmode \
-      -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml"
+      -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
+      "$CUSTOM_PARAMETERS"
 
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
