@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-# Set the license file path
+#
+# Set and display project path
+#
+
 UNITY_PROJECT_PATH=$GITHUB_WORKSPACE/$PROJECT_PATH
 echo "Using project path \"$UNITY_PROJECT_PATH\"."
 
-# Set the artifacts path
-if [ -z "$ARTIFACTS_PATH" ]; then
-  ARTIFACTS_PATH=artifacts
-fi
+#
+# Set and display the artifacts path
+#
+
 echo "Using build path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 

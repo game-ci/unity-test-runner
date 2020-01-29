@@ -6,6 +6,12 @@ class Input {
     return ['all', 'playmode', 'editmode'];
   }
 
+  static isValidFolderName(folderName) {
+    const validFolderName = new RegExp(/^(\.|\.\/)?(\.?\w+\/?)*$/);
+
+    return validFolderName.test(folderName);
+  }
+
   static getFromUser() {
     // Input variables specified in workflow using "with" prop.
     const unityVersion = getInput('unityVersion') || '2019.2.11f1';
@@ -16,6 +22,14 @@ class Input {
     // Validate input
     if (!includes(this.testModes, testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
+    }
+
+    if (!this.isValidFolderName(rawArtifactsPath)) {
+      throw new Error(`Invalid artifactsPath "${rawArtifactsPath}"`);
+    }
+
+    if (!this.isValidFolderName(rawProjectPath)) {
+      throw new Error(`Invalid projectPath "${rawProjectPath}"`);
     }
 
     // Sanitise input
