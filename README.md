@@ -15,7 +15,7 @@ collection.
 
 This is a recommended step to prepare your pipeline for using the 
 [Build](https://github.com/webbertakken/unity-actions#build)
-action. This action also requires the [activation](https://github.com/marketplace/actions/unity-activate) step.
+action.
 
 ## Documentation
 

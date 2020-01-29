@@ -1,13 +1,17 @@
 name: 'Unity - Test runner'
 author: Webber Takken <webber@takken.io>
 description: 'Run tests for any Unity project.'
-inputs: {}
+inputs:
+  unityVersion:
+    required: false
+    default: '2019.2.11f1'
+    description: 'Version of unity to use for testing the project.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
 branding:
   icon: 'box'
   color: 'gray-dark'
+runs:
+  using: 'node12'
+  main: 'action/index.js'
