@@ -30,6 +30,12 @@ esac
 # Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html
 
 #
+# Display the unity version
+#
+
+echo "Using Unity version \"$UNITY_VERSION\" to test."
+
+#
 # Overall info
 #
 
