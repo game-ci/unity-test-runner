@@ -7,7 +7,7 @@ class Input {
   }
 
   static isValidFolderName(folderName) {
-    const validFolderName = new RegExp(/^(\.|\.\/)?(\.?\w+\/?)*$/);
+    const validFolderName = new RegExp(/^(\.|\.\/)?(\.?\w+([-_]?\w+)*\/?)*$/);
 
     return validFolderName.test(folderName);
   }
