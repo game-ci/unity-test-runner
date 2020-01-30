@@ -44,7 +44,6 @@ Then, define the test step as follows:
 
 ```yaml
 - uses: webbertakken/unity-test-runner@v1.2
-  id: myTestStep
   env:
     UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   with:
@@ -66,7 +65,6 @@ Define the test step as follows:
 
 ```yaml
 - uses: webbertakken/unity-test-runner@v1.2
-  id: myTestStep
   env:
     UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
     UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -107,6 +105,12 @@ If a different `artifactsPath` was specified in the test runner,
 you can reference this path using the `id` of the test step.
 
 Example:
+
+```yaml
+- uses: webbertakken/unity-test-runner@v1.2
+  id: myTestStep
+  (...)
+```
 
 ```yaml
 - uses: actions/upload-artifact@v1
