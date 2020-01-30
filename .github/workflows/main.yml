@@ -72,7 +72,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2018.4.15f1
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
@@ -116,7 +115,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2018.4.15f1
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
@@ -160,7 +158,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2018.4.15f1
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
