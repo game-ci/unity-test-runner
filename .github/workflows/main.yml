@@ -21,17 +21,50 @@ jobs:
       - run: yarn build || { echo "build command should always succeed" ; exit 61; }
       - run: yarn build --quiet && git diff --quiet action || { echo "action should be auto generated" ; exit 62; }
 
+  testAllModesLikeInTheReadme:
+    name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-project-with-correct-tests
+        unityVersion:
+          - 2019.2.11f1
+        testMode:
+          - playmode
+          - editmode
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+      - uses: actions/cache@v1.1.0
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-
+      - uses: ./
+        id: tests
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Test results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+
   testRunnerInAllModes:
     name: Test all modes ✨
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        unityVersion:
-          # - 2018.4.15f1 # need a way to use multiple licenses, using matrix.include referencing env
-          - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
+        unityVersion:
+          - 2019.2.11f1
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
@@ -53,9 +86,9 @@ jobs:
         id: allTests
         uses: ./
         with:
+          projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
-          projectPath: ${{ matrix.projectPath }}
           # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
@@ -96,9 +129,9 @@ jobs:
         id: editMode
         uses: ./
         with:
+          projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          projectPath: ${{ matrix.projectPath }}
           artifactsPath: artifacts/editmode
 
       # Upload artifacts
@@ -114,10 +147,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        unityVersion:
-          - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
+        unityVersion:
+          - 2019.2.11f1
     steps:
       # Checkout repository (required to test local actions)
       - name: Checkout repository
@@ -139,9 +172,9 @@ jobs:
         id: playMode
         uses: ./
         with:
+          projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
-          projectPath: ${{ matrix.projectPath }}
           artifactsPath: artifacts/playmode
 
       # Upload artifacts
@@ -151,7 +184,7 @@ jobs:
           name: Test results (play mode)
           path: ${{ steps.playMode.outputs.artifactsPath }}
 
-  testRunnerInEachModeSeparately:
+  testEachModeSequentially:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
     runs-on: ubuntu-latest
     strategy:
@@ -181,18 +214,18 @@ jobs:
       - name: Tests in editmode 📝
         uses: ./
         with:
+          projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          projectPath: ${{ matrix.projectPath }}
           artifactsPath: artifacts/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
         uses: ./
         with:
+          projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
-          projectPath: ${{ matrix.projectPath }}
           artifactsPath: artifacts/playmode
 
       # Upload combined artifacts

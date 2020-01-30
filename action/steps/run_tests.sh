@@ -11,7 +11,7 @@ echo "Using project path \"$UNITY_PROJECT_PATH\"."
 # Set and display the artifacts path
 #
 
-echo "Using build path \"$ARTIFACTS_PATH\" to save test results."
+echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
 #
