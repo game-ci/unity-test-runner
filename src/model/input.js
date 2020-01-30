@@ -16,8 +16,8 @@ class Input {
     // Input variables specified in workflow using "with" prop.
     const unityVersion = getInput('unityVersion') || '2019.2.11f1';
     const testMode = getInput('testMode') || 'all';
-    const rawProjectPath = getInput('testMode') || '.';
-    const rawArtifactsPath = getInput('testMode') || 'artifacts';
+    const rawProjectPath = getInput('projectPath') || '.';
+    const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const customParameters = getInput('customParameters') || '';
 
     // Validate input
