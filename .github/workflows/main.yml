@@ -54,10 +54,9 @@ jobs:
         uses: ./
         with:
           unityVersion: ${{ matrix.unityVersion }}
-        env:
-          TEST_MODE: all
-          PROJECT_PATH: ${{ matrix.projectPath }}
-          # Test implicit ARTIFACTS_PATH, by not setting it
+          testMode: all
+          projectPath: ${{ matrix.projectPath }}
+          # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
       - name: Upload test results
@@ -99,10 +98,9 @@ jobs:
         uses: ./
         with:
           unityVersion: ${{ matrix.unityVersion }}
-        env:
-          TEST_MODE: editmode
-          PROJECT_PATH: ${{ matrix.projectPath }}
-          ARTIFACTS_PATH: artifacts/editmode
+          testMode: editmode
+          projectPath: ${{ matrix.projectPath }}
+          artifactsPath: artifacts/editmode
 
       # Upload artifacts
       - name: Upload test results
@@ -144,10 +142,9 @@ jobs:
         uses: ./
         with:
           unityVersion: ${{ matrix.unityVersion }}
-        env:
-          TEST_MODE: playmode
-          PROJECT_PATH: ${{ matrix.projectPath }}
-          ARTIFACTS_PATH: artifacts/editmode
+          testMode: playmode
+          projectPath: ${{ matrix.projectPath }}
+          artifactsPath: artifacts/playmode
 
       # Upload artifacts
       - name: Upload test results
@@ -188,20 +185,18 @@ jobs:
         uses: ./
         with:
           unityVersion: ${{ matrix.unityVersion }}
-        env:
-          TEST_MODE: editmode
-          PROJECT_PATH: ${{ matrix.projectPath }}
-          ARTIFACTS_PATH: artifacts/editmode
+          testMode: editmode
+          projectPath: ${{ matrix.projectPath }}
+          artifactsPath: artifacts/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
         uses: ./
         with:
           unityVersion: ${{ matrix.unityVersion }}
-        env:
-          TEST_MODE: playmode
-          PROJECT_PATH: ${{ matrix.projectPath }}
-          ARTIFACTS_PATH: artifacts/playmode
+          testMode: playmode
+          projectPath: ${{ matrix.projectPath }}
+          artifactsPath: artifacts/playmode
 
       # Upload combined artifacts
       - name: Upload combined test results
