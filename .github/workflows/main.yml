@@ -28,7 +28,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2018.4.15f1
+          # - 2018.4.15f1 # need a way to use multiple licenses, using matrix.include referencing env
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
