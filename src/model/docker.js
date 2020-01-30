@@ -18,7 +18,14 @@ class Docker {
   }
 
   static async run(image, parameters, silent = false) {
-    const { unityVersion, workspace, projectPath, artifactsPath, customParameters } = parameters;
+    const {
+      unityVersion,
+      workspace,
+      projectPath,
+      testMode,
+      artifactsPath,
+      customParameters,
+    } = parameters;
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -29,6 +36,7 @@ class Docker {
         --env UNITY_SERIAL \
         --env UNITY_VERSION=${unityVersion} \
         --env PROJECT_PATH=${projectPath} \
+        --env TEST_MODE=${testMode} \
         --env ARTIFACTS_PATH=${artifactsPath} \
         --env CUSTOM_PARAMETERS=${customParameters} \
         --env HOME=/github/home \

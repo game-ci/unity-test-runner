@@ -5,7 +5,13 @@ async function action() {
   Action.checkCompatibility();
 
   const { dockerfile, workspace, actionFolder } = Action;
-  const { unityVersion, projectPath, artifactsPath, customParameters } = Input.getFromUser();
+  const {
+    unityVersion,
+    projectPath,
+    testMode,
+    artifactsPath,
+    customParameters,
+  } = Input.getFromUser();
   const baseImage = ImageTag.createForBase(unityVersion);
 
   // Build docker image
@@ -16,6 +22,7 @@ async function action() {
     workspace,
     unityVersion,
     projectPath,
+    testMode,
     artifactsPath,
     customParameters,
   });
