@@ -34,11 +34,11 @@ class Docker {
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
-        --env UNITY_VERSION=${unityVersion} \
-        --env PROJECT_PATH=${projectPath} \
-        --env TEST_MODE=${testMode} \
-        --env ARTIFACTS_PATH=${artifactsPath} \
-        --env CUSTOM_PARAMETERS=${customParameters} \
+        --env UNITY_VERSION="${unityVersion}" \
+        --env PROJECT_PATH="${projectPath}" \
+        --env TEST_MODE="${testMode}" \
+        --env ARTIFACTS_PATH="${artifactsPath}" \
+        --env CUSTOM_PARAMETERS="${customParameters}" \
         --env HOME=/github/home \
         --env GITHUB_REF \
         --env GITHUB_SHA \
