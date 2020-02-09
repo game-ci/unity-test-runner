@@ -14,7 +14,7 @@
   "dependencies": {
     "@actions/core": "^1.2.0",
     "@actions/exec": "1.0.2",
-    "@actions/github": "^2.0.0"
+    "@actions/github": "^2.0.1"
   },
   "devDependencies": {
     "@babel/cli": "7.7.5",
