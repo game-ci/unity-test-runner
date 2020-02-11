@@ -116,7 +116,8 @@ if [ $PLAY_MODE = true ]; then
       -projectPath "$UNITY_PROJECT_PATH" \
       -runTests \
       -testPlatform playmode \
-      -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml"
+      -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
+      $CUSTOM_PARAMETERS
 
   # Catch exit code
   PLAY_MODE_EXIT_CODE=$?
