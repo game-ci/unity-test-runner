@@ -17,7 +17,7 @@ FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 #
 # Display custom parameters
 #
-echo "Using custom parameters \"$CUSTOM_PARAMETERS\"."
+echo "Using custom parameters $CUSTOM_PARAMETERS."
 
 # Set the modes for testing
 case $TEST_MODE in
@@ -82,7 +82,7 @@ if [ $EDIT_MODE = true ]; then
       -runTests \
       -testPlatform editmode \
       -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
-      "$CUSTOM_PARAMETERS"
+      $CUSTOM_PARAMETERS
 
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
