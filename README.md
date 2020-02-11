@@ -43,7 +43,7 @@ your license file and add it as a secret.
 Then, define the test step as follows:
 
 ```yaml
-- uses: webbertakken/unity-test-runner@v1.3
+- uses: webbertakken/unity-test-runner@v1.4
   env:
     UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   with:
@@ -64,7 +64,7 @@ Instead, three variables will need to be set.
 Define the test step as follows:
 
 ```yaml
-- uses: webbertakken/unity-test-runner@v1.3
+- uses: webbertakken/unity-test-runner@v1.4
   env:
     UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
     UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
@@ -107,7 +107,7 @@ you can reference this path using the `id` of the test step.
 Example:
 
 ```yaml
-- uses: webbertakken/unity-test-runner@v1.3
+- uses: webbertakken/unity-test-runner@v1.4
   id: myTestStep
   (...)
 ```
@@ -179,7 +179,7 @@ jobs:
           key: Library-${{ matrix.projectPath }}
           restore-keys: |
             Library-
-      - uses: webbertakken/unity-test-runner@v1.3
+      - uses: webbertakken/unity-test-runner@v1.4
         id: tests
         with:
           projectPath: ${{ matrix.projectPath }}
