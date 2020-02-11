@@ -51,6 +51,7 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
+          customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
       - uses: actions/upload-artifact@v1
         with:
           name: Test results for ${{ matrix.testMode }}
