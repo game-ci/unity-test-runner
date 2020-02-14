@@ -83,12 +83,12 @@ if [ $EDIT_MODE = true ]; then
       -testPlatform editmode \
       -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
       $CUSTOM_PARAMETERS
-
-  # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/editmode.log"
-
+      
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
+  
+  # Print unity log output
+  cat "$FULL_ARTIFACTS_PATH/editmode.log"
 
   # Display results
   if [ $EDIT_MODE_EXIT_CODE -eq 0 ]; then
@@ -121,12 +121,12 @@ if [ $PLAY_MODE = true ]; then
       -testPlatform playmode \
       -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
       $CUSTOM_PARAMETERS
+      
+  # Catch exit code
+  PLAY_MODE_EXIT_CODE=$?
 
   # Print unity log output
   cat "$FULL_ARTIFACTS_PATH/playmode.log"
-
-  # Catch exit code
-  PLAY_MODE_EXIT_CODE=$?
 
   # Display results
   if [ $PLAY_MODE_EXIT_CODE -eq 0 ]; then
