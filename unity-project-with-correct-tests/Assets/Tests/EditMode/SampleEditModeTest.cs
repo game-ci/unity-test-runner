@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
@@ -34,5 +34,23 @@ namespace Tests
       Assert.AreEqual(BasicCounter.MaxCount, counter.Count);
     }
 
+
+    [Test]
+    public void TestException()
+    {
+      throw new System.Exception("Exception was thrown!");
+    }
+
+    [Test]
+    public void TestError()
+    {
+      Debug.LogError("Bad error happend!");
+    }
+
+    [Test]
+    public void TestAssert()
+    {
+      Assert.IsFalse(true);
+    }
   }
 }
