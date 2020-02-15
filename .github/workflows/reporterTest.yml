@@ -52,11 +52,8 @@ jobs:
           dotnet-version: '2.1.202'
           
       # Do the report magic
-      - run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll \
-                    --resultsPath=artifacts/editmode \
-                    --resultXMLName=editmode-results.xml \
-                    --unityLogName=editmode.log \
-                    --reportdirpath=artifacts/editmode
+      - name: Generate .html report
+        run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll --resultsPath=artifacts/editmode --resultXMLName=editmode-results.xml --unityLogName=editmode.log --reportdirpath=artifacts/editmode
         if: always()
         
       # Upload artifacts
