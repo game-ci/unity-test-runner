@@ -43,14 +43,6 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
           artifactsPath: artifacts/editmode
-
-      # Upload artifacts
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v1
-        with:
-          name: Test results (edit mode)
-          path: artifacts/editmode
           
       # Install dotnet
       - name: Installing dotnet
@@ -58,5 +50,19 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '2.1.202'
-      - run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll
+          
+      # Do the report magic
+      - run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll \
+                    --resultsPath=artifacts/editmode \
+                    --resultXMLName=editmode-results.xml \
+                    --unityLogName=editmode.log \
+                    --reportdirpath=artifacts/editmode
         if: always()
+        
+      # Upload artifacts
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: Test results (edit mode)
+          path: artifacts/editmode        
