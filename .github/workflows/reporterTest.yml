@@ -53,7 +53,7 @@ jobs:
           
       # Do the report magic
       - name: Generate .html report
-        run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll --resultsPath=artifacts/editmode --resultXMLName=editmode-results.xml --unityLogName=editmode.log --reportdirpath=artifacts/editmode
+        run: sudo dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll --resultsPath=artifacts/editmode --resultXMLName=editmode-results.xml --unityLogName=editmode.log --reportdirpath=artifacts/editmode
         if: always()
         
       # Upload artifacts
