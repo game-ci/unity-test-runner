@@ -1,0 +1,326 @@
+<!doctype html>
+<html ng-app="testReportApp">testCommandLine
+
+<head>
+    <title>Test Report</title>
+    <script src="TestReport.files/js/lib/angular.min.js"></script>
+    <script src="TestReport.files/js/lib/moment.min.js"></script>
+    <script src="TestReport.files/js/lib/moment-duration-format.js"></script>
+    <script id="data" type="application/json">
+		TEST_DATA_HERE
+    </script>
+</head>
+<script type="text/javascript" src="TestReport.files/js/app.js"></script>
+<script type="text/javascript" src="TestReport.files/js/config.js"></script>
+<script type="text/javascript" src="TestReport.files/js/TestReportController.js"></script>
+<link rel="stylesheet" href="TestReport.files/css/report.css">
+<link rel="stylesheet" href="TestReport.files/css/style.css">
+<link rel="stylesheet" href="TestReport.files/css/animate.css">
+<link rel="stylesheet" href="TestReport.files/css/bootstrap.css">
+
+<body ng-controller="TestReportController">
+    <div id="wrapper">
+<script type="text/ng-template" id="GenericTest.tmpl.html">
+    <table class="table">
+        <tr>
+            <th>Test</th>
+            <th>State</th>
+            <th>Time</th>
+            <th>Artifacts</th>
+        </tr>
+        <tr ng-repeat="test in suite.tests|filter:testFilter" ng-class='styleForTest (test.state)' />
+        <td width="60%">{{test.name}}
+            <!--<div>
+                <a ng-click="isCollapsed = !isCollapsed">Show command line (to run this test locally)</a>
+                <div ng-hide="isCollapsed" select-on-click>
+                    {{testCommandLine(suite, test)}}
+                </div>
+            </div>-->
+            <div ng-show="test.message">
+                <div><b>Message:</b></div>
+                <div class="formatted_text">{{test.message}}</div>
+            </div>
+            <div ng-show="test.stackTrace">
+                <div><b>Stack trace:</b></div>
+                <div class="formatted_text">{{test.stackTrace}}</div>
+            </div>
+            <div ng-show="test.reason">
+                <div><b>Reason:</b></div>
+                <div class="formatted_text">{{test.reason}}</div>
+            </div>
+            <div ng-show="test.errors">
+                <div><b>Other errors:</b></div>
+                <div ng-repeat="error in test.errors" class="fail">
+                    <div class="formatted_text">{{error}}</div>
+                </div>
+            </div>
+        </td>
+        <td width="10%">{{formatTestState (test.state)}}</td>
+        <td width="10%">{{formatDuration (test.time)}}</td>
+        <td width="20%">
+            <div ng-repeat="artifact in test.artifacts">
+                <a target="_blank" href="{{formatLink(artifact)}}">{{formatArtifactName(artifact)}}</a>
+            </div>
+        </td>
+    </table>
+</script>
+<script type="text/ng-template" id="GraphicsTest.tmpl.html">
+    <table class="table">
+        <tr>
+            <th>Test</th>
+            <th>State</th>
+            <th>Time</th>
+            <th>Artifacts</th>
+        </tr>
+        <tr ng-repeat="test in suite.tests|filter:testFilter" ng-class='styleForTest (test.state)' />
+        <td width="80%">{{test.name}}
+            <div>
+                <div style="float: left;margin-right: 10px;" ng-repeat="image in test.artifacts|filter:isImage">
+                    <div>
+                    {{formatArtifactName(image)}}
+                    </div>
+                    <div>
+                    <img ng-src="{{formatLink(image)}}" alt="Description" />
+                    </div>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <a ng-click="isCollapsed = !isCollapsed">Show command line (to run this test locally)</a>
+                <div ng-hide="isCollapsed" select-on-click>
+                    {{testCommandLine(suite, test)}}
+                </div>
+            </div>
+            <div  ng-show="test.message">
+                <div><b>Message:</b></div>
+                <div class="formatted_text">{{test.message}}</div>
+            </div>
+            <div ng-show="test.stackTrace">
+                <div><b>Stack trace:</b></div>
+                <div class="formatted_text">{{test.stackTrace}}</div>
+            </div>
+            <div ng-show="test.reason">
+                <div><b>Reason:</b></div>
+                <div class="formatted_text">{{test.reason}}</div>
+            </div>
+            <div ng-show="test.errors">
+                <div><b>Other errors:</b></div>
+                <div ng-repeat="error in test.errors" class="fail">
+                    <div class="formatted_text">{{error}}</div>
+                </div>
+            </div>
+        </td>
+        <td width="5%">{{formatTestState (test.state)}}</td>
+        <td width="5%">{{formatDuration (test.time)}}</td>
+        <td width="10%">
+            <div ng-repeat="artifact in test.artifacts">
+                <a target="_blank" href="{{formatLink(artifact)}}">{{formatArtifactName(artifact)}}</a>
+            </div>
+        </td>
+    </table>
+</script>
+<script type="text/ng-template" id="PerformanceRuntime.tmpl.html">
+    <div ng-show='false'>
+    </div>
+    <table class="table">
+        <tr>
+            <th>Test</th>
+            <th>Samples</th>
+        </tr>
+        <tr ng-repeat="test in suite.tests|filter:testFilter" ng-class='styleForTest (test.data.performanceTestResults.state)' />
+        <td width="60%">{{test.name}}
+            <div>
+                <a ng-click="isCollapsed = !isCollapsed">Show command line (to run this test locally)</a>
+                <div ng-hide="isCollapsed" select-on-click>
+                    {{testCommandLine(suite, test)}}
+                </div>
+            </div>
+            <div ng-show="test.message">
+                <div><b>Message:</b></div>
+                <div class="formatted_text">{{test.message}}</div>
+            </div>
+            <div ng-show="test.stackTrace">
+                <div><b>Stack trace:</b></div>
+                <div class="formatted_text">{{test.stackTrace}}</div>
+            </div>
+            <div ng-show="test.reason">
+                <div><b>Reason:</b></div>
+                <div class="formatted_text">{{test.reason}}</div>
+            </div>
+            <div ng-show="test.errors">
+                <div><b>Other errors:</b></div>
+                <div ng-repeat="error in test.errors" class="fail">
+                    <div class="formatted_text">{{error}}</div>
+                </div>
+            </div>
+        </td>
+        <td width="40%">
+            <table class="table">
+                <tr>
+                    <th>SampleGroup</th>
+                    <th>increaseIsBetter</th>
+                    <th>aggregationType</th>
+                    <th>percentile</th>
+                    <th>threshold</th>
+                    <th>baselineValue</th>
+                    <th>currentValue</th>
+                </tr>
+                <tr ng-repeat="sample in test.data.performanceTestResults.sampleGroupResults">
+                    <td>{{sample.sampleGroupName}}</td>
+                    <td>{{sample.increaseIsBetter}}</td>
+                    <td>{{sample.aggregationType}}</td>
+                    <td>{{formatNumber(sample.percentile)}}</td>
+                    <td>{{formatNumber(sample.threshold)}}</td>
+                    <td>{{formatNumber(sample.baselineValue)}}</td>
+                    <td>{{formatNumber(sample.currentValue)}}</td>
+                </tr>
+            </table>
+        </td>
+    </table>
+</script>
+<script type="text/ng-template" id="SuiteDataMemoryLeaks.tmpl.html">
+    <div id="allocated_memory" ng-class='{fail: dataEntry.allocatedMemory > dataEntry.threshold}' >
+        <div>Memory leaks details</div>
+        <div>Total memory allocated(bytes):<strong>{{dataEntry.allocatedMemory}}</strong></div>
+        <table width="30%">
+            <thead>
+            <tr>
+            <th>Label name</th>
+            <th>Size(bytes)</th>
+            </tr>
+            </thead>
+            <tr ng-repeat="entry in dataEntry.memoryLabels">
+                <td ng-repeat="(label, memory) in entry">{{label}}</td>
+                <td ng-repeat="(label, memory) in entry">{{memory}}</td>
+            </tr>
+        </table>
+    </div>
+</script>
+        <div class="row">
+            <div class="col-lg-3 animated-panel zoomIn" style="-webkit-animation: 0.4s;">
+                <div class="hpanel">
+                    <div class="panel-body text-center h-200">
+                        <div>Unity Version: <strong>{{data['product-version'].unity_version}}</strong></div>
+                        <div>Branch: <strong>{{data['product-version'].branch}}</strong></div>
+                        <div>Revision: <strong>{{cleanupRevision(data['product-version'].revision)}}</strong></div>
+                    </div>
+                    <div class="panel-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center m-t-md animated-panel zoomIn" style="-webkit-animation: 0.1s;">
+                <h1>
+                    Summary
+                </h1>
+                <p>
+                    Summary on running <strong>Unified Test Runner</strong>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 animated-panel zoomIn" style="animation-delay: 0.2s;">
+                <div class="hpanel">
+                    <div class="panel-heading">
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div id="states_filter">
+                                <label class="checkbox-inline" ng-repeat="state in states">
+                                    <input type="checkbox" ng-model="statesFilter[state.value]">{{state.name}}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="session_summary">
+                                <table class="table">
+                                    <tr>
+                                        <th>All Tests</th>
+                                        <th>Passed</th>
+                                        <th>Failures</th>
+                                        <th>Errors</th>
+                                        <th>Ignored</th>
+                                        <th>Skipped</th>
+                                        <th>Inconclusive</th>
+                                        <th>Time</th>
+                                    </tr>
+                                    <tr ng-class='{success : data.summary.success, fail: !data.summary.success}'>
+                                        <td>{{data.summary.testsCount}}</td>
+                                        <td>{{data.summary.successCount}}</td>
+                                        <td>{{data.summary.failedCount}}</td>
+                                        <td>{{data.summary.errorCount}}</td>
+                                        <td>{{data.summary.ignoredCount}}</td>
+                                        <td>{{data.summary.skippedCount}}</td>
+                                        <td>{{data.summary.inconclusiveCount}}</td>
+                                        <td>{{formatDuration(data.summary.time)}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-repeat="suite in data.suites">
+                <div ng-if="suite.error || suite.failureReasons || hasAnyVisibleTests(suite)">
+                    <div class="col-lg-12 animated-panel zoomIn" style="animation-delay: 0.2s;">
+                        <div class="hpanel">
+                            <div class="panel-heading" />
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <h2>Suite name: {{suite.name}} {{suite.description}}</h2>
+                                <div ng-show="suite.error" class="fail">
+                                    {{suite.error}}
+                                </div>
+                                <!--this one eventually will be removed-->
+                                <div ng-repeat="reason in suite.failureReasons" class="fail">
+                                    {{reason}}
+                                </div>
+                                <div ng-repeat="error in suite.errors" class="fail">
+                                    {{error}}
+                                </div>
+                                <div id="suite_sattelite_data">
+                                    <div ng-repeat="(key, dataEntry) in suite.data">
+                                        <div ng-switch="key">
+                                            <div ng-switch-when='MemoryLeaks' class="animate-switch">
+                                                <div ng-include src="'SuiteDataMemoryLeaks.tmpl.html'"> </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a ng-click="isSuiteCommandLineCollapsed = !isSuiteCommandLineCollapsed">Show command line (to run suite locally)</a>
+                                    <div ng-hide="isSuiteCommandLineCollapsed" select-on-click>
+                                        {{suiteCommandLine(suite)}}
+                                    </div>
+                                </div>
+                                <h3>Suite Artifacts:</h3>
+                                <div id="suite_artifacts">
+                                    <div ng-repeat="artifact in suite.artifacts">
+                                        <a target="_blank" href="{{formatLink (artifact)}}">{{artifact}}</a>
+                                    </div>
+                                </div>
+
+                                <div ng-switch on="suite.name">
+                                    <div class="animate-switch" ng-switch-when="graphics">
+                                        <div ng-include src="'GraphicsTest.tmpl.html'"> </div>
+                                    </div>
+                                    <div class="animate-switch" ng-switch-default>
+                                        <div class="force-performance-template" ng-if="isPerformanceData(suite)">
+                                            <div ng-include src="'PerformanceRuntime.tmpl.html'"> </div>
+                                        </div>
+                                        <div class="use-generic-template" ng-if="!isPerformanceData(suite)">
+                                            <div ng-include src="'GenericTest.tmpl.html'"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

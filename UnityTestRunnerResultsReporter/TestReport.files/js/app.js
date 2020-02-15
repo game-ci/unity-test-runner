@@ -1,0 +1,1 @@
+var testReportApp = angular.module('testReportApp', []);

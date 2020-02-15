@@ -1,0 +1,59 @@
+<script type="text/ng-template" id="PerformanceRuntime.tmpl.html">
+    <div ng-show='false'>
+    </div>
+    <table class="table">
+        <tr>
+            <th>Test</th>
+            <th>Samples</th>
+        </tr>
+        <tr ng-repeat="test in suite.tests|filter:testFilter" ng-class='styleForTest (test.data.performanceTestResults.state)' />
+        <td width="60%">{{test.name}}
+            <div>
+                <a ng-click="isCollapsed = !isCollapsed">Show command line (to run this test locally)</a>
+                <div ng-hide="isCollapsed" select-on-click>
+                    {{testCommandLine(suite, test)}}
+                </div>
+            </div>
+            <div ng-show="test.message">
+                <div><b>Message:</b></div>
+                <div class="formatted_text">{{test.message}}</div>
+            </div>
+            <div ng-show="test.stackTrace">
+                <div><b>Stack trace:</b></div>
+                <div class="formatted_text">{{test.stackTrace}}</div>
+            </div>
+            <div ng-show="test.reason">
+                <div><b>Reason:</b></div>
+                <div class="formatted_text">{{test.reason}}</div>
+            </div>
+            <div ng-show="test.errors">
+                <div><b>Other errors:</b></div>
+                <div ng-repeat="error in test.errors" class="fail">
+                    <div class="formatted_text">{{error}}</div>
+                </div>
+            </div>
+        </td>
+        <td width="40%">
+            <table class="table">
+                <tr>
+                    <th>SampleGroup</th>
+                    <th>increaseIsBetter</th>
+                    <th>aggregationType</th>
+                    <th>percentile</th>
+                    <th>threshold</th>
+                    <th>baselineValue</th>
+                    <th>currentValue</th>
+                </tr>
+                <tr ng-repeat="sample in test.data.performanceTestResults.sampleGroupResults">
+                    <td>{{sample.sampleGroupName}}</td>
+                    <td>{{sample.increaseIsBetter}}</td>
+                    <td>{{sample.aggregationType}}</td>
+                    <td>{{formatNumber(sample.percentile)}}</td>
+                    <td>{{formatNumber(sample.threshold)}}</td>
+                    <td>{{formatNumber(sample.baselineValue)}}</td>
+                    <td>{{formatNumber(sample.currentValue)}}</td>
+                </tr>
+            </table>
+        </td>
+    </table>
+</script>
