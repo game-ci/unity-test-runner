@@ -57,4 +57,4 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '2.1.202'
-        - run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll
+      - run: dotnet ./UnityTestRunnerResultsReporter/UnityTestRunnerResultsReporter.dll
