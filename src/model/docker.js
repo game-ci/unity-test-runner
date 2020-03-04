@@ -31,6 +31,7 @@ class Docker {
         --workdir /github/workspace \
         --rm \
         --env UNITY_LICENSE \
+        --env UNITY_LICENSE_PATH \
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
