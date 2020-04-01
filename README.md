@@ -231,6 +231,18 @@ In this folder a folder will be created for every test mode.
 _**required:** `false`_
 _**default:** `artifacts`_
 
+#### useHostNetwork
+
+Initializes Docker using the host network. 
+
+This is useful if Unity needs to access a local server that was started as part of your workflow.
+
+Options are: "true", "false"
+
+_**required:** `false`_
+_**default:** `false`_
+
+
 #### customParameters
 
 Custom parameters to configure the test runner.
