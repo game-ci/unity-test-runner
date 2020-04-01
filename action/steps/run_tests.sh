@@ -82,6 +82,10 @@ if [ $EDIT_MODE = true ]; then
       -runTests \
       -testPlatform editmode \
       -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
+      -enableCodeCoverage \
+      -coverageResultsPath "$FULL_ARTIFACTS_PATH/CodeCoverage/" \ 
+      -coverageOptions "generateHtmlReport;assemblyFilters:-*unity*" \
+      -burst-disable-compilation 
       $CUSTOM_PARAMETERS
       
   # Catch exit code
@@ -120,6 +124,10 @@ if [ $PLAY_MODE = true ]; then
       -runTests \
       -testPlatform playmode \
       -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
+      -enableCodeCoverage \
+      -coverageResultsPath "$FULL_ARTIFACTS_PATH/CodeCoverage/" \
+      -coverageOptions "generateHtmlReport;assemblyFilters:-*unity*" \
+      -burst-disable-compilation 
       $CUSTOM_PARAMETERS
       
   # Catch exit code
