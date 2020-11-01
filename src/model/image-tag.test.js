@@ -32,7 +32,7 @@ describe('UnityImageVersion', () => {
     it('returns the correct version', () => {
       const image = ImageTag.createForBase('2099.1.1111');
 
-      expect(image.toString()).toStrictEqual(`gableroux/unity3d:2099.1.1111`);
+      expect(image.toString()).toStrictEqual(`unityci/editor:2099.1.1111-base-0`);
     });
   });
 });
