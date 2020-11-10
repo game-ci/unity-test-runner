@@ -16,14 +16,14 @@ inputs:
   artifactsPath:
     required: false
     default: 'artifacts'
-    description: 'Path where test results should be stored.'
+    description: 'Path where test artifacts should be stored.'
   useNetworkHost:
     required: false
     default: false
-    description: 'Initialzes Docker using the network host.'
+    description: 'Initialises Docker using the hosts network.'
   customParameters:
     required: false
-    description: 'Custom parameters to configure the test runner.'
+    description: 'Extra parameters to configure the Unity editor run.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
