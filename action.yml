@@ -6,6 +6,24 @@ inputs:
     required: false
     default: '2019.2.11f1'
     description: 'Version of unity to use for testing the project.'
+  projectPath:
+    required: false
+    description: 'Path to the Unity project to be tested.'
+  testMode:
+    required: false
+    default: 'all'
+    description: 'The type of tests to be run by the test runner.'
+  artifactsPath:
+    required: false
+    default: 'artifacts'
+    description: 'Path where test results should be stored.'
+  useNetworkHost:
+    required: false
+    default: false
+    description: 'Initialzes Docker using the network host.'
+  customParameters:
+    required: false
+    description: 'Custom parameters to configure the test runner.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
