@@ -9,7 +9,7 @@ inputs:
   customImage:
     required: false
     default: ''
-    description: 'Specific docker image that should be used for building the project'
+    description: 'Specific docker image that should be used for testing the project'
   projectPath:
     required: false
     description: 'Path to the Unity project to be tested.'
