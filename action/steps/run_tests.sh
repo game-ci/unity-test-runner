@@ -74,19 +74,18 @@ if [ $EDIT_MODE = true ]; then
   echo "#   Testing in EditMode   #"
   echo "###########################"
   echo ""
-  xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' \
-    /opt/Unity/Editor/Unity \
-      -batchmode \
-      -logFile "$FULL_ARTIFACTS_PATH/editmode.log" \
-      -projectPath "$UNITY_PROJECT_PATH" \
-      -runTests \
-      -testPlatform editmode \
-      -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
-      $CUSTOM_PARAMETERS
-      
+  unity-editor \
+    -batchmode \
+    -logFile "$FULL_ARTIFACTS_PATH/editmode.log" \
+    -projectPath "$UNITY_PROJECT_PATH" \
+    -runTests \
+    -testPlatform editmode \
+    -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
+    $CUSTOM_PARAMETERS
+
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
-  
+
   # Print unity log output
   cat "$FULL_ARTIFACTS_PATH/editmode.log"
 
@@ -112,16 +111,15 @@ if [ $PLAY_MODE = true ]; then
   echo "#   Testing in PlayMode   #"
   echo "###########################"
   echo ""
-  xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' \
-    /opt/Unity/Editor/Unity \
-      -batchmode \
-      -logFile "$FULL_ARTIFACTS_PATH/playmode.log" \
-      -projectPath "$UNITY_PROJECT_PATH" \
-      -runTests \
-      -testPlatform playmode \
-      -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
-      $CUSTOM_PARAMETERS
-      
+  unity-editor \
+    -batchmode \
+    -logFile "$FULL_ARTIFACTS_PATH/playmode.log" \
+    -projectPath "$UNITY_PROJECT_PATH" \
+    -runTests \
+    -testPlatform playmode \
+    -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
+    $CUSTOM_PARAMETERS
+
   # Catch exit code
   PLAY_MODE_EXIT_CODE=$?
 

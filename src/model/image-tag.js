@@ -2,8 +2,8 @@ import { trimStart } from 'lodash-es';
 
 class ImageTag {
   static createForBase({ version, customImage }) {
-    const repository = 'gableroux';
-    const name = 'unity3d';
+    const repository = 'unityci';
+    const name = 'editor';
     return new this({ repository, name, version, customImage });
   }
 
@@ -38,7 +38,7 @@ class ImageTag {
       return this.customImage;
     }
 
-    return `${this.image}:${this.tag}`;
+    return `${this.image}:${this.tag}-base-0`;
   }
 }
 
