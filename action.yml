@@ -6,6 +6,10 @@ inputs:
     required: false
     default: '2019.2.11f1'
     description: 'Version of unity to use for testing the project.'
+  customImage:
+    required: false
+    default: ''
+    description: 'Specific docker image that should be used for building the project'
   projectPath:
     required: false
     description: 'Path to the Unity project to be tested.'
