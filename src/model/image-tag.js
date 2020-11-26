@@ -1,10 +1,10 @@
 import { trimStart } from 'lodash-es';
 
 class ImageTag {
-  static createForBase(version) {
+  static createForBase({ version, customImage }) {
     const repository = 'gableroux';
     const name = 'unity3d';
-    return new this({ repository, name, version });
+    return new this({ repository, name, version, customImage });
   }
 
   static createForAction(version) {
@@ -13,12 +13,12 @@ class ImageTag {
     return new this({ repository, name, version });
   }
 
-  constructor({ repository = '', name, version }) {
+  constructor({ repository = '', name, version, customImage }) {
     if (!ImageTag.versionPattern.test(version)) {
       throw new Error(`Invalid version "${version}".`);
     }
 
-    Object.assign(this, { repository, name, version });
+    Object.assign(this, { repository, name, version, customImage });
   }
 
   static get versionPattern() {
@@ -34,6 +34,10 @@ class ImageTag {
   }
 
   toString() {
+    if (this.customImage && this.customImage !== '') {
+      return this.customImage;
+    }
+
     return `${this.image}:${this.tag}`;
   }
 }
