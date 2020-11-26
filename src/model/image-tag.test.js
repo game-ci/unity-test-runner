@@ -30,9 +30,18 @@ describe('UnityImageVersion', () => {
 
   describe('toString', () => {
     it('returns the correct version', () => {
-      const image = ImageTag.createForBase('2099.1.1111');
+      const image = ImageTag.createForBase({ version: '2099.1.1111' });
 
       expect(image.toString()).toStrictEqual(`unityci/editor:2099.1.1111-base-0`);
+    });
+
+    it('returns customImage if given', () => {
+      const image = ImageTag.createForBase({
+        version: '2099.1.1111',
+        customImage: 'unityci/editor:2099.1.1111-base-0',
+      });
+
+      expect(image.toString()).toStrictEqual(image.customImage);
     });
   });
 });

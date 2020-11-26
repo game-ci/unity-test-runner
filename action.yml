@@ -6,6 +6,28 @@ inputs:
     required: false
     default: '2019.2.11f1'
     description: 'Version of unity to use for testing the project.'
+  customImage:
+    required: false
+    default: ''
+    description: 'Specific docker image that should be used for testing the project'
+  projectPath:
+    required: false
+    description: 'Path to the Unity project to be tested.'
+  testMode:
+    required: false
+    default: 'all'
+    description: 'The type of tests to be run by the test runner.'
+  artifactsPath:
+    required: false
+    default: 'artifacts'
+    description: 'Path where test artifacts should be stored.'
+  useNetworkHost:
+    required: false
+    default: false
+    description: 'Initialises Docker using the hosts network.'
+  customParameters:
+    required: false
+    description: 'Extra parameters to configure the Unity editor run.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
