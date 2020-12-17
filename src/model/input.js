@@ -15,6 +15,7 @@ class Input {
   static getFromUser() {
     // Input variables specified in workflow using "with" prop.
     const unityVersion = getInput('unityVersion') || '2019.2.11f1';
+    const customImage = getInput('customImage') || '';
     const testMode = getInput('testMode') || 'all';
     const rawProjectPath = getInput('projectPath') || '.';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
@@ -46,6 +47,7 @@ class Input {
     // Return sanitised input
     return {
       unityVersion,
+      customImage,
       projectPath,
       testMode,
       artifactsPath,
