@@ -4,8 +4,8 @@ description: 'Run tests for any Unity project.'
 inputs:
   unityVersion:
     required: false
-    default: '2019.2.11f1'
-    description: 'Version of unity to use for testing the project.'
+    default: 'auto'
+    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt'
   customImage:
     required: false
     default: ''

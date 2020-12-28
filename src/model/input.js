@@ -1,5 +1,6 @@
 import { getInput } from '@actions/core';
 import { includes } from 'lodash-es';
+import UnityVersionParser from './unity-version-parser';
 
 class Input {
   static get testModes() {
@@ -14,7 +15,7 @@ class Input {
 
   static getFromUser() {
     // Input variables specified in workflow using "with" prop.
-    const unityVersion = getInput('unityVersion') || '2019.2.11f1';
+    const rawUnityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const testMode = getInput('testMode') || 'all';
     const rawProjectPath = getInput('projectPath') || '.';
@@ -43,6 +44,8 @@ class Input {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
+    const unityVersion =
+      rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
 
     // Return sanitised input
     return {
