@@ -1,6 +1,6 @@
 import ImageTag from './image-tag';
 
-describe('UnityImageVersion', () => {
+describe('ImageTag', () => {
   describe('constructor', () => {
     const some = {
       name: 'someName',
