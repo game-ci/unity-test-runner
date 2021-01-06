@@ -1,26 +1,11 @@
 import { exec } from '@actions/exec';
-import ImageTag from './image-tag';
 
 class Docker {
-  static async build(buildParameters, silent = false) {
-    const { path, dockerfile, baseImage } = buildParameters;
-    const { version } = baseImage;
-
-    const tag = ImageTag.createForAction(version);
-    const command = `docker build ${path} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-
-    await exec(command, null, { silent });
-
-    return tag;
-  }
-
   static async run(image, parameters, silent = false) {
     const {
       unityVersion,
       workspace,
+      actionFolder,
       projectPath,
       testMode,
       artifactsPath,
@@ -60,9 +45,11 @@ class Docker {
         --volume "/var/run/docker.sock":"/var/run/docker.sock" \
         --volume "/home/runner/work/_temp/_github_home":"/github/home" \
         --volume "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
+        --volume "${actionFolder}":"/github/action" \
         --volume "${workspace}":"/github/workspace" \
+        --entrypoint="" \
         ${useHostNetwork ? '--net=host' : ''} \
-        ${image}`;
+        ${image} /bin/bash -c "chmod -R +x /github/action && /github/action/entrypoint.sh"`;
 
     await exec(command, null, { silent });
   }

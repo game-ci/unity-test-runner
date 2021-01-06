@@ -4,9 +4,9 @@
 # Run steps
 #
 
-source /steps/activate.sh
-source /steps/run_tests.sh
-source /steps/return_license.sh
+source /github/action/steps/activate.sh
+source /github/action/steps/run_tests.sh
+source /github/action/steps/return_license.sh
 
 #
 # Instructions for debugging

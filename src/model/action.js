@@ -29,10 +29,6 @@ class Action {
     return `${Action.rootFolder}/action`;
   }
 
-  static get dockerfile() {
-    return `${Action.actionFolder}/Dockerfile`;
-  }
-
   static get workspace() {
     return process.env.GITHUB_WORKSPACE;
   }
