@@ -23,7 +23,7 @@ describe('ImageTag', () => {
       expect(() => new ImageTag({ version })).not.toThrow();
     });
 
-    test.each(['some version', '', 1, null])('throws for incorrect versions %p', version => {
+    test.each(['some version', '', 1, undefined])('throws for incorrect versions %p', version => {
       expect(() => new ImageTag({ version })).toThrow();
     });
   });
