@@ -51,7 +51,7 @@ class Docker {
         ${useHostNetwork ? '--net=host' : ''} \
         ${image} /bin/bash -c "chmod -R +x /github/action && /github/action/entrypoint.sh"`;
 
-    await exec(command, null, { silent });
+    await exec(command, undefined, { silent });
   }
 }
 

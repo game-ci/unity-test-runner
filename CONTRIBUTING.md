@@ -31,8 +31,8 @@ You have [Node](https://nodejs.org/) installed at v12.2.0+ and [Yarn](https://ya
 Please note that commit hooks will run automatically to perform some tasks;
 
 - format your code
-- run tests
-- build distributable files
+- run tests & lint - `yarn lint && yarn test`
+- build distributable files - `yarn build`
 
 #### License
 
