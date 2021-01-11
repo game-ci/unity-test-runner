@@ -2,7 +2,8 @@
     "name": "PlayModeTests",
     "references": [
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "MyScripts"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
