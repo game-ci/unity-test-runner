@@ -52,10 +52,11 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v2
         with:
           name: Test results for ${{ matrix.testMode }}
           path: ${{ steps.tests.outputs.artifactsPath }}
+          retention-days: 14
 
   testRunnerInAllModes:
     name: Test all modes ✨
@@ -95,10 +96,11 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Test results (all)
           path: ${{ steps.allTests.outputs.artifactsPath }}
+          retention-days: 14
 
   testRunnerInEditMode:
     name: Test edit mode 📝
@@ -138,10 +140,11 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Test results (edit mode)
           path: ${{ steps.editMode.outputs.artifactsPath }}
+          retention-days: 14
 
   testRunnerInPlayMode:
     name: Test play mode 📺
@@ -181,10 +184,11 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Test results (play mode)
           path: ${{ steps.playMode.outputs.artifactsPath }}
+          retention-days: 14
 
   testEachModeSequentially:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
@@ -232,7 +236,8 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: Test results (combined)
           path: artifacts/
+          retention-days: 14
