@@ -1,6 +1,6 @@
 name: Actions 😎
 on:
-  push: { branches: [master] }
+  push: { branches: [main] }
   pull_request_target:
     paths-ignore:
       - ".github/**"
