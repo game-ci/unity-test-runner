@@ -1,7 +1,9 @@
 name: Actions 😎
 on:
-  pull_request_target: {}
   push: { branches: [master] }
+  pull_request_target:
+    paths-ignore:
+      - ".github/**"
 
 jobs:
   tests:
