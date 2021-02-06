@@ -17,9 +17,9 @@ Part of the <a href="https://game.ci">GameCI</a> open source project.
 ## How to use
 
 Find the
-[docs](https://game.ci/docs)
+[docs](https://game.ci/docs/github/test-runner)
 on the GameCI
-[website](https://game.ci/).
+[documentation website](https://game.ci/docs).
 
 ## Related actions
 
