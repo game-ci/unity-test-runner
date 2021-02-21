@@ -32,14 +32,12 @@ class ReportConverter {
     const result = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
-      result.push(
-        ...ReportConverter.convertSuite(innerSuite, ReportConverter.convertTestsFunction),
-      );
+      result.push(...ReportConverter.convertSuite(innerSuite, ReportConverter.convertTests));
     }
 
     const tests = suites['test-case'];
     if (tests) {
-      result.push(...ReportConverter.convertTestsFunction(suites.fullname, tests));
+      result.push(...ReportConverter.convertTests(suites.fullname, tests));
     }
 
     return result;
