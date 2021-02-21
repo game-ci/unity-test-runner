@@ -19,11 +19,11 @@ class ReportConverter {
     return meta;
   }
 
-  static convertSuite(suites, convertTestsFunction = ReportConverter.convertTests) {
+  static convertSuite(suites) {
     if (Array.isArray(suites)) {
       const result = [];
       suites.array.forEach(suite => {
-        result.concat(ReportConverter.convertSuite(suite, convertTestsFunction));
+        result.concat(ReportConverter.convertSuite(suite));
       });
       return result;
     }
@@ -45,23 +45,19 @@ class ReportConverter {
     return result;
   }
 
-  static convertTests(suite, tests, convertTestCaseFunction = ReportConverter.convertTests) {
+  static convertTests(suite, tests) {
     if (Array.isArray(tests)) {
       const result = [];
       tests.array.forEach(test => {
-        result.concat(ReportConverter.convertTests(suite, test, convertTestCaseFunction));
+        result.concat(ReportConverter.convertTests(suite, test));
       });
       return result;
     }
 
-    return [ReportConverter.convertTestCaseFunction(suite, tests)];
+    return [ReportConverter.convertTestCase(suite, tests)];
   }
 
-  static convertTestCase(
-    suite,
-    testCase,
-    findAnnotationPointFunction = ReportConverter.findAnnotationPoint,
-  ) {
+  static convertTestCase(suite, testCase) {
     const { name, fullname, result, failure, duration } = testCase;
     const meta = new TestMeta(suite, name);
     meta.result = result;
@@ -79,7 +75,7 @@ class ReportConverter {
     }
 
     const trace = failure['stack-trace'].cdata;
-    const point = findAnnotationPointFunction(trace);
+    const point = ReportConverter.findAnnotationPoint(trace);
     if (point === undefined) {
       core.warning('Not able to find entry point for failed test! Test trace:');
       core.warning(trace);
