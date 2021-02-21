@@ -22,7 +22,7 @@ class ReportConverter {
   static convertSuite(suites) {
     if (Array.isArray(suites)) {
       const result = [];
-      suites.array.forEach(suite => {
+      suites.forEach(suite => {
         result.concat(ReportConverter.convertSuite(suite));
       });
       return result;
@@ -46,7 +46,7 @@ class ReportConverter {
   static convertTests(suite, tests) {
     if (Array.isArray(tests)) {
       const result = [];
-      tests.array.forEach(test => {
+      tests.forEach(test => {
         result.concat(ReportConverter.convertTests(suite, test));
       });
       return result;
