@@ -9,7 +9,7 @@ if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
   # Note that this is the ONLY WAY for PERSONAL LICENSES in 2020.
   #   * See for more details: https://gitlab.com/gableroux/unity3d-gitlab-ci-example/issues/5#note_72815478
   #
-  # The license file can be acquired using `webbertakken/request-manual-activation-file` action.
+  # The license file can be acquired using `game-ci/request-manual-activation-file` action.
   echo "Requesting activation (personal license)"
 
   # Set the license file path
@@ -85,7 +85,7 @@ else
   echo "Visit https://github.com/webbertakken/unity-builder#usage for more"
   echo "details on how to set up one of the possible activation strategies."
 
-  # Immediately exit as no UNITY_EXIT_CODE can be derrived.
+  # Immediately exit as no UNITY_EXIT_CODE can be derived.
   exit 1;
 
 fi

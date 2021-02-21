@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { Action, Docker, Input, ImageTag, Output } from './model';
+import { Action, Docker, Input, ImageTag, Output, ResultsCheck } from './model';
 
 async function action() {
   Action.checkCompatibility();
@@ -12,6 +12,8 @@ async function action() {
     testMode,
     artifactsPath,
     useHostNetwork,
+    createCheck,
+    githubToken,
     customParameters,
   } = Input.getFromUser();
   const baseImage = ImageTag.createForBase({ version: unityVersion, customImage });
@@ -30,6 +32,10 @@ async function action() {
       useHostNetwork,
       customParameters,
     });
+
+    if (createCheck) {
+      await ResultsCheck.publishResults(artifactsPath, githubToken);
+    }
   } finally {
     // Set output
     await Output.setArtifactsPath(artifactsPath);

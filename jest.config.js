@@ -2,7 +2,7 @@ const esModules = ['lodash-es'].join('|');
 
 module.exports = {
   testEnvironment: 'node',
-  moduleFileExtensions: ['js', 'jsx', 'json', 'vue'],
-  transform: { '^.+\\.(js|jsx)?$': 'babel-jest' },
+  moduleFileExtensions: ['ts', 'js', 'jsx', 'json', 'vue'],
+  transform: { '^.+\\.(ts|js|jsx)?$': 'babel-jest' },
   transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
 };

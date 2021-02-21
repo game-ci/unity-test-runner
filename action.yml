@@ -30,7 +30,7 @@ inputs:
     description: 'Extra parameters to configure the Unity editor run.'
   createCheck:
     required: false
-    default: false
+    default: 'false'
     description: 'Creates a check with the Test Results'
   githubToken:
     required: false

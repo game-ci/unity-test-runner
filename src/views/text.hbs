@@ -1,0 +1,19 @@
+{{#runs}}
+<details><summary>{{summary}}</summary>
+{{#suites}}
+
+#### {{summary}}
+
+{{#tests}}
+* {{summary}}{{#if annotation}}
+
+{{indent annotation.message}}
+
+{{indent annotation.raw_details}}
+
+{{else}}
+
+{{/if}}{{/tests}}{{/suites}}
+</details>
+
+{{/runs}}

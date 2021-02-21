@@ -21,9 +21,9 @@ class Input {
     const rawProjectPath = getInput('projectPath') || '.';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
-    const customParameters = getInput('customParameters') || '';
-
-    // Validate input
+    const createCheck = getInput('createCheck') || 'false';
+    const githubToken = getInput('githubToken') || '';
+    const customParameters = getInput('customParameters') || ''; // Validate input
     if (!includes(this.testModes, testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
     }
@@ -55,6 +55,8 @@ class Input {
       testMode,
       artifactsPath,
       useHostNetwork,
+      createCheck,
+      githubToken,
       customParameters,
     };
   }
