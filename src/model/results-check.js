@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
 import * as xmljs from 'xml-js';
+import path from 'path';
 import Handlebars from 'handlebars';
 import ReportConverter from './report-converter';
 import { RunMeta } from './ts/meta.ts';
@@ -10,14 +11,12 @@ class ResultsCheck {
   static async publishResults(artifactsPath, githubToken) {
     // Parse all reports
     const runs = [];
-    const workspace = process.env.GITHUB_WORKSPACE;
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
       files.map(async filepath => {
         if (!filepath.endsWith('.xml')) return;
-        const filename = filepath.replace(workspace, '');
-        core.startGroup(`Processing file ${filename}...`);
-        const fileData = await ResultsCheck.parseReport(filepath, filename);
+        core.startGroup(`Processing file ${filepath}...`);
+        const fileData = await ResultsCheck.parseReport(path.join(artifactsPath, filepath));
         core.info(fileData.summary);
         runs.push(fileData);
         core.endGroup();
@@ -46,13 +45,13 @@ class ResultsCheck {
     await ResultsCheck.createCheck(githubToken, runs, runSummary, runSummary.extractAnnotations());
   }
 
-  static async parseReport(filepath, filename) {
+  static async parseReport(filepath) {
     core.info(`Trying to open ${filepath}`);
     const file = await fs.promises.readFile(filepath, 'utf8');
     const report = xmljs.xml2js(file, { compact: true });
     core.info(`File ${filepath} parsed...`);
 
-    return ReportConverter.convertReport(filename, report);
+    return ReportConverter.convertReport(path.basename(filepath), report);
   }
 
   static async createCheck(githubToken, runs, runSummary, annotations) {
