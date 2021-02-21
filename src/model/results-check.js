@@ -14,6 +14,7 @@ class ResultsCheck {
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
       files.map(async filepath => {
+        if (!filepath.endsWith('.xml')) return;
         const filename = filepath.replace(workspace, '');
         core.startGroup(`Processing file ${filename}...`);
         const fileData = await ResultsCheck.parseReport(filepath, filename);
@@ -46,10 +47,10 @@ class ResultsCheck {
   }
 
   static async parseReport(filepath, filename) {
-    core.debug(`Trying to open ${filepath}`);
+    core.info(`Trying to open ${filepath}`);
     const file = await fs.promises.readFile(filepath, 'utf8');
     const report = xmljs.xml2js(file, { compact: true });
-    core.debug(`File ${filepath} parsed...`);
+    core.info(`File ${filepath} parsed...`);
 
     return ReportConverter.convertReport(filename, report);
   }

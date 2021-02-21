@@ -3,7 +3,7 @@ import { RunMeta, TestMeta } from './ts/meta.ts';
 
 class ReportConverter {
   static convertReport(filename, report) {
-    core.debug('Start analyzing report:');
+    core.info(`Start analyzing report: ${filename}`);
     core.debug(JSON.stringify(report));
     const run = report['test-run'];
     const meta = new RunMeta(filename);
@@ -68,13 +68,13 @@ class ReportConverter {
     meta.duration = Number(duration);
 
     if (!failure) {
-      core.debug(`Skip test ${fullname} without failure data`);
+      core.isDebug(`Skip test ${fullname} without failure data`);
       return meta;
     }
 
     core.debug(`Convert data for test ${fullname}`);
     if (failure['stack-trace'] === undefined) {
-      core.warning(`Not stack trace for test case: ${fullname}`);
+      core.warning(`No stack trace for test case: ${fullname}`);
       return meta;
     }
 
