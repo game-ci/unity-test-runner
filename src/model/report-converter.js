@@ -21,14 +21,14 @@ class ReportConverter {
 
   static convertSuite(suites) {
     if (Array.isArray(suites)) {
-      const result = [];
+      const innerResult = [];
       suites.forEach(suite => {
-        result.concat(ReportConverter.convertSuite(suite));
+        innerResult.concat(ReportConverter.convertSuite(suite));
       });
-      return result;
+      return innerResult;
     }
 
-    core.debug(`Analyze suite ${suites._attributes.type} / ${suites._attributes.fullname}`);
+    core.info(`Analyze suite ${suites._attributes.type} / ${suites._attributes.fullname}`);
     const result = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
