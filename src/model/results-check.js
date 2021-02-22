@@ -24,13 +24,13 @@ class ResultsCheck {
 
     // Prepare run summary
     const runSummary = new RunMeta('Test Results');
-    runs.array.forEach(suite => {
+    runs.forEach(suite => {
       runSummary.total += suite.total;
       runSummary.passed += suite.passed;
       runSummary.skipped += suite.skipped;
       runSummary.failed += suite.failed;
       runSummary.duration += suite.duration;
-      suite.suites.array.forEach(s => {
+      suite.suites.forEach(s => {
         runSummary.addTests(s.tests);
       });
     });
