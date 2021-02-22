@@ -8,11 +8,11 @@ class ReportConverter {
     const run = report['test-run'];
     const meta = new RunMeta(filename);
 
-    meta.total = Number(run.attributes.total);
-    meta.failed = Number(run.attributes.failed);
-    meta.skipped = Number(run.attributes.skipped);
-    meta.passed = Number(run.attributes.passed);
-    meta.duration = Number(run.attributes.duration);
+    meta.total = Number(run._attributes.total);
+    meta.failed = Number(run._attributes.failed);
+    meta.skipped = Number(run._attributes.skipped);
+    meta.passed = Number(run._attributes.passed);
+    meta.duration = Number(run._attributes.duration);
 
     meta.addTests(ReportConverter.convertSuite(run['test-suite']));
 
@@ -28,7 +28,7 @@ class ReportConverter {
       return result;
     }
 
-    core.debug(`Analyze suite ${suites.attributes.type} / ${suites.attributes.fullname}`);
+    core.debug(`Analyze suite ${suites._attributes.type} / ${suites._attributes.fullname}`);
     const result = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
@@ -37,7 +37,7 @@ class ReportConverter {
 
     const tests = suites['test-case'];
     if (tests) {
-      result.push(...ReportConverter.convertTests(suites.attributes.fullname, tests));
+      result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
     }
 
     return result;
@@ -56,7 +56,7 @@ class ReportConverter {
   }
 
   static convertTestCase(suite, testCase) {
-    const { name, fullname, result, failure, duration } = testCase.attributes;
+    const { name, fullname, result, failure, duration } = testCase._attributes;
     const meta = new TestMeta(suite, name);
     meta.result = result;
     meta.duration = Number(duration);

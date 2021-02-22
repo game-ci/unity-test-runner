@@ -16,6 +16,7 @@
   "settings": { "react": { "version": "latest" } },
   "rules": {
     "prettier/prettier": "error",
-    "import/no-extraneous-dependencies": 0
+    "import/no-extraneous-dependencies": 0,
+    "no-underscore-dangle": 0
   }
 }
