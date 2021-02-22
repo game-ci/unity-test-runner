@@ -4,7 +4,7 @@ import { RunMeta, TestMeta } from './ts/meta.ts';
 class ReportConverter {
   static convertReport(filename, report) {
     core.info(`Start analyzing report: ${filename}`);
-    core.debug(JSON.stringify(report));
+    core.info(JSON.stringify(report));
     const run = report['test-run'];
     const meta = new RunMeta(filename);
 
@@ -14,6 +14,7 @@ class ReportConverter {
     meta.passed = Number(run._attributes.passed);
     meta.duration = Number(run._attributes.duration);
 
+    core.info(`test-suite length ${run['test-suite'].length} and value ${run['test-suite']}`);
     meta.addTests(ReportConverter.convertSuite(run['test-suite']));
     core.info(`meta length ${meta.suites.length}`);
 
