@@ -15,11 +15,10 @@ class ResultsCheck {
     await Promise.all(
       files.map(async filepath => {
         if (!filepath.endsWith('.xml')) return;
-        core.startGroup(`Processing file ${filepath}...`);
+        core.info(`Processing file ${filepath}...`);
         const fileData = await ResultsCheck.parseReport(path.join(artifactsPath, filepath));
         core.info(fileData.summary);
         runs.push(fileData);
-        core.endGroup();
       }),
     );
 
