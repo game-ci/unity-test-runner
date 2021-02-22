@@ -15,6 +15,7 @@ class ReportConverter {
     meta.duration = Number(run._attributes.duration);
 
     meta.addTests(ReportConverter.convertSuite(run['test-suite']));
+    core.info(`meta length ${meta.suites.length}`);
 
     return meta;
   }
@@ -40,6 +41,7 @@ class ReportConverter {
       result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
     }
 
+    core.info(`result length ${result.length}`);
     return result;
   }
 
