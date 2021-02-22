@@ -26,6 +26,7 @@ class ReportConverter {
       suites.forEach(suite => {
         innerResult.concat(ReportConverter.convertSuite(suite));
       });
+      core.info(`innerResult length ${innerResult.length}`);
       return innerResult;
     }
 
