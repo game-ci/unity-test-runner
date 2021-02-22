@@ -32,7 +32,7 @@ class ReportConverter {
     const result = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
-      result.push(...ReportConverter.convertSuite(innerSuite, ReportConverter.convertTests));
+      result.push(...ReportConverter.convertSuite(innerSuite));
     }
 
     const tests = suites['test-case'];
@@ -62,7 +62,7 @@ class ReportConverter {
     meta.duration = Number(duration);
 
     if (!failure) {
-      core.isDebug(`Skip test ${fullname} without failure data`);
+      core.info(`Skip test ${fullname} without failure data`);
       return meta;
     }
 
@@ -86,7 +86,7 @@ class ReportConverter {
       end_line: point.line,
       annotation_level: 'failure',
       title: fullname,
-      message: failure.message.cdata,
+      message: failure.message._cdata,
       raw_details: trace,
     };
     core.info(`- ${meta.annotation.path}:${meta.annotation.start_line} - ${meta.annotation.title}`);

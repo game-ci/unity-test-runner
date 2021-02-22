@@ -53,6 +53,6 @@ export interface TestCaseAttributes extends CommonAttributes {
 }
 
 export interface FailureMessage {
-  message: { cdata: string };
-  'stack-trace'?: { cdata: string };
+  message: { _cdata: string };
+  'stack-trace'?: { _cdata: string };
 }

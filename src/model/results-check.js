@@ -55,22 +55,19 @@ class ResultsCheck {
 
   static async createCheck(githubToken, runs, runSummary, annotations) {
     const pullRequest = github.context.payload.pull_request;
-    const link = (pullRequest && pullRequest.html_url) || github.context.ref;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
-    const conclusion = runSummary.failed === 0 ? 'success' : 'failure';
-    core.info(
-      `Posting status 'completed' with conclusion '${conclusion}' to ${link} (sha: ${headSha})`,
-    );
 
     const summary = await ResultsCheck.renderSummary(runs);
     const text = await ResultsCheck.renderText(runs);
     const title = runSummary.summary;
+
+    core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
       ...github.context.repo,
       name: 'Test Results',
       head_sha: headSha,
       status: 'completed',
-      conclusion,
+      conclusion: 'neutral',
       output: {
         title,
         summary,
