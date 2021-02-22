@@ -18,7 +18,6 @@ class ResultsCheck {
         core.info(`Processing file ${filepath}...`);
         const fileData = await ResultsCheck.parseReport(path.join(artifactsPath, filepath));
         core.info(fileData.summary);
-        core.info(fileData.suites.length);
         runs.push(fileData);
       }),
     );
@@ -31,6 +30,7 @@ class ResultsCheck {
       runSummary.skipped += suite.skipped;
       runSummary.failed += suite.failed;
       runSummary.duration += suite.duration;
+      core.info(suite.suites.length);
       suite.suites.forEach(s => {
         runSummary.addTests(s.tests);
       });
