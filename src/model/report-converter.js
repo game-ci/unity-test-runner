@@ -36,10 +36,12 @@ class ReportConverter {
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
       result.push(...ReportConverter.convertSuite(innerSuite));
+      core.info(`pushed suite ${innerSuite._attributes.id}`);
     }
 
     const tests = suites['test-case'];
     if (tests) {
+      core.info(`tests length ${tests.length}`);
       result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
     }
 
