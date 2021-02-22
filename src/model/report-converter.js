@@ -4,7 +4,7 @@ import { RunMeta, TestMeta } from './ts/meta.ts';
 class ReportConverter {
   static convertReport(filename, report) {
     core.info(`Start analyzing report: ${filename}`);
-    core.info(JSON.stringify(report));
+    core.debug(JSON.stringify(report));
     const run = report['test-run'];
     const meta = new RunMeta(filename);
 
@@ -14,9 +14,9 @@ class ReportConverter {
     meta.passed = Number(run._attributes.passed);
     meta.duration = Number(run._attributes.duration);
 
-    core.info(`test-suite length ${run['test-suite'].length} and value ${run['test-suite']}`);
+    core.debug(`test-suite length ${run['test-suite'].length} and value ${run['test-suite']}`);
     meta.addTests(ReportConverter.convertSuite(run['test-suite']));
-    core.info(`meta length ${meta.suites.length}`);
+    core.debug(`meta length ${meta.suites.length}`);
 
     return meta;
   }
@@ -27,25 +27,25 @@ class ReportConverter {
       suites.forEach(suite => {
         innerResult.concat(ReportConverter.convertSuite(suite));
       });
-      core.info(`innerResult length ${innerResult.length}`);
+      core.debug(`innerResult length ${innerResult.length}`);
       return innerResult;
     }
 
-    core.info(`Analyze suite ${suites._attributes.type} / ${suites._attributes.fullname}`);
+    core.debug(`Analyze suite ${suites._attributes.type} / ${suites._attributes.fullname}`);
     const result = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
+      core.debug(`pushing suite ${innerSuite._attributes.id}`);
       result.push(...ReportConverter.convertSuite(innerSuite));
-      core.info(`pushed suite ${innerSuite._attributes.id}`);
     }
 
     const tests = suites['test-case'];
     if (tests) {
-      core.info(`tests length ${tests.length}`);
+      core.debug(`tests length ${tests.length}`);
       result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
     }
 
-    core.info(`result length ${result.length}`);
+    core.infdebugo(`result length ${result.length}`);
     return result;
   }
 
@@ -53,7 +53,8 @@ class ReportConverter {
     if (Array.isArray(tests)) {
       const result = [];
       tests.forEach(test => {
-        result.concat(ReportConverter.convertTests(suite, test));
+        core.debug(`pushing test ${test._attributes.name}`);
+        result.concat(ReportConverter.convertTestCase(suite, test));
       });
       return result;
     }
@@ -68,7 +69,7 @@ class ReportConverter {
     meta.duration = Number(duration);
 
     if (!failure) {
-      core.info(`Skip test ${fullname} without failure data`);
+      core.debug(`Skip test ${fullname} without failure data`);
       return meta;
     }
 
