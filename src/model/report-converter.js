@@ -45,7 +45,7 @@ class ReportConverter {
       result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
     }
 
-    core.infdebugo(`result length ${result.length}`);
+    core.debug(`result length ${result.length}`);
     return result;
   }
 
