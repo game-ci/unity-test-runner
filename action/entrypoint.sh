@@ -29,4 +29,6 @@ fi;
 # Exit with code from the build step.
 #
 
+if [ $USE_EXIT_CODE = true ]; then
 exit $TEST_RUNNER_EXIT_CODE
+fi;

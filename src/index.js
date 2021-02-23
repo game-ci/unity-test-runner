@@ -30,15 +30,19 @@ async function action() {
       testMode,
       artifactsPath,
       useHostNetwork,
+      createCheck,
       customParameters,
     });
-
-    if (createCheck) {
-      await ResultsCheck.publishResults(artifactsPath, githubToken);
-    }
   } finally {
     // Set output
     await Output.setArtifactsPath(artifactsPath);
+  }
+
+  if (createCheck) {
+    const fail = await ResultsCheck.publishResults(artifactsPath, githubToken);
+    if (fail > 0) {
+      core.setFailed('Tests Failed! See Test Results for details.');
+    }
   }
 }
 
