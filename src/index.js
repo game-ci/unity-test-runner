@@ -42,7 +42,7 @@ async function action() {
   if (createCheck) {
     const fail = await ResultsCheck.publishResults(artifactsPath, checkName, githubToken);
     if (fail > 0) {
-      core.setFailed(`Tests Failed! Check ${checkName} for details.`);
+      core.setFailed(`Tests Failed! Check '${checkName}' for details.`);
     }
   }
 }
