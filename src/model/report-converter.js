@@ -25,7 +25,7 @@ class ReportConverter {
     if (Array.isArray(suites)) {
       const innerResult = [];
       suites.forEach(suite => {
-        innerResult.concat(ReportConverter.convertSuite(suite));
+        innerResult.push(ReportConverter.convertSuite(suite));
       });
       core.debug(`innerResult length ${innerResult.length}`);
       return innerResult;
@@ -56,7 +56,8 @@ class ReportConverter {
       const result = [];
       tests.forEach(test => {
         core.debug(`pushing test ${test._attributes.name}`);
-        result.concat(ReportConverter.convertTestCase(suite, test));
+        result.push(ReportConverter.convertTestCase(suite, test));
+        core.debug(`test ${test._attributes.name} pushed result to length ${result.length}`);
       });
       return result;
     }

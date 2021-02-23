@@ -30,7 +30,7 @@ class ResultsCheck {
       runSummary.skipped += run.skipped;
       runSummary.failed += run.failed;
       runSummary.duration += run.duration;
-      core.info(`Run suites length ${run.suites.length}`);
+      core.debug(`Run suites length ${run.suites.length}`);
       run.suites.forEach(suite => {
         runSummary.addTests(suite.tests);
       });
