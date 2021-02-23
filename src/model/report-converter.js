@@ -37,12 +37,14 @@ class ReportConverter {
     if (innerSuite) {
       core.debug(`pushing suite ${innerSuite._attributes.id}`);
       result.push(...ReportConverter.convertSuite(innerSuite));
+      core.debug(`suite ${innerSuite._attributes.id} pushed result to length ${result.length}`);
     }
 
     const tests = suites['test-case'];
     if (tests) {
       core.debug(`tests length ${tests.length}`);
       result.push(...ReportConverter.convertTests(suites._attributes.fullname, tests));
+      core.debug(`tests pushed result to length ${result.length}`);
     }
 
     core.debug(`result length ${result.length}`);
