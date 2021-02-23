@@ -22,6 +22,7 @@ class Input {
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const rawCreateCheck = getInput('createCheck') || 'false';
+    const checkName = getInput('checkName') || 'Test Results';
     const githubToken = getInput('githubToken') || '';
     const customParameters = getInput('customParameters') || ''; // Validate input
     if (!includes(this.testModes, testMode)) {
@@ -57,6 +58,7 @@ class Input {
       artifactsPath,
       useHostNetwork,
       createCheck,
+      checkName,
       githubToken,
       customParameters,
     };

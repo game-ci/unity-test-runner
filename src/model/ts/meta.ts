@@ -78,7 +78,7 @@ export class RunMeta extends Meta {
 
   get mark(): string {
     if (this.failed > 0) return '❌️';
-    else if (this.skipped === 0) return '✔️';
+    else if (this.skipped === 0) return '✅';
     return '⚠️';
   }
 }
@@ -111,7 +111,7 @@ export class TestMeta extends Meta {
   get mark(): string {
     if (this.isFailed()) return '❌️';
     else if (this.isSkipped()) return '⚠️';
-    return '✔️';
+    return '✅';
   }
 }
 

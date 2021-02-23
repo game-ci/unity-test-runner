@@ -13,6 +13,7 @@ async function action() {
     artifactsPath,
     useHostNetwork,
     createCheck,
+    checkName,
     githubToken,
     customParameters,
   } = Input.getFromUser();
@@ -39,9 +40,9 @@ async function action() {
   }
 
   if (createCheck) {
-    const fail = await ResultsCheck.publishResults(artifactsPath, githubToken);
+    const fail = await ResultsCheck.publishResults(artifactsPath, checkName, githubToken);
     if (fail > 0) {
-      core.setFailed('Tests Failed! See Test Results for details.');
+      core.setFailed(`Tests Failed! Check ${checkName} for details.`);
     }
   }
 }

@@ -32,6 +32,10 @@ inputs:
     required: false
     default: 'false'
     description: 'Creates a check with the Test Results'
+  checkName:
+    required: false
+    default: 'Test Results'
+    description: 'Name for the check created when createCheck is true.'
   githubToken:
     required: false
     default: ''

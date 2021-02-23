@@ -8,7 +8,7 @@ import ReportConverter from './report-converter';
 import { RunMeta } from './ts/meta.ts';
 
 class ResultsCheck {
-  static async publishResults(artifactsPath, githubToken) {
+  static async publishResults(artifactsPath, checkName, githubToken) {
     // Parse all reports
     const runs = [];
     const files = fs.readdirSync(artifactsPath);
@@ -41,7 +41,13 @@ class ResultsCheck {
     core.info(runSummary.summary);
 
     // Create check
-    await ResultsCheck.createCheck(githubToken, runs, runSummary, runSummary.extractAnnotations());
+    await ResultsCheck.createCheck(
+      checkName,
+      githubToken,
+      runs,
+      runSummary,
+      runSummary.extractAnnotations(),
+    );
     return runSummary.failed;
   }
 
@@ -54,7 +60,7 @@ class ResultsCheck {
     return ReportConverter.convertReport(path.basename(filepath), report);
   }
 
-  static async createCheck(githubToken, runs, runSummary, annotations) {
+  static async createCheck(checkName, githubToken, runs, runSummary, annotations) {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
@@ -65,7 +71,7 @@ class ResultsCheck {
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
       ...github.context.repo,
-      name: 'Test Results',
+      name: checkName,
       head_sha: headSha,
       status: 'completed',
       conclusion: 'neutral',
