@@ -27,7 +27,7 @@ class ReportConverter {
       suites.forEach(suite => {
         innerResult.push(ReportConverter.convertSuite(suite));
       });
-      core.debug(`innerResult length ${innerResult.length}`);
+      core.debug(`suite innerResult length ${innerResult.length}`);
       return innerResult;
     }
 
@@ -47,7 +47,7 @@ class ReportConverter {
       core.debug(`tests pushed result to length ${result.length}`);
     }
 
-    core.debug(`result length ${result.length}`);
+    core.debug(`suite result length ${result.length}`);
     return result;
   }
 

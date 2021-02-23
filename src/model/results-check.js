@@ -30,7 +30,6 @@ class ResultsCheck {
       runSummary.skipped += run.skipped;
       runSummary.failed += run.failed;
       runSummary.duration += run.duration;
-      core.debug(`Run suites length ${run.suites.length}`);
       run.suites.forEach(suite => {
         runSummary.addTests(suite.tests);
       });
@@ -43,6 +42,7 @@ class ResultsCheck {
 
     // Create check
     await ResultsCheck.createCheck(githubToken, runs, runSummary, runSummary.extractAnnotations());
+    return runSummary.failed;
   }
 
   static async parseReport(filepath) {
