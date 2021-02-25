@@ -1,28 +1,27 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import * as fs from 'fs';
-import * as xmljs from 'xml-js';
 import path from 'path';
 import Handlebars from 'handlebars';
-import ReportConverter from './report-converter';
+import ResultsParser from './results-parser';
 import { RunMeta } from './ts/meta.ts';
 
 class ResultsCheck {
-  static async publishResults(artifactsPath, checkName, githubToken) {
-    // Parse all reports
+  static async createCheck(artifactsPath, checkName, githubToken) {
+    // Parse all results files
     const runs = [];
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
       files.map(async filepath => {
         if (!filepath.endsWith('.xml')) return;
         core.info(`Processing file ${filepath}...`);
-        const fileData = await ResultsCheck.parseReport(path.join(artifactsPath, filepath));
+        const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
         core.info(fileData.summary);
         runs.push(fileData);
       }),
     );
 
-    // Prepare run summary
+    // Combine all results into a single run summary
     const runSummary = new RunMeta('Test Results');
     runs.forEach(run => {
       runSummary.total += run.total;
@@ -35,38 +34,24 @@ class ResultsCheck {
       });
     });
 
-    // Log run summary
+    // Log
     core.info('=================');
     core.info('Analyze result:');
     core.info(runSummary.summary);
 
-    // Create check
-    await ResultsCheck.createCheck(
-      checkName,
-      githubToken,
-      runs,
-      runSummary,
-      runSummary.extractAnnotations(),
-    );
+    // Call GitHub API
+    await ResultsCheck.requestGitHubCheck(checkName, githubToken, runs, runSummary);
     return runSummary.failed;
   }
 
-  static async parseReport(filepath) {
-    core.info(`Trying to open ${filepath}`);
-    const file = await fs.promises.readFile(filepath, 'utf8');
-    const report = xmljs.xml2js(file, { compact: true });
-    core.info(`File ${filepath} parsed...`);
-
-    return ReportConverter.convertReport(path.basename(filepath), report);
-  }
-
-  static async createCheck(checkName, githubToken, runs, runSummary, annotations) {
+  static async requestGitHubCheck(checkName, githubToken, runs, runSummary) {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
-    const summary = await ResultsCheck.renderSummary(runs);
-    const text = await ResultsCheck.renderText(runs);
     const title = runSummary.summary;
+    const summary = await ResultsCheck.renderSummary(runs);
+    const details = await ResultsCheck.renderDetails(runs);
+    const annotations = runSummary.extractAnnotations();
 
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
@@ -78,7 +63,7 @@ class ResultsCheck {
       output: {
         title,
         summary,
-        text,
+        text: details,
         annotations: annotations.slice(0, 50),
       },
     };
@@ -91,13 +76,18 @@ class ResultsCheck {
     return ResultsCheck.render(`${__dirname}/../views/summary.hbs`, runMetas);
   }
 
-  static async renderText(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/text.hbs`, runMetas);
+  static async renderDetails(runMetas) {
+    return ResultsCheck.render(`${__dirname}/../views/details.hbs`, runMetas);
   }
 
   static async render(viewPath, runMetas) {
+    Handlebars.registerHelper('indent', toIndent =>
+      toIndent
+        .split('\n')
+        .map(s => `        ${s}`)
+        .join('\n'),
+    );
     const source = await fs.promises.readFile(viewPath, 'utf8');
-    Handlebars.registerHelper('indent', ResultsCheck.indentHelper);
     const template = Handlebars.compile(source);
     return template(
       { runs: runMetas },
@@ -106,13 +96,6 @@ class ResultsCheck {
         allowProtoPropertiesByDefault: true,
       },
     );
-  }
-
-  static indentHelper(argument) {
-    return argument
-      .split('\n')
-      .map(s => `        ${s}`)
-      .join('\n');
   }
 }
 

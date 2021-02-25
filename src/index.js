@@ -40,8 +40,8 @@ async function action() {
   }
 
   if (createCheck) {
-    const fail = await ResultsCheck.publishResults(artifactsPath, checkName, githubToken);
-    if (fail > 0) {
+    const failedTestCount = await ResultsCheck.createCheck(artifactsPath, checkName, githubToken);
+    if (failedTestCount >= 1) {
       core.setFailed(`Tests Failed! Check '${checkName}' for details.`);
     }
   }
