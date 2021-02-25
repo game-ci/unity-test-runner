@@ -4,10 +4,17 @@ import * as fs from 'fs';
 import path from 'path';
 import Handlebars from 'handlebars';
 import ResultsParser from './results-parser';
-import { RunMeta } from './ts/meta.ts';
+import { RunMeta } from './ts/results-meta.ts';
 
 class ResultsCheck {
   static async createCheck(artifactsPath, checkName, githubToken) {
+    // Validate input
+    if (!artifactsPath || !checkName || !githubToken) {
+      throw new Error(
+        `Missing input! {"artifactsPath": "${artifactsPath}", "checkName": "${checkName}",  "githubToken": "${githubToken}`,
+      );
+    }
+
     // Parse all results files
     const runs = [];
     const files = fs.readdirSync(artifactsPath);

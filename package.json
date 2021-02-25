@@ -16,6 +16,7 @@
     "@actions/core": "^1.2.6",
     "@actions/exec": "1.0.4",
     "@actions/github": "^4.0.0",
+    "@octokit/types": "6.10.1",
     "handlebars": "4.7.7",
     "xml-js": "1.6.11"
   },

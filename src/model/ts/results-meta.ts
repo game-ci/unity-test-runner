@@ -1,4 +1,4 @@
-﻿import { components } from '@octokit/openapi-types/generated/types';
+﻿import { components } from '@octokit/openapi-types/dist-types/generated/types';
 
 export function timeHelper(seconds: number): string {
   return `${seconds.toFixed(3)}s`;
@@ -16,6 +16,8 @@ export abstract class Meta {
 
   abstract get mark(): string;
 }
+
+export type Annotation = components['schemas']['check-annotation'];
 
 export class RunMeta extends Meta {
   total = 0;
@@ -114,5 +116,3 @@ export class TestMeta extends Meta {
     return '✅';
   }
 }
-
-export type Annotation = components['schemas']['check-annotation'];

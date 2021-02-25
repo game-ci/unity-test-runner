@@ -2,10 +2,14 @@ import * as core from '@actions/core';
 import * as xmljs from 'xml-js';
 import * as fs from 'fs';
 import path from 'path';
-import { RunMeta, TestMeta } from './ts/meta.ts';
+import { RunMeta, TestMeta } from './ts/results-meta.ts';
 
 class ResultsParser {
   static async parseResults(filepath) {
+    if (!fs.existsSync(filepath)) {
+      throw new Error(`Missing file! {"filepath": "${filepath}"}`);
+    }
+
     core.info(`Trying to open ${filepath}`);
     const file = await fs.promises.readFile(filepath, 'utf8');
     const results = xmljs.xml2js(file, { compact: true });
@@ -66,7 +70,8 @@ class ResultsParser {
   }
 
   static convertTestCase(suite, testCase) {
-    const { name, fullname, result, failure, duration } = testCase._attributes;
+    const { _attributes, failure } = testCase;
+    const { name, fullname, result, duration } = _attributes;
     const testMeta = new TestMeta(suite, name);
     testMeta.result = result;
     testMeta.duration = Number(duration);
@@ -82,11 +87,10 @@ class ResultsParser {
       return testMeta;
     }
 
-    const trace = failure['stack-trace'].cdata;
+    const trace = failure['stack-trace']._cdata;
     const point = ResultsParser.findAnnotationPoint(trace);
-    if (point === undefined) {
-      core.warning('Not able to find entry point for failed test! Test trace:');
-      core.warning(trace);
+    if (!point.path || !point.line) {
+      core.warning(`Not able to find annotation point for failed test! Test trace: ${trace}`);
       return testMeta;
     }
 
@@ -108,8 +112,8 @@ class ResultsParser {
   static findAnnotationPoint(trace) {
     const match = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
     return {
-      path: match.groups.path,
-      line: Number(match.groups.line),
+      path: match ? match.groups.path : '',
+      line: match ? Number(match.groups.line) : 0,
     };
   }
 }
