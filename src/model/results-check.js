@@ -29,7 +29,7 @@ class ResultsCheck {
     );
 
     // Combine all results into a single run summary
-    const runSummary = new RunMeta('Test Results');
+    const runSummary = new RunMeta(checkName);
     runs.forEach(run => {
       runSummary.total += run.total;
       runSummary.passed += run.passed;
