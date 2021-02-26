@@ -58,7 +58,12 @@ class ResultsCheck {
     const title = runSummary.summary;
     const summary = await ResultsCheck.renderSummary(runs);
     const details = await ResultsCheck.renderDetails(runs);
-    const annotations = runSummary.extractAnnotations();
+    const rawAnnotations = runSummary.extractAnnotations();
+    const annotations = rawAnnotations.map(rawAnnotation => {
+      const annotation = rawAnnotation;
+      annotation.path = rawAnnotation.path.replace('/github/workspace/', '');
+      return annotation;
+    });
 
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
