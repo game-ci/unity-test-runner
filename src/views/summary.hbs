@@ -1,10 +1,8 @@
 {{#runs}}
 ### {{summary}}
-{{#suites}}{{#tests}}{{#if isFailed}}* {{summary}}
-        {{annotation.path}}:{{annotation.start_line}}
-{{else if isSkipped}}
-
+{{#suites}}
+{{#tests}}
 * {{summary}}
-{{/if}}{{/tests}}
+{{/tests}}
 {{/suites}}
 {{/runs}}
