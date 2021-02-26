@@ -85,11 +85,11 @@ class ResultsCheck {
   }
 
   static async renderSummary(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/summary.hbs`, runMetas);
+    return ResultsCheck.render(`${__dirname}/../views/results-check-summary.hbs`, runMetas);
   }
 
   static async renderDetails(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/details.hbs`, runMetas);
+    return ResultsCheck.render(`${__dirname}/../views/results-check-details.hbs`, runMetas);
   }
 
   static async render(viewPath, runMetas) {
