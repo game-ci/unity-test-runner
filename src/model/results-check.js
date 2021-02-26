@@ -96,7 +96,7 @@ class ResultsCheck {
     Handlebars.registerHelper('indent', toIndent =>
       toIndent
         .split('\n')
-        .map(s => `        ${s}`)
+        .map(s => `        ${s.replace('/github/workspace/', '')}`)
         .join('\n'),
     );
     const source = await fs.promises.readFile(viewPath, 'utf8');
