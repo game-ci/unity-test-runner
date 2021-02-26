@@ -11,7 +11,8 @@ class ResultsParser {
     }
 
     core.info(`Trying to open ${filepath}`);
-    const file = await fs.promises.readFile(filepath, 'utf8');
+    const rawFile = await fs.promises.readFile(filepath, 'utf8');
+    const file = rawFile.replace('/github/workspace/', '');
     const results = xmljs.xml2js(file, { compact: true });
     core.info(`File ${filepath} parsed...`);
 
