@@ -24,7 +24,9 @@ class Input {
     const rawCreateCheck = getInput('createCheck') || 'false';
     const checkName = getInput('checkName') || 'Test Results';
     const githubToken = getInput('githubToken') || '';
-    const customParameters = getInput('customParameters') || ''; // Validate input
+    const customParameters = getInput('customParameters') || '';
+
+    // Validate input
     if (!includes(this.testModes, testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
     }
