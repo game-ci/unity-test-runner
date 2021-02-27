@@ -1,5 +1,5 @@
 import * as core from '@actions/core';
-import { Action, Docker, Input, ImageTag, Output } from './model';
+import { Action, Docker, Input, ImageTag, Output, ResultsCheck } from './model';
 
 async function action() {
   Action.checkCompatibility();
@@ -12,6 +12,9 @@ async function action() {
     testMode,
     artifactsPath,
     useHostNetwork,
+    createCheck,
+    checkName,
+    githubToken,
     customParameters,
   } = Input.getFromUser();
   const baseImage = ImageTag.createForBase({ version: unityVersion, customImage });
@@ -28,11 +31,19 @@ async function action() {
       testMode,
       artifactsPath,
       useHostNetwork,
+      createCheck,
       customParameters,
     });
   } finally {
     // Set output
     await Output.setArtifactsPath(artifactsPath);
+  }
+
+  if (createCheck) {
+    const failedTestCount = await ResultsCheck.createCheck(artifactsPath, checkName, githubToken);
+    if (failedTestCount >= 1) {
+      core.setFailed(`Test(s) Failed! Check '${checkName}' for details.`);
+    }
   }
 }
 
