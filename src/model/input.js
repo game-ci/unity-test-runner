@@ -21,10 +21,9 @@ class Input {
     const rawProjectPath = getInput('projectPath') || '.';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
-    const rawCreateCheck = getInput('createCheck') || 'false';
-    const checkName = getInput('checkName') || 'Test Results';
-    const githubToken = getInput('githubToken') || '';
     const customParameters = getInput('customParameters') || '';
+    const githubToken = getInput('githubToken') || '';
+    const checkName = getInput('checkName') || 'Test Results';
 
     // Validate input
     if (!includes(this.testModes, testMode)) {
@@ -47,7 +46,6 @@ class Input {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
-    const createCheck = rawCreateCheck === 'true';
     const unityVersion =
       rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
 
@@ -59,10 +57,9 @@ class Input {
       testMode,
       artifactsPath,
       useHostNetwork,
-      createCheck,
-      checkName,
-      githubToken,
       customParameters,
+      githubToken,
+      checkName,
     };
   }
 }

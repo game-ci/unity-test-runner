@@ -28,18 +28,14 @@ inputs:
   customParameters:
     required: false
     description: 'Extra parameters to configure the Unity editor run.'
-  createCheck:
-    required: false
-    default: 'false'
-    description: 'Creates a check with the Test Results'
-  checkName:
-    required: false
-    default: 'Test Results'
-    description: 'Name for the check created when createCheck is true.'
   githubToken:
     required: false
     default: ''
-    description: 'Token to authorize access to the GitHub REST API. Required if and only if createCheck is true.'
+    description: 'Token to authorize access to the GitHub REST API. If provided, a check run will be created with the test results.'
+  checkName:
+    required: false
+    default: 'Test Results'
+    description: 'Name for the check run that is created when a github token is provided.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
