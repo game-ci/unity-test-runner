@@ -12,10 +12,9 @@ async function action() {
     testMode,
     artifactsPath,
     useHostNetwork,
-    createCheck,
-    checkName,
-    githubToken,
     customParameters,
+    githubToken,
+    checkName,
   } = Input.getFromUser();
   const baseImage = ImageTag.createForBase({ version: unityVersion, customImage });
 
@@ -31,15 +30,15 @@ async function action() {
       testMode,
       artifactsPath,
       useHostNetwork,
-      createCheck,
       customParameters,
+      githubToken,
     });
   } finally {
     // Set output
     await Output.setArtifactsPath(artifactsPath);
   }
 
-  if (createCheck) {
+  if (githubToken) {
     const failedTestCount = await ResultsCheck.createCheck(artifactsPath, checkName, githubToken);
     if (failedTestCount >= 1) {
       core.setFailed(`Test(s) Failed! Check '${checkName}' for details.`);

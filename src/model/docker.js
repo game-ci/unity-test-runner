@@ -25,8 +25,8 @@ class Docker {
       testMode,
       artifactsPath,
       useHostNetwork,
-      createCheck,
       customParameters,
+      githubToken,
     } = parameters;
 
     const command = `docker run \
@@ -63,7 +63,7 @@ class Docker {
         --volume "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
         --volume "${workspace}":"/github/workspace" \
         ${useHostNetwork ? '--net=host' : ''} \
-        ${createCheck ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
+        ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image}`;
 
     await exec(command, undefined, { silent });

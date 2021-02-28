@@ -7,11 +7,11 @@ import ResultsParser from './results-parser';
 import { RunMeta } from './ts/results-meta.ts';
 
 class ResultsCheck {
-  static async createCheck(artifactsPath, checkName, githubToken) {
+  static async createCheck(artifactsPath, githubToken, checkName) {
     // Validate input
     if (!artifactsPath || !checkName || !githubToken) {
       throw new Error(
-        `Missing input! {"artifactsPath": "${artifactsPath}", "checkName": "${checkName}",  "githubToken": "${githubToken}`,
+        `Missing input! {"artifactsPath": "${artifactsPath}",  "githubToken": "${githubToken}, "checkName": "${checkName}"`,
       );
     }
 
