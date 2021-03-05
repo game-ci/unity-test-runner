@@ -1,9 +1,35 @@
+import * as xmljs from 'xml-js';
+import * as fs from 'fs';
 import ResultsParser from './results-parser';
 
 describe('ResultsParser', () => {
   describe('parseResults', () => {
     it('throws for missing file', () => {
       expect(() => ResultsParser.parseResults('')).rejects.toEqual(Error);
+    });
+
+    it('parses editmode-results.xml', () => {
+      expect(() => ResultsParser.parseResults('./artifacts/editmode-results.xml')).not.toThrow();
+    });
+
+    it('parses playmode-results.xml', () => {
+      expect(() => ResultsParser.parseResults('./artifacts/playmode-results.xml')).not.toThrow();
+    });
+  });
+
+  describe('convertResults', () => {
+    it('converts editmode-results.xml', () => {
+      const file = fs.readFileSync('./artifacts/editmode-results.xml');
+      const filedata = xmljs.xml2js(file, { compact: true });
+      const result = ResultsParser.convertResults('editmode-results.xml', filedata);
+      expect(result.suites.length).toEqual(1);
+    });
+
+    it('converts playmode-results.xml', () => {
+      const file = fs.readFileSync('./artifacts/playmode-results.xml');
+      const filedata = xmljs.xml2js(file, { compact: true });
+      const result = ResultsParser.convertResults('playmode-results.xml', filedata);
+      expect(result.suites.length).toEqual(3);
     });
   });
 
@@ -27,15 +53,13 @@ describe('ResultsParser', () => {
       const result = ResultsParser.convertSuite(targetSuite);
 
       expect(result).toMatchObject([
-        [
-          {
-            annotation: undefined,
-            duration: Number.NaN,
-            result: undefined,
-            suite: 'Inner Suite Full Name',
-            title: 'testC',
-          },
-        ],
+        {
+          annotation: undefined,
+          duration: Number.NaN,
+          result: undefined,
+          suite: 'Inner Suite Full Name',
+          title: 'testC',
+        },
         {
           annotation: undefined,
           duration: Number.NaN,

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="8" result="Failed(Child)" total="8" passed="2" failed="4" inconclusive="0" skipped="2" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.1055695">
+  <test-suite type="TestSuite" id="1000" name="sample-project" fullname="sample-project" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.105570" total="8" passed="2" failed="4" inconclusive="0" skipped="2" asserts="0">
+    <properties />
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1012" name="Assembly-CSharp.dll" fullname="/github/workspace/unity-project/Library/ScriptAssemblies/Assembly-CSharp.dll" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.088008" total="8" passed="2" failed="4" inconclusive="0" skipped="2" asserts="0">
+      <properties>
+        <property name="_PID" value="474" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1013" name="Tests" fullname="Tests" runstate="Runnable" testcasecount="8" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.084864" total="8" passed="2" failed="4" inconclusive="0" skipped="2" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestFixture" id="1001" name="PlayModeTest" fullname="Tests.PlayModeTest" classname="Tests.PlayModeTest" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.074407" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-case id="1004" name="FailedTest" fullname="Tests.PlayModeTest.FailedTest" methodname="FailedTest" classname="Tests.PlayModeTest" runstate="Runnable" seed="1067965392" result="Failed" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.034377" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+              <stack-trace><![CDATA[at Tests.PlayModeTest.FailedTest () [0x00000] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:20
+]]></stack-trace>
+            </failure>
+          </test-case>
+          <test-case id="1007" name="FailedUnityTest" fullname="Tests.PlayModeTest.FailedUnityTest" methodname="FailedUnityTest" classname="Tests.PlayModeTest" runstate="Runnable" seed="318345342" result="Failed" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.009524" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+            </properties>
+            <failure>
+              <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+              <stack-trace><![CDATA[at Tests.PlayModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:39
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /github/workspace/unity-project/Library/PackageCache/com.unity.test-framework@1.1.19/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:36
+]]></stack-trace>
+            </failure>
+          </test-case>
+          <test-case id="1003" name="IgnoredTest" fullname="Tests.PlayModeTest.IgnoredTest" methodname="IgnoredTest" classname="Tests.PlayModeTest" runstate="Ignored" seed="1914466070" result="Skipped" label="Ignored" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.000211" asserts="0">
+            <properties>
+              <property name="_SKIPREASON" value="ignore" />
+            </properties>
+            <reason>
+              <message><![CDATA[ignore]]></message>
+            </reason>
+          </test-case>
+          <test-case id="1006" name="IgnoredUnityTest" fullname="Tests.PlayModeTest.IgnoredUnityTest" methodname="IgnoredUnityTest" classname="Tests.PlayModeTest" runstate="Ignored" seed="475291067" result="Skipped" label="Ignored" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.000004" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+              <property name="_SKIPREASON" value="ignore" />
+            </properties>
+            <reason>
+              <message><![CDATA[ignore]]></message>
+            </reason>
+          </test-case>
+          <test-case id="1002" name="PassedTest" fullname="Tests.PlayModeTest.PassedTest" methodname="PassedTest" classname="Tests.PlayModeTest" runstate="Runnable" seed="635988114" result="Passed" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.000400" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1005" name="PassedUnityTest" fullname="Tests.PlayModeTest.PassedUnityTest" methodname="PassedUnityTest" classname="Tests.PlayModeTest" runstate="Runnable" seed="881217608" result="Passed" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.000736" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+            </properties>
+          </test-case>
+        </test-suite>
+        <test-suite type="TestFixture" id="1008" name="SetupFailedTest" fullname="Tests.SetupFailedTest" classname="Tests.SetupFailedTest" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.004318" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-case id="1009" name="PassedTest" fullname="Tests.SetupFailedTest.PassedTest" methodname="PassedTest" classname="Tests.SetupFailedTest" runstate="Runnable" seed="1423699315" result="Failed" label="Error" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.003206" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[SetUp : System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+              <stack-trace><![CDATA[--SetUp
+  at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10 
+  at (wrapper managed-to-native) System.Reflection.MonoMethod.InternalInvoke(System.Reflection.MonoMethod,object,object[],System.Exception&)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00032] in <9577ac7a62ef43179789031239ba8798>:0 ]]></stack-trace>
+            </failure>
+          </test-case>
+        </test-suite>
+        <test-suite type="TestFixture" id="1010" name="TearDownFailedTest" fullname="Tests.TearDownFailedTest" classname="Tests.TearDownFailedTest" runstate="Runnable" testcasecount="1" result="Failed" site="Child" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.001857" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-case id="1011" name="PassedTest" fullname="Tests.TearDownFailedTest.PassedTest" methodname="PassedTest" classname="Tests.TearDownFailedTest" runstate="Runnable" seed="1384928637" result="Failed" label="Error" start-time="2021-01-19 20:51:44Z" end-time="2021-01-19 20:51:44Z" duration="0.000755" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[TearDown : System.NullReferenceException : Object reference not set to an instance of an object]]></message>
+              <stack-trace><![CDATA[--TearDown
+  at Tests.TearDownFailedTest.TearDown () [0x00000] in /github/workspace/unity-project/Assets/Tests/TearDownFailedTest.cs:10 
+  at (wrapper managed-to-native) System.Reflection.MonoMethod.InternalInvoke(System.Reflection.MonoMethod,object,object[],System.Exception&)
+  at System.Reflection.MonoMethod.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x00032] in <9577ac7a62ef43179789031239ba8798>:0 ]]></stack-trace>
+            </failure>
+          </test-case>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

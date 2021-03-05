@@ -59,7 +59,7 @@ class ResultsCheck {
       annotation.path = rawAnnotation.path.replace('/github/workspace/', '');
       return annotation;
     });
-    core.debug(`Annotations: ${rawAnnotations}`);
+    core.debug(`Annotations: ${annotations}`);
     const output = {
       title,
       summary,
