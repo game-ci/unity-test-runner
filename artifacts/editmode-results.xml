@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="6" result="Failed(Child)" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.1168037">
+  <test-suite type="TestSuite" id="1012" name="sample-project" fullname="sample-project" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.116804" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0">
+    <properties />
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1020" name="Editor.dll" fullname="/github/workspace/unity-project/Library/ScriptAssemblies/Editor.dll" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.087946" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0">
+      <properties>
+        <property name="_PID" value="78" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1021" name="Editor" fullname="Editor" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.086212" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestFixture" id="1013" name="EditorModeTest" fullname="Editor.EditorModeTest" classname="Editor.EditorModeTest" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.076416" total="6" passed="2" failed="2" inconclusive="0" skipped="2" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <output><![CDATA[You are trying to create a MonoBehaviour using the 'new' keyword.  This is not allowed.  MonoBehaviours can only be added using AddComponent(). Alternatively, your script can inherit from ScriptableObject or no base class at all
+]]></output>
+          <test-case id="1016" name="FailedTest" fullname="Editor.EditorModeTest.FailedTest" methodname="FailedTest" classname="Editor.EditorModeTest" runstate="Runnable" seed="330279882" result="Failed" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.023093" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+              <stack-trace><![CDATA[at Editor.EditorModeTest.FailedTest () [0x00000] in /github/workspace/unity-project/Assets/Editor/EditorModeTest.cs:21
+]]></stack-trace>
+            </failure>
+          </test-case>
+          <test-case id="1019" name="FailedUnityTest" fullname="Editor.EditorModeTest.FailedUnityTest" methodname="FailedUnityTest" classname="Editor.EditorModeTest" runstate="Runnable" seed="347277877" result="Failed" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.014203" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+            </properties>
+            <failure>
+              <message><![CDATA[  Expected: True
+  But was:  False
+]]></message>
+              <stack-trace><![CDATA[at Editor.EditorModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Editor/EditorModeTest.cs:40
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /github/workspace/unity-project/Library/PackageCache/com.unity.test-framework@1.1.19/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:36
+]]></stack-trace>
+            </failure>
+          </test-case>
+          <test-case id="1015" name="IgnoredTest" fullname="Editor.EditorModeTest.IgnoredTest" methodname="IgnoredTest" classname="Editor.EditorModeTest" runstate="Ignored" seed="1319288303" result="Skipped" label="Ignored" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.000218" asserts="0">
+            <properties>
+              <property name="_SKIPREASON" value="ignore" />
+            </properties>
+            <reason>
+              <message><![CDATA[ignore]]></message>
+            </reason>
+          </test-case>
+          <test-case id="1018" name="IgnoredUnityTest" fullname="Editor.EditorModeTest.IgnoredUnityTest" methodname="IgnoredUnityTest" classname="Editor.EditorModeTest" runstate="Ignored" seed="2034877647" result="Skipped" label="Ignored" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.000004" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+              <property name="_SKIPREASON" value="ignore" />
+            </properties>
+            <reason>
+              <message><![CDATA[ignore]]></message>
+            </reason>
+          </test-case>
+          <test-case id="1014" name="PassedTest" fullname="Editor.EditorModeTest.PassedTest" methodname="PassedTest" classname="Editor.EditorModeTest" runstate="Runnable" seed="387558551" result="Passed" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.000366" asserts="0">
+            <properties />
+          </test-case>
+          <test-case id="1017" name="PassedUnityTest" fullname="Editor.EditorModeTest.PassedUnityTest" methodname="PassedUnityTest" classname="Editor.EditorModeTest" runstate="Runnable" seed="1069930397" result="Passed" start-time="2021-01-19 20:51:34Z" end-time="2021-01-19 20:51:34Z" duration="0.007903" asserts="0">
+            <properties>
+              <property name="_JOINTYPE" value="UnityCombinatorial" />
+            </properties>
+          </test-case>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

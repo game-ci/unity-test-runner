@@ -23,13 +23,15 @@ class ResultsParser {
 
     const run = filedata['test-run'];
     const runMeta = new RunMeta(filename);
+    const tests = ResultsParser.convertSuite(run['test-suite']);
+    core.debug(tests);
 
     runMeta.total = Number(run._attributes.total);
     runMeta.failed = Number(run._attributes.failed);
     runMeta.skipped = Number(run._attributes.skipped);
     runMeta.passed = Number(run._attributes.passed);
     runMeta.duration = Number(run._attributes.duration);
-    runMeta.addTests(ResultsParser.convertSuite(run['test-suite']));
+    runMeta.addTests(tests);
 
     return runMeta;
   }
@@ -38,7 +40,7 @@ class ResultsParser {
     if (Array.isArray(suites)) {
       const innerResult = [];
       suites.forEach(suite => {
-        innerResult.push(ResultsParser.convertSuite(suite));
+        innerResult.push(...ResultsParser.convertSuite(suite));
       });
       return innerResult;
     }

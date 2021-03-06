@@ -41,8 +41,8 @@ export class RunMeta extends Meta {
     return result;
   }
 
-  addTests(testsToAdd: TestMeta[]): void {
-    testsToAdd.forEach(test => {
+  addTests(testSuite: TestMeta[]): void {
+    testSuite.forEach(test => {
       this.addTest(test);
     });
   }

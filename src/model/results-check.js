@@ -9,7 +9,7 @@ import { RunMeta } from './ts/results-meta.ts';
 class ResultsCheck {
   static async createCheck(artifactsPath, githubToken, checkName) {
     // Validate input
-    if (!artifactsPath || !checkName || !githubToken) {
+    if (!fs.existsSync(artifactsPath) || !githubToken || !checkName) {
       throw new Error(
         `Missing input! {"artifactsPath": "${artifactsPath}",  "githubToken": "${githubToken}, "checkName": "${checkName}"`,
       );
@@ -46,24 +46,35 @@ class ResultsCheck {
     core.info('Analyze result:');
     core.info(runSummary.summary);
 
-    // Call GitHub API
-    await ResultsCheck.requestGitHubCheck(checkName, githubToken, runs, runSummary);
-    return runSummary.failed;
-  }
-
-  static async requestGitHubCheck(checkName, githubToken, runs, runSummary) {
-    const pullRequest = github.context.payload.pull_request;
-    const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
-
+    // Format output
     const title = runSummary.summary;
     const summary = await ResultsCheck.renderSummary(runs);
+    core.debug(`Summary view: ${summary}`);
     const details = await ResultsCheck.renderDetails(runs);
+    core.debug(`Details view: ${details}`);
     const rawAnnotations = runSummary.extractAnnotations();
+    core.debug(`Raw annotations: ${rawAnnotations}`);
     const annotations = rawAnnotations.map(rawAnnotation => {
       const annotation = rawAnnotation;
       annotation.path = rawAnnotation.path.replace('/github/workspace/', '');
       return annotation;
     });
+    core.debug(`Annotations: ${annotations}`);
+    const output = {
+      title,
+      summary,
+      text: details,
+      annotations: annotations.slice(0, 50),
+    };
+
+    // Call GitHub API
+    await ResultsCheck.requestGitHubCheck(githubToken, checkName, output);
+    return runSummary.failed;
+  }
+
+  static async requestGitHubCheck(githubToken, checkName, output) {
+    const pullRequest = github.context.payload.pull_request;
+    const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
@@ -72,12 +83,7 @@ class ResultsCheck {
       head_sha: headSha,
       status: 'completed',
       conclusion: 'neutral',
-      output: {
-        title,
-        summary,
-        text: details,
-        annotations: annotations.slice(0, 50),
-      },
+      output,
     };
 
     const octokit = github.getOctokit(githubToken);
