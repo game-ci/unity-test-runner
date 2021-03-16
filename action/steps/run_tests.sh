@@ -74,7 +74,7 @@ if [ $EDIT_MODE = true ]; then
   echo "#   Testing in EditMode   #"
   echo "###########################"
   echo ""
-  unity-editor \
+  /opt/unity/Editor/Unity \
     -batchmode \
     -logFile "$FULL_ARTIFACTS_PATH/editmode.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
@@ -111,7 +111,7 @@ if [ $PLAY_MODE = true ]; then
   echo "#   Testing in PlayMode   #"
   echo "###########################"
   echo ""
-  unity-editor \
+  /opt/unity/Editor/Unity \
     -batchmode \
     -logFile "$FULL_ARTIFACTS_PATH/playmode.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
