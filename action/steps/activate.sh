@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+#
+# Set and display project path
+#
+UNITY_PROJECT_PATH="$GITHUB_WORKSPACE/$PROJECT_PATH"
+echo "Using project path \"$UNITY_PROJECT_PATH\"."
+
 if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
   #
   # PERSONAL LICENSE MODE
@@ -29,6 +35,7 @@ if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
     -nographics \
     -logFile /dev/stdout \
     -quit \
+    -projectPath "$UNITY_PROJECT_PATH" \
     -manualLicenseFile $FILE_PATH)
 
   # Store the exit code from the verify command
@@ -69,7 +76,8 @@ elif [[ -n "$UNITY_SERIAL" && -n "$UNITY_EMAIL" && -n "$UNITY_PASSWORD" ]]; then
     -quit \
     -serial "$UNITY_SERIAL" \
     -username "$UNITY_EMAIL" \
-    -password "$UNITY_PASSWORD"
+    -password "$UNITY_PASSWORD" \
+    -projectPath "$UNITY_PROJECT_PATH"
 
   # Store the exit code from the verify command
   UNITY_EXIT_CODE=$?
