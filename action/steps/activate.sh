@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# Run in a new empty directory
+ACTIVATE_LICENSE_PATH="$GITHUB_WORKSPACE/_activate-license"
+echo "Creating and changing to \"$ACTIVATE_LICENSE_PATH\" directory."
+mkdir -p "$ACTIVATE_LICENSE_PATH"
+pushd "$ACTIVATE_LICENSE_PATH"
+
 if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
   #
   # PERSONAL LICENSE MODE
@@ -102,3 +108,6 @@ else
   echo "Exit code was: $UNITY_EXIT_CODE"
   exit $UNITY_EXIT_CODE
 fi
+
+# Return to previous working directory
+popd
