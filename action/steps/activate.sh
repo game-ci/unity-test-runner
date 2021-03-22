@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-# Run in a new empty directory
-ACTIVATE_LICENSE_PATH="$GITHUB_WORKSPACE/_activate-license"
-echo "Creating and changing to \"$ACTIVATE_LICENSE_PATH\" directory."
-mkdir -p "$ACTIVATE_LICENSE_PATH"
+# Run in ACTIVATE_LICENSE_PATH directory
+echo "Changing to \"$ACTIVATE_LICENSE_PATH\" directory."
 pushd "$ACTIVATE_LICENSE_PATH"
 
 if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
