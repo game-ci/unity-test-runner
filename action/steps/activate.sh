@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+UNITY_PROJECT_PATH="$GITHUB_WORKSPACE/$PROJECT_PATH"
+
 # Run in ACTIVATE_LICENSE_PATH directory
 echo "Changing to \"$ACTIVATE_LICENSE_PATH\" directory."
 pushd "$ACTIVATE_LICENSE_PATH"
@@ -24,7 +26,7 @@ if [[ -n "$UNITY_LICENSE" ]] || [[ -n "$UNITY_LICENSE_FILE"  ]]; then
     echo "$UNITY_LICENSE" | tr -d '\r' > $FILE_PATH
   elif [[ -n "$UNITY_LICENSE_FILE" ]]; then
     # Copy license file from file system
-    cat "$UNITY_LICENSE_FILE" | tr -d '\r' > $FILE_PATH
+    cat "$UNITY_PROJECT_PATH/$UNITY_LICENSE_FILE" | tr -d '\r' > $FILE_PATH
   fi
 
   # Activate license
