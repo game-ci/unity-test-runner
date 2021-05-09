@@ -17,7 +17,7 @@ class Input {
     // Input variables specified in workflow using "with" prop.
     const rawUnityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
-    const testMode = getInput('testMode') || 'all';
+    const testMode = (getInput('testMode') || 'all').toLowerCase();
     const rawProjectPath = getInput('projectPath') || '.';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
