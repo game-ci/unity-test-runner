@@ -28,6 +28,10 @@ inputs:
   customParameters:
     required: false
     description: 'Extra parameters to configure the Unity editor run.'
+  sshAgent:
+    required: false
+    default: ''
+    description: 'SSH Agent path to forward to the container'
   githubToken:
     required: false
     default: ''

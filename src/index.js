@@ -4,7 +4,7 @@ import { Action, Docker, Input, ImageTag, Output, ResultsCheck } from './model';
 async function action() {
   Action.checkCompatibility();
 
-  const { dockerfile, workspace, actionFolder, sshAgent } = Action;
+  const { dockerfile, workspace, actionFolder } = Action;
   const {
     unityVersion,
     customImage,
@@ -13,6 +13,7 @@ async function action() {
     artifactsPath,
     useHostNetwork,
     customParameters,
+    sshAgent,
     githubToken,
     checkName,
   } = Input.getFromUser();
@@ -31,8 +32,8 @@ async function action() {
       artifactsPath,
       useHostNetwork,
       customParameters,
-      githubToken,
       sshAgent,
+      githubToken,
     });
   } finally {
     // Set output
