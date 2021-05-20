@@ -104,9 +104,7 @@ export class TestMeta extends Meta {
   }
 
   get summary(): string {
-    const dPart = this.isSkipped()
-      ? ''
-      : ` in ${timeHelper(this.duration)}`;
+    const dPart = this.isSkipped() ? '' : ` in ${timeHelper(this.duration)}`;
     return `${this.mark} **${this.title}** - ${this.result}${dPart}`;
   }
 
