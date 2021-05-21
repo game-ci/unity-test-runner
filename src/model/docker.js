@@ -63,7 +63,7 @@ class Docker {
         --volume "/home/runner/work/_temp/_github_home":"/root" \
         --volume "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
         --volume "${workspace}":"/github/workspace" \
-        ${sshAgent ? '--volume ' + sshAgent + ':/ssh-agent' : ''} \
+        ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
