@@ -13,6 +13,7 @@ async function action() {
     artifactsPath,
     useHostNetwork,
     customParameters,
+    sshAgent,
     githubToken,
     checkName,
   } = Input.getFromUser();
@@ -31,6 +32,7 @@ async function action() {
       artifactsPath,
       useHostNetwork,
       customParameters,
+      sshAgent,
       githubToken,
     });
   } finally {

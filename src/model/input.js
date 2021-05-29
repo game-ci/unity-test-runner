@@ -22,6 +22,7 @@ class Input {
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const customParameters = getInput('customParameters') || '';
+    const sshAgent = getInput('sshAgent') || '';
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
 
@@ -58,6 +59,7 @@ class Input {
       artifactsPath,
       useHostNetwork,
       customParameters,
+      sshAgent,
       githubToken,
       checkName,
     };
