@@ -102,7 +102,7 @@ class ResultsParser {
       end_line: point.line,
       annotation_level: 'failure',
       title: fullname,
-      message: failure.message._cdata,
+      message: failure.message._cdata ? failure.message._cdata : 'Test Failed!',
       raw_details: trace,
     };
     core.info(
