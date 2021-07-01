@@ -14,8 +14,8 @@ describe('UnityVersionParser', () => {
   });
 
   describe('read', () => {
-    it('does not throw', () => {
-      expect(() => UnityVersionParser.read('')).not.toThrow();
+    it('throws for invalid path', () => {
+      expect(() => UnityVersionParser.read('')).toThrow(Error);
     });
 
     it('reads from unity-project-with-correct-tests', () => {

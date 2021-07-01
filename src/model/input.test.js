@@ -1,5 +1,7 @@
 import Input from './input';
 
+jest.mock('./unity-version-parser');
+
 describe('Input', () => {
   describe('getFromUser', () => {
     it('does not throw', () => {
