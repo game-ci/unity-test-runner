@@ -17,7 +17,9 @@ class UnityVersionParser {
   static read(projectPath) {
     const filePath = path.join(projectPath, 'ProjectSettings', 'ProjectVersion.txt');
     if (!fs.existsSync(filePath)) {
-      return 'auto';
+      throw new Error(
+        `Project settings file not found at "${filePath}". Have you correctly set the projectPath?`,
+      );
     }
     return UnityVersionParser.parse(fs.readFileSync(filePath, 'utf8'));
   }
