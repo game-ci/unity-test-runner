@@ -39,6 +39,14 @@ To help improve the documentation, please find the docs [repository](https://git
 
 To contribute to this project, kindly read the [contribution guide](./CONTRIBUTING.md).
 
+## Support us
+
+GameCI is free for everyone forever.
+
+You can support us at [OpenCollective](https://opencollective.com/game-ci).
+
 ## Licence
 
-[MIT](./LICENSE)
+This repository is [MIT](./LICENSE) licensed.
+
+This includes all contributions from the community.
