@@ -69,7 +69,7 @@ class ResultsCheck {
 
     // Call GitHub API
     await ResultsCheck.requestGitHubCheck(githubToken, checkName, output);
-    return runSummary.failed;
+    return runSummary;
   }
 
   static async requestGitHubCheck(githubToken, checkName, output) {
