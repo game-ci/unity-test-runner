@@ -130,7 +130,7 @@ class ResultsParser {
         return result[0];
       }
     }
-    // If all entries have zero line number use legacy match
+    // If all entries have zero line number match fallback pattern
     const match = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
     return {
       path: match ? match.groups.path : '',
