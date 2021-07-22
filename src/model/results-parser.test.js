@@ -195,6 +195,16 @@ at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /
       expect(result.line).toBe(39);
     });
 
+    test('first entry with non-zero line number annotation point', () => {
+      const result = ResultsParser.findAnnotationPoint(`at FluentAssertions.Execution.LateBoundTestFramework.Throw (System.String message) [0x00044] in <527a5493e59e45679b35c1e8d65350b3>:0
+at FluentAssertions.Execution.TestFrameworkProvider.Throw (System.String message) [0x00011] in <527a5493e59e45679b35c1e8d65350b3>:0
+at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure (System.String message) [0x00005] in <527a5493e59e45679b35c1e8d65350b3>:0
+at Tests.PlayModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:39
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /github/workspace/unity-project/Library/PackageCache/com.unity.test-framework@1.1.19/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:36`);
+      expect(result.path).toBe('/github/workspace/unity-project/Assets/Tests/PlayModeTest.cs');
+      expect(result.line).toBe(39);
+    });
+
     test('setup annotation point', () => {
       const result = ResultsParser.findAnnotationPoint(`SetUp
 at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10`);
