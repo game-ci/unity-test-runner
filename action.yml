@@ -21,7 +21,7 @@ inputs:
     required: false
     default: 'artifacts'
     description: 'Path where test artifacts should be stored.'
-  useNetworkHost:
+  useHostNetwork:
     required: false
     default: false
     description: 'Initialises Docker using the hosts network.'
