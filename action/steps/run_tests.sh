@@ -67,8 +67,9 @@ ls -alh $UNITY_PROJECT_PATH
 #
 # Testing in EditMode
 #
+EDIT_MODE_EXIT_CODE=0
 
-if [ $EDIT_MODE = true ]; then
+if [ "$EDIT_MODE" == "true" ]; then
   echo ""
   echo "###########################"
   echo "#   Testing in EditMode   #"
@@ -104,8 +105,8 @@ fi
 #
 # Testing in PlayMode
 #
-
-if [ $PLAY_MODE = true ]; then
+PLAY_MODE_EXIT_CODE=0
+if [ "$PLAY_MODE" == "true" ]; then
   echo ""
   echo "###########################"
   echo "#   Testing in PlayMode   #"
@@ -149,7 +150,7 @@ echo "###########################"
 echo ""
 ls -alh $UNITY_PROJECT_PATH
 
-if [ $EDIT_MODE = true ]; then
+if [ "$EDIT_MODE" == "true" ]; then
   echo ""
   echo "###########################"
   echo "#    Edit Mode Results    #"
@@ -159,7 +160,7 @@ if [ $EDIT_MODE = true ]; then
   cat "$FULL_ARTIFACTS_PATH/editmode-results.xml" | grep test-run | grep Passed
 fi
 
-if [ $PLAY_MODE = true ]; then
+if [ "$PLAY_MODE" == "true ]; then
   echo ""
   echo "###########################"
   echo "#    Play Mode Results    #"
