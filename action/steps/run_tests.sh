@@ -68,7 +68,6 @@ ls -alh $UNITY_PROJECT_PATH
 # Testing in EditMode
 #
 EDIT_MODE_EXIT_CODE=0
-
 if [ "$EDIT_MODE" = "true" ]; then
   echo ""
   echo "###########################"
