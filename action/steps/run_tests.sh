@@ -160,7 +160,7 @@ if [ "$EDIT_MODE" == "true" ]; then
   cat "$FULL_ARTIFACTS_PATH/editmode-results.xml" | grep test-run | grep Passed
 fi
 
-if [ "$PLAY_MODE" == "true ]; then
+if [ "$PLAY_MODE" == "true" ]; then
   echo ""
   echo "###########################"
   echo "#    Play Mode Results    #"
