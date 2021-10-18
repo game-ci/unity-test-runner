@@ -27,6 +27,7 @@ class Docker {
       useHostNetwork,
       customParameters,
       sshAgent,
+      packageMode,
       githubToken,
     } = parameters;
 
@@ -43,6 +44,7 @@ class Docker {
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
+        --env PACKAGE_MODE="${packageMode}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
         --env GITHUB_REPOSITORY \

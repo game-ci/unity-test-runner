@@ -25,6 +25,7 @@ class Input {
     const sshAgent = getInput('sshAgent') || '';
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
+    const rawPackageMode = getInput('packageMode') || 'false';
 
     // Validate input
     if (!includes(this.testModes, testMode)) {
@@ -43,12 +44,18 @@ class Input {
       throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
     }
 
+    if(rawPackageMode !== 'true' && rawPackageMode !== 'false') {
+      throw new Error(`Invalid packageMode "${rawPackageMode}"`);
+    }
+
     // Sanitise input
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
     const unityVersion =
       rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
+    const packageMode = rawPackageMode === 'true';
+    
 
     // Return sanitised input
     return {
@@ -62,6 +69,7 @@ class Input {
       sshAgent,
       githubToken,
       checkName,
+      packageMode,
     };
   }
 }
