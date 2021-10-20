@@ -15,7 +15,6 @@ RUN apt-get update \
 &&  apt-get install -y --force-yes \
     jq \
 &&  apt-get clean \
-&&  rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
 
 ADD steps /steps
 RUN chmod -R +x /steps
