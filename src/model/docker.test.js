@@ -17,7 +17,7 @@ describe('Docker', () => {
       version: image.version,
     };
 
-    const tag = await Docker.build({ path, dockerfile, baseImage }, true);
+    const tag = await Docker.build({ path, dockerfile, baseImage }, false);
 
     expect(tag).toBeInstanceOf(ImageTag);
     expect(tag.toString()).toStrictEqual('unity-action:3-base-0');
