@@ -16,7 +16,6 @@ async function action() {
     sshAgent,
     githubToken,
     checkName,
-    packageMode,
   } = Input.getFromUser();
   const baseImage = ImageTag.createForBase({ version: unityVersion, customImage });
 
@@ -34,7 +33,6 @@ async function action() {
       useHostNetwork,
       customParameters,
       sshAgent,
-      packageMode,
       githubToken,
     });
   } finally {
