@@ -10,11 +10,10 @@ LABEL "repository"="http://github.com/webbertakken/unity-actions"
 LABEL "homepage"="http://github.com/webbertakken/unity-actions"
 LABEL "maintainer"="Webber Takken <webber@takken.io>"
 
-RUN apt-get update \
-&&  apt-get upgrade -y --force-yes \
-&&  apt-get install -y --force-yes \
-    jq \
-&&  apt-get clean \
+RUN apt-get update
+RUN apt-get upgrade -y --force-yes 
+RUN apt-get install -y --force-yes jq
+
 
 ADD steps /steps
 RUN chmod -R +x /steps
