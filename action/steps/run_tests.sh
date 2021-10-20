@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "TEMP should print the jq version"
+jq --version
+
 #
 # Set and display project path
 #
