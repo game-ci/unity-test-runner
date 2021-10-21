@@ -149,7 +149,7 @@ describe('ResultsParser', () => {
       expect(result.annotation).toBeUndefined();
     });
 
-    test('prepare annotation', () => {
+    test('prepare annotation without console output', () => {
       const result = ResultsParser.convertTestCase('Test Suite', {
         _attributes: {
           name: 'Test Name',
@@ -175,6 +175,40 @@ describe('ResultsParser', () => {
         path: '/github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs',
         raw_details:
           'at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10',
+        start_line: 10,
+        title: 'Test Full Name',
+      });
+    });
+
+    test('prepare annotation with console output', () => {
+      const result = ResultsParser.convertTestCase('Test Suite', {
+        _attributes: {
+          name: 'Test Name',
+          fullname: 'Test Full Name',
+          duration: '3.14',
+        },
+        output: {
+          _cdata: '[Warning] This is a warning',
+        },
+        failure: {
+          message: { _cdata: 'Message CDATA' },
+          'stack-trace': {
+            _cdata:
+              'at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10',
+          },
+        },
+      });
+
+      expect(result.suite).toBe('Test Suite');
+      expect(result.title).toBe('Test Name');
+      expect(result.duration).toBe(3.14);
+      expect(result.annotation).toMatchObject({
+        annotation_level: 'failure',
+        end_line: 10,
+        message: 'Message CDATA',
+        path: '/github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs',
+        raw_details:
+          '[Warning] This is a warning\nat Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10',
         start_line: 10,
         title: 'Test Full Name',
       });

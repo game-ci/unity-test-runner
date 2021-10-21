@@ -72,7 +72,7 @@ class ResultsParser {
   }
 
   static convertTestCase(suite, testCase) {
-    const { _attributes, failure } = testCase;
+    const { _attributes, failure, output } = testCase;
     const { name, fullname, result, duration } = _attributes;
     const testMeta = new TestMeta(suite, name);
     testMeta.result = result;
@@ -96,6 +96,14 @@ class ResultsParser {
       return testMeta;
     }
 
+    const rawDetails = [trace];
+
+    if (output && output._cdata) {
+      rawDetails.unshift(output._cdata);
+    } else {
+      core.debug(`No console output for test case: ${fullname}`);
+    }
+
     testMeta.annotation = {
       path: point.path,
       start_line: point.line,
@@ -103,7 +111,7 @@ class ResultsParser {
       annotation_level: 'failure',
       title: fullname,
       message: failure.message._cdata ? failure.message._cdata : 'Test Failed!',
-      raw_details: trace,
+      raw_details: rawDetails.join('\n'),
     };
     core.info(
       `- ${testMeta.annotation.path}:${testMeta.annotation.start_line} - ${testMeta.annotation.title}`,
