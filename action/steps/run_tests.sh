@@ -20,7 +20,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "###########################"
   echo ""
 
-  cat "$UNITY_PROJECT_PATH"
+  ls "$UNITY_PROJECT_PATH"
 
   PACKAGE_JSON_PATH="$UNITY_PROJECT_PATH/package.json"
   if [ ! -f "$PACKAGE_JSON_PATH" ]; then
@@ -37,14 +37,16 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   echo "Package name found: ${PACKAGE_NAME}"
 
-#  echo "Creating an empty Unity project to add the package to."
+  echo "Creating an empty Unity project to add the package to."
 
-#  unity-editor \ 
-#    -batchMode \
-#    -createProject "./TempProject" \ 
-#    -quit
+  mkdir "TempProject"
 
-#  UNITY_PROJECT_PATH="./TempProject"
+  unity-editor \ 
+    -batchMode \
+    -createProject "./TempProject" \ 
+    -quit
+
+  UNITY_PROJECT_PATH="./TempProject"
 fi
 
 #
