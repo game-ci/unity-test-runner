@@ -20,16 +20,29 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "###########################"
   echo ""
 
-  cat UNITY_PROJECT_PATH 
+  cat "$UNITY_PROJECT_PATH"
 
-  echo "Creating an empty Unity project to add the package to."
+  PACKAGE_JSON_PATH="$UNITY_PROJECT_PATH/package.json"
+  if [ ! -f "$PACKAGE_JSON_PATH" ]; then
+      echo "Unable to locate package.json from the given package path. Aborting..."
+      exit
+  fi
+
+  PACKAGE_NAME=$(cat "$PACKAGE_JSON_PATH" | jq ".name")
+
+  if [ -z $PACKAGE_NAME ]; then 
+    echo "Unable to parse package name from package.json. Aborting..."
+    exit
+  fi
+
+  echo "Package name found: ${PACKAGE_NAME}"
+
+#  echo "Creating an empty Unity project to add the package to."
 
 #  unity-editor \ 
 #    -batchMode \
 #    -createProject "./TempProject" \ 
 #    -quit
-
-  jq --version
 
 #  UNITY_PROJECT_PATH="./TempProject"
 fi
