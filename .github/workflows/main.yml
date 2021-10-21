@@ -263,3 +263,44 @@ jobs:
           name: Test results (combined)
           path: artifacts/
           retention-days: 14
+
+  testPackageRunnerInEditMode:
+    name: Test package mode in edit mode 📦📝
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      ###########################
+      #  Cache(don't use yet)   #
+      ###########################
+
+      # Configure test runner
+      - name: Run tests
+        id: editMode
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          artifactsPath: artifacts/editmode
+          packageMode: true
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test results (edit mode)
+          path: ${{ steps.editMode.outputs.artifactsPath }}
+          retention-days: 14

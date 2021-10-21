@@ -1,14 +1,38 @@
 #!/usr/bin/env bash
 
-echo "TEMP should print the jq version"
-jq --version
-
 #
 # Set and display project path
 #
 
 UNITY_PROJECT_PATH="$GITHUB_WORKSPACE/$PROJECT_PATH"
 echo "Using project path \"$UNITY_PROJECT_PATH\"."
+
+#
+# Create an empty project for testing if in package mode
+#
+
+if [ "$PACKAGE_MODE" = "true" ]; then
+  echo "Running tests on a Unity package rather than a Unity project."
+
+  echo ""
+  echo "###########################"
+  echo "#    Package Folder       #"
+  echo "###########################"
+  echo ""
+
+  cat UNITY_PROJECT_PATH 
+
+  echo "Creating an empty Unity project to add the package to."
+
+#  unity-editor \ 
+#    -batchMode \
+#    -createProject "./TempProject" \ 
+#    -quit
+
+  jq --version
+
+#  UNITY_PROJECT_PATH="./TempProject"
+fi
 
 #
 # Set and display the artifacts path

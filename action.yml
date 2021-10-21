@@ -12,7 +12,7 @@ inputs:
     description: 'Specific docker image that should be used for testing the project'
   projectPath:
     required: false
-    description: 'Path to the Unity project to be tested.'
+    description: 'Path to the Unity project (or, in package mode, the path to the package directory) to be tested.'
   testMode:
     required: false
     default: 'all'
@@ -40,6 +40,10 @@ inputs:
     required: false
     default: 'Test Results'
     description: 'Name for the check run that is created when a github token is provided.'
+  packageMode:
+    required: false
+    default: false
+    description: 'Whether the tests are being run for a Unity package. Not needed for packages located within a Unity Project.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
