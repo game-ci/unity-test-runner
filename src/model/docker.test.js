@@ -8,8 +8,8 @@ describe('Docker', () => {
     const dockerfile = `${path}/Dockerfile`;
     const image = new ImageTag({
       repository: '',
-      name: 'alpine',
-      version: '3',
+      name: 'ubuntu',
+      version: 'impish',
     });
 
     const baseImage = {
@@ -17,9 +17,9 @@ describe('Docker', () => {
       version: image.version,
     };
 
-    const tag = await Docker.build({ path, dockerfile, baseImage }, false);
+    const tag = await Docker.build({ path, dockerfile, baseImage }, true);
 
     expect(tag).toBeInstanceOf(ImageTag);
-    expect(tag.toString()).toStrictEqual('unity-action:3-base-0');
+    expect(tag.toString()).toStrictEqual('unity-action:impish-base-0');
   }, 240000);
 });

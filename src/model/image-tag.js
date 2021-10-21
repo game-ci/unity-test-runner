@@ -22,7 +22,7 @@ class ImageTag {
   }
 
   static get versionPattern() {
-    return /^20\d{2}\.\d\.\w{3,4}|3$/;
+    return /^(20\d{2}\.\d\.\w{3,4}|3)|impish$/;
   }
 
   get tag() {
