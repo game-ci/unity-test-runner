@@ -25,6 +25,7 @@ class Input {
     const sshAgent = getInput('sshAgent') || '';
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
+    const gitPrivateToken = getInput('gitPrivateToken') || '';
 
     // Validate input
     if (!includes(this.testModes, testMode)) {
@@ -62,6 +63,7 @@ class Input {
       sshAgent,
       githubToken,
       checkName,
+      gitPrivateToken,
     };
   }
 }
