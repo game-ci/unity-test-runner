@@ -17,27 +17,27 @@ class Input {
     // Input variables specified in workflow using "with" prop.
     const rawUnityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
-    const testMode = (getInput('testMode') || 'all').toLowerCase();
     const rawProjectPath = getInput('projectPath') || '.';
+    const customParameters = getInput('customParameters') || '';
+    const testMode = (getInput('testMode') || 'all').toLowerCase();
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
-    const customParameters = getInput('customParameters') || '';
     const sshAgent = getInput('sshAgent') || '';
+    const gitPrivateToken = getInput('gitPrivateToken') || '';
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
-    const gitPrivateToken = getInput('gitPrivateToken') || '';
 
     // Validate input
     if (!includes(this.testModes, testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
     }
 
-    if (!this.isValidFolderName(rawArtifactsPath)) {
-      throw new Error(`Invalid artifactsPath "${rawArtifactsPath}"`);
-    }
-
     if (!this.isValidFolderName(rawProjectPath)) {
       throw new Error(`Invalid projectPath "${rawProjectPath}"`);
+    }
+
+    if (!this.isValidFolderName(rawArtifactsPath)) {
+      throw new Error(`Invalid artifactsPath "${rawArtifactsPath}"`);
     }
 
     if (rawUseHostNetwork !== 'true' && rawUseHostNetwork !== 'false') {
@@ -56,14 +56,14 @@ class Input {
       unityVersion,
       customImage,
       projectPath,
+      customParameters,
       testMode,
       artifactsPath,
       useHostNetwork,
-      customParameters,
       sshAgent,
+      gitPrivateToken,
       githubToken,
       checkName,
-      gitPrivateToken,
     };
   }
 }

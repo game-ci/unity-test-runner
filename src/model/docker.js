@@ -22,13 +22,13 @@ class Docker {
       unityVersion,
       workspace,
       projectPath,
+      customParameters,
       testMode,
       artifactsPath,
       useHostNetwork,
-      customParameters,
       sshAgent,
-      githubToken,
       gitPrivateToken,
+      githubToken,
     } = parameters;
 
     const command = `docker run \
@@ -41,9 +41,9 @@ class Docker {
         --env UNITY_SERIAL \
         --env UNITY_VERSION="${unityVersion}" \
         --env PROJECT_PATH="${projectPath}" \
+        --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
-        --env CUSTOM_PARAMETERS="${customParameters}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
         --env GITHUB_REPOSITORY \

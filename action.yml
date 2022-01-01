@@ -13,6 +13,9 @@ inputs:
   projectPath:
     required: false
     description: 'Path to the Unity project to be tested.'
+  customParameters:
+    required: false
+    description: 'Extra parameters to configure the Unity editor run.'
   testMode:
     required: false
     default: 'all'
@@ -24,19 +27,15 @@ inputs:
   useHostNetwork:
     required: false
     default: false
-    description: 'Initialises Docker using the hosts network.'
-  customParameters:
-    required: false
-    description: 'Extra parameters to configure the Unity editor run.'
+    description: 'Initialises Docker using the host network.'
   sshAgent:
     required: false
     default: ''
-    description: 'SSH Agent path to forward to the container'
+    description: 'SSH Agent path to forward to the container.'
   gitPrivateToken:
     required: false
     default: ''
-    description: >
-      Github private token to pull from github
+    description: 'GitHub Private Access Token (PAT) to pull from GitHub.'
   githubToken:
     required: false
     default: ''

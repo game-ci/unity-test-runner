@@ -9,11 +9,12 @@ async function action() {
     unityVersion,
     customImage,
     projectPath,
+    customParameters,
     testMode,
     artifactsPath,
     useHostNetwork,
-    customParameters,
     sshAgent,
+    gitPrivateToken,
     githubToken,
     checkName,
   } = Input.getFromUser();
@@ -25,14 +26,15 @@ async function action() {
 
     // Run docker image
     await Docker.run(actionImage, {
-      workspace,
       unityVersion,
+      workspace,
       projectPath,
+      customParameters,
       testMode,
       artifactsPath,
       useHostNetwork,
-      customParameters,
       sshAgent,
+      gitPrivateToken,
       githubToken,
     });
   } finally {
