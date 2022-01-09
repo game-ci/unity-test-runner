@@ -13,7 +13,7 @@ class ImageTag {
       repository = 'unityci',
       name = 'editor',
       version = '2019.2.11f1',
-      platform,
+      platform = Platform.types.StandaloneLinux64,
       customImage,
     } = imageProperties;
 

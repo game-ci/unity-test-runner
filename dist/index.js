@@ -229,7 +229,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { repository = 'unityci', name = 'editor', version = '2019.2.11f1', platform, customImage, } = imageProperties;
+        const { repository = 'unityci', name = 'editor', version = '2019.2.11f1', platform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
         if (!ImageTag.versionPattern.test(version)) {
             throw new Error(`Invalid version "${version}".`);
         }
