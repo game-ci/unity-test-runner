@@ -39,10 +39,6 @@ describe('ImageTag', () => {
       const { platform } = some;
       expect(() => new ImageTag({ version, platform })).toThrow();
     });
-
-    test.each([undefined, 'nonExisting'])('throws for unsupported target %p', platform => {
-      expect(() => new ImageTag({ platform })).toThrow();
-    });
   });
 
   describe('toString', () => {
