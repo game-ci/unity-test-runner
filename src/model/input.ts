@@ -1,19 +1,18 @@
-import { getInput } from '@actions/core';
-import { includes } from 'lodash-es';
 import UnityVersionParser from './unity-version-parser';
+import { getInput } from '@actions/core';
 
-class Input {
-  static get testModes() {
+const Input = {
+  get testModes() {
     return ['all', 'playmode', 'editmode'];
-  }
+  },
 
-  static isValidFolderName(folderName) {
+  isValidFolderName(folderName) {
     const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
 
     return validFolderName.test(folderName);
-  }
+  },
 
-  static getFromUser() {
+  getFromUser() {
     // Input variables specified in workflow using "with" prop.
     const rawUnityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
@@ -28,7 +27,7 @@ class Input {
     const checkName = getInput('checkName') || 'Test Results';
 
     // Validate input
-    if (!includes(this.testModes, testMode)) {
+    if (!this.testModes.includes(testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
     }
 
@@ -65,7 +64,7 @@ class Input {
       githubToken,
       checkName,
     };
-  }
-}
+  },
+};
 
 export default Input;

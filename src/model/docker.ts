@@ -1,12 +1,12 @@
-import { exec } from '@actions/exec';
 import ImageTag from './image-tag';
+import { exec } from '@actions/exec';
 
-class Docker {
-  static async build(buildParameters, silent = false) {
+const Docker = {
+  async build(buildParameters, silent = false) {
     const { path, dockerfile, baseImage } = buildParameters;
     const { version } = baseImage;
 
-    const tag = ImageTag.createForAction(version);
+    const tag = new ImageTag({ version });
     const command = `docker build ${path} \
       --file ${dockerfile} \
       --build-arg IMAGE=${baseImage} \
@@ -15,9 +15,9 @@ class Docker {
     await exec(command, undefined, { silent });
 
     return tag;
-  }
+  },
 
-  static async run(image, parameters, silent = false) {
+  async run(image, parameters, silent = false) {
     const {
       unityVersion,
       workspace,
@@ -72,7 +72,7 @@ class Docker {
         ${image}`;
 
     await exec(command, undefined, { silent });
-  }
-}
+  },
+};
 
 export default Docker;
