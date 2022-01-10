@@ -322,7 +322,8 @@ class ImageTag {
         if (customImage && customImage !== '') {
             return customImage;
         }
-        return `${image}:${tag}-0`; // '0' here represents the docker repo version
+        const dockerRepoVersion = 0;
+        return `${image}:${tag}-${dockerRepoVersion}`;
     }
 }
 exports["default"] = ImageTag;
