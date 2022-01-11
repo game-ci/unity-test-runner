@@ -91,11 +91,11 @@ const ResultsCheck = {
   },
 
   async renderSummary(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/results-check-summary.hbs`, runMetas);
+    return ResultsCheck.render(`${__dirname}/results-check-summary.hbs`, runMetas);
   },
 
   async renderDetails(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/results-check-details.hbs`, runMetas);
+    return ResultsCheck.render(`${__dirname}/results-check-details.hbs`, runMetas);
   },
 
   async render(viewPath, runMetas) {

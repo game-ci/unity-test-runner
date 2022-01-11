@@ -647,12 +647,12 @@ const ResultsCheck = {
     },
     renderSummary(runMetas) {
         return __awaiter(this, void 0, void 0, function* () {
-            return ResultsCheck.render(`${__dirname}/../views/results-check-summary.hbs`, runMetas);
+            return ResultsCheck.render(`${__dirname}/results-check-summary.hbs`, runMetas);
         });
     },
     renderDetails(runMetas) {
         return __awaiter(this, void 0, void 0, function* () {
-            return ResultsCheck.render(`${__dirname}/../views/results-check-details.hbs`, runMetas);
+            return ResultsCheck.render(`${__dirname}/results-check-details.hbs`, runMetas);
         });
     },
     render(viewPath, runMetas) {
