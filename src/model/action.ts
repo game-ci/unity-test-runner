@@ -1,48 +1,48 @@
 import path from 'path';
 
-class Action {
-  static get supportedPlatforms() {
+const Action = {
+  get supportedPlatforms() {
     return ['linux'];
-  }
+  },
 
-  static get isRunningLocally() {
+  get isRunningLocally() {
     return process.env.RUNNER_WORKSPACE === undefined;
-  }
+  },
 
-  static get isRunningFromSource() {
+  get isRunningFromSource() {
     return path.basename(__dirname) === 'model';
-  }
+  },
 
-  static get name() {
+  get canonicalName() {
     return 'unity-test-runner';
-  }
+  },
 
-  static get rootFolder() {
+  get rootFolder() {
     if (Action.isRunningFromSource) {
       return path.dirname(path.dirname(path.dirname(__filename)));
     }
 
     return path.dirname(path.dirname(__filename));
-  }
+  },
 
-  static get actionFolder() {
-    return `${Action.rootFolder}/action`;
-  }
+  get actionFolder() {
+    return `${Action.rootFolder}/dist`;
+  },
 
-  static get dockerfile() {
+  get dockerfile() {
     return `${Action.actionFolder}/Dockerfile`;
-  }
+  },
 
-  static get workspace() {
+  get workspace() {
     return process.env.GITHUB_WORKSPACE;
-  }
+  },
 
-  static checkCompatibility() {
+  checkCompatibility() {
     const currentPlatform = process.platform;
     if (!Action.supportedPlatforms.includes(currentPlatform)) {
       throw new Error(`Currently ${currentPlatform}-platform is not supported`);
     }
-  }
-}
+  },
+};
 
 export default Action;

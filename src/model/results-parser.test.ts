@@ -1,11 +1,12 @@
-import * as xmljs from 'xml-js';
 import * as fs from 'fs';
+import * as xmljs from 'xml-js';
 import ResultsParser from './results-parser';
+import { TestMeta } from './results-meta';
 
 describe('ResultsParser', () => {
   describe('parseResults', () => {
     it('throws for missing file', () => {
-      expect(() => ResultsParser.parseResults('')).rejects.toEqual(Error);
+      expect(() => ResultsParser.parseResults('')).rejects;
     });
 
     it('parses editmode-results.xml', () => {
@@ -19,14 +20,14 @@ describe('ResultsParser', () => {
 
   describe('convertResults', () => {
     it('converts editmode-results.xml', () => {
-      const file = fs.readFileSync('./artifacts/editmode-results.xml');
+      const file = fs.readFileSync('./artifacts/editmode-results.xml', 'utf8');
       const filedata = xmljs.xml2js(file, { compact: true });
       const result = ResultsParser.convertResults('editmode-results.xml', filedata);
       expect(result.suites.length).toEqual(1);
     });
 
     it('converts playmode-results.xml', () => {
-      const file = fs.readFileSync('./artifacts/playmode-results.xml');
+      const file = fs.readFileSync('./artifacts/playmode-results.xml', 'utf8');
       const filedata = xmljs.xml2js(file, { compact: true });
       const result = ResultsParser.convertResults('playmode-results.xml', filedata);
       expect(result.suites.length).toEqual(3);
@@ -53,27 +54,9 @@ describe('ResultsParser', () => {
       const result = ResultsParser.convertSuite(targetSuite);
 
       expect(result).toMatchObject([
-        {
-          annotation: undefined,
-          duration: Number.NaN,
-          result: undefined,
-          suite: 'Inner Suite Full Name',
-          title: 'testC',
-        },
-        {
-          annotation: undefined,
-          duration: Number.NaN,
-          result: undefined,
-          suite: 'Suite Full Name',
-          title: 'testA',
-        },
-        {
-          annotation: undefined,
-          duration: Number.NaN,
-          result: undefined,
-          suite: 'Suite Full Name',
-          title: 'testB',
-        },
+        new TestMeta('Inner Suite Full Name', 'testC'),
+        new TestMeta('Suite Full Name', 'testA'),
+        new TestMeta('Suite Full Name', 'testB'),
       ]);
     });
   });
@@ -223,14 +206,16 @@ describe('ResultsParser', () => {
     });
 
     test('simple annotation point', () => {
-      const result = ResultsParser.findAnnotationPoint(`at Tests.PlayModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:39
+      const result =
+        ResultsParser.findAnnotationPoint(`at Tests.PlayModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:39
 at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /github/workspace/unity-project/Library/PackageCache/com.unity.test-framework@1.1.19/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:36`);
       expect(result.path).toBe('/github/workspace/unity-project/Assets/Tests/PlayModeTest.cs');
       expect(result.line).toBe(39);
     });
 
     test('first entry with non-zero line number annotation point', () => {
-      const result = ResultsParser.findAnnotationPoint(`at FluentAssertions.Execution.LateBoundTestFramework.Throw (System.String message) [0x00044] in <527a5493e59e45679b35c1e8d65350b3>:0
+      const result =
+        ResultsParser.findAnnotationPoint(`at FluentAssertions.Execution.LateBoundTestFramework.Throw (System.String message) [0x00044] in <527a5493e59e45679b35c1e8d65350b3>:0
 at FluentAssertions.Execution.TestFrameworkProvider.Throw (System.String message) [0x00011] in <527a5493e59e45679b35c1e8d65350b3>:0
 at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure (System.String message) [0x00005] in <527a5493e59e45679b35c1e8d65350b3>:0
 at Tests.PlayModeTest+<FailedUnityTest>d__5.MoveNext () [0x0002e] in /github/workspace/unity-project/Assets/Tests/PlayModeTest.cs:39

@@ -1,67 +1,56 @@
 {
   "name": "unity-test-runner",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "description": "Run tests for any Unity project.",
-  "main": "action/index.js",
-  "repository": "git@github.com:webbertakken/unity-test-runner.git",
+  "main": "dist/index.js",
+  "repository": "git@github.com:game-ci/unity-test-runner.git",
   "author": "Webber <webber@takken.io>",
   "license": "MIT",
   "scripts": {
     "prebuild": "yarn",
-    "build": "ncc build src --out action --minify",
-    "lint": "prettier --check \"src/**/*.js\" && eslint src",
-    "test": "jest"
+    "build": "tsc && ncc build lib --source-map --license licenses.txt",
+    "lint": "prettier --check \"src/**/*.{js,ts}\" && eslint src/**/*.ts",
+    "format": "prettier --write \"src/**/*.{js,ts}\"",
+    "test": "jest",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "1.0.4",
+    "@actions/exec": "^1.0.4",
     "@actions/github": "^4.0.0",
-    "@octokit/types": "6.10.1",
-    "handlebars": "4.7.7",
-    "xml-js": "1.6.11"
+    "@octokit/openapi-types": "^11.2.0",
+    "handlebars": "^4.7.7",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@babel/cli": "7.12.10",
-    "@babel/core": "7.12.10",
-    "@babel/plugin-proposal-class-properties": "^7.12.13",
-    "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
-    "@babel/preset-env": "7.12.11",
-    "@babel/preset-typescript": "^7.12.17",
-    "@zeit/ncc": "0.22.3",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-eslint": "10.1.0",
-    "babel-jest": "^26.6.3",
-    "eslint": "7.17.0",
-    "eslint-config-airbnb": "18.2.1",
-    "eslint-config-prettier": "7.1.0",
-    "eslint-plugin-flowtype": "5.2.0",
-    "eslint-plugin-import": "2.22.1",
-    "eslint-plugin-jsx-a11y": "6.4.1",
-    "eslint-plugin-prettier": "3.3.1",
-    "eslint-plugin-react": "7.22.0",
-    "eslint-plugin-unicorn": "25.0.1",
-    "husky": "4.3.7",
-    "jest": "26.6.3",
-    "lint-staged": "10.5.3",
-    "lodash-es": "4.17.20",
-    "prettier": "2.2.1",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^14.14.9",
+    "@types/semver": "^7.3.5",
+    "@typescript-eslint/parser": "^5.9.0",
+    "@vercel/ncc": "^0.33.1",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-github": "^4.3.5",
+    "eslint-plugin-jest": "^25.3.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-unicorn": "^40.0.0",
+    "husky": "^7.0.4",
+    "jest": "^26.6.3",
+    "jest-circus": "^26.6.3",
+    "js-yaml": "^3.14.0",
+    "lint-staged": "^12.1.2",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.4.4",
     "typescript": "^4.1.5"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged && yarn build && git add action/index.js"
-    }
-  },
   "lint-staged": {
-    "*.{js,jsx}": [
+    "*.{js,jsx,ts,tsx}": [
       "prettier --write",
       "eslint",
-      "git add",
       "jest --findRelatedTests"
     ],
     "*.{json,md,yaml,yml}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   }
 }
