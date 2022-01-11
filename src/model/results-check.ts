@@ -87,7 +87,7 @@ const ResultsCheck = {
     };
 
     const octokit = github.getOctokit(githubToken);
-    await octokit.checks.create(createCheckRequest);
+    await octokit.rest.checks.create(createCheckRequest);
   },
 
   async renderSummary(runMetas) {
