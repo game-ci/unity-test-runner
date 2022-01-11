@@ -5,7 +5,7 @@ if [ -t 1 ]; then
   exec < /dev/tty
 fi
 
-npx lint-staged
+yarn lint-staged
 yarn lint
 yarn test
 yarn build
