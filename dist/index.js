@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { dockerfile, workspace, actionFolder } = model_1.Action;
-            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
             try {
                 // Build docker image
@@ -57,6 +57,7 @@ function run() {
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
+                    packageMode,
                     gitPrivateToken,
                     githubToken,
                 });
@@ -168,7 +169,7 @@ const Docker = {
     },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, } = parameters;
+            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, gitPrivateToken, githubToken, } = parameters;
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -182,6 +183,7 @@ const Docker = {
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
+        --env PACKAGE_MODE="${packageMode}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
         --env GITHUB_REPOSITORY \
@@ -389,6 +391,7 @@ const Input = {
         const gitPrivateToken = (0, core_1.getInput)('gitPrivateToken') || '';
         const githubToken = (0, core_1.getInput)('githubToken') || '';
         const checkName = (0, core_1.getInput)('checkName') || 'Test Results';
+        const rawPackageMode = (0, core_1.getInput)('packageMode') || 'false';
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
@@ -402,11 +405,15 @@ const Input = {
         if (rawUseHostNetwork !== 'true' && rawUseHostNetwork !== 'false') {
             throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
         }
+        if (rawPackageMode !== 'true' && rawPackageMode !== 'false') {
+            throw new Error(`Invalid packageMode "${rawPackageMode}"`);
+        }
         // Sanitise input
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
         const unityVersion = rawUnityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : rawUnityVersion;
+        const packageMode = rawPackageMode === 'true';
         // Return sanitised input
         return {
             unityVersion,
@@ -420,6 +427,7 @@ const Input = {
             gitPrivateToken,
             githubToken,
             checkName,
+            packageMode,
         };
     },
 };
