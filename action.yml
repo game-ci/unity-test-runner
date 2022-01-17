@@ -47,7 +47,7 @@ inputs:
   packageMode:
     required: false
     default: false
-    description: 'Whether the tests are being run for a Unity package. Not needed for packages located within a Unity Project.'
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. NOTE: If this is true, any custom docker image you pass must be compatible with apt-get.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
