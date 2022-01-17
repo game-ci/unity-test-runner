@@ -1,13 +1,13 @@
 import * as core from '@actions/core';
-import * as github from '@actions/github';
 import * as fs from 'fs';
-import path from 'path';
+import * as github from '@actions/github';
 import Handlebars from 'handlebars';
 import ResultsParser from './results-parser';
-import { RunMeta } from './ts/results-meta.ts';
+import { RunMeta } from './results-meta';
+import path from 'path';
 
-class ResultsCheck {
-  static async createCheck(artifactsPath, githubToken, checkName) {
+const ResultsCheck = {
+  async createCheck(artifactsPath, githubToken, checkName) {
     // Validate input
     if (!fs.existsSync(artifactsPath) || !githubToken || !checkName) {
       throw new Error(
@@ -16,7 +16,7 @@ class ResultsCheck {
     }
 
     // Parse all results files
-    const runs = [];
+    const runs: RunMeta[] = [];
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
       files.map(async filepath => {
@@ -30,16 +30,16 @@ class ResultsCheck {
 
     // Combine all results into a single run summary
     const runSummary = new RunMeta(checkName);
-    runs.forEach(run => {
+    for (const run of runs) {
       runSummary.total += run.total;
       runSummary.passed += run.passed;
       runSummary.skipped += run.skipped;
       runSummary.failed += run.failed;
       runSummary.duration += run.duration;
-      run.suites.forEach(suite => {
+      for (const suite of run.suites) {
         runSummary.addTests(suite.tests);
-      });
-    });
+      }
+    }
 
     // Log
     core.info('=================');
@@ -70,9 +70,9 @@ class ResultsCheck {
     // Call GitHub API
     await ResultsCheck.requestGitHubCheck(githubToken, checkName, output);
     return runSummary.failed;
-  }
+  },
 
-  static async requestGitHubCheck(githubToken, checkName, output) {
+  async requestGitHubCheck(githubToken, checkName, output) {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
@@ -87,18 +87,18 @@ class ResultsCheck {
     };
 
     const octokit = github.getOctokit(githubToken);
-    await octokit.checks.create(createCheckRequest);
-  }
+    await octokit.rest.checks.create(createCheckRequest);
+  },
 
-  static async renderSummary(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/results-check-summary.hbs`, runMetas);
-  }
+  async renderSummary(runMetas) {
+    return ResultsCheck.render(`${__dirname}/results-check-summary.hbs`, runMetas);
+  },
 
-  static async renderDetails(runMetas) {
-    return ResultsCheck.render(`${__dirname}/../views/results-check-details.hbs`, runMetas);
-  }
+  async renderDetails(runMetas) {
+    return ResultsCheck.render(`${__dirname}/results-check-details.hbs`, runMetas);
+  },
 
-  static async render(viewPath, runMetas) {
+  async render(viewPath, runMetas) {
     Handlebars.registerHelper('indent', toIndent =>
       toIndent
         .split('\n')
@@ -114,7 +114,7 @@ class ResultsCheck {
         allowProtoPropertiesByDefault: true,
       },
     );
-  }
-}
+  },
+};
 
 export default ResultsCheck;

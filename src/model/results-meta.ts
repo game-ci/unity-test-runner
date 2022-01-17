@@ -1,4 +1,4 @@
-﻿import { components } from '@octokit/openapi-types/dist-types/generated/types';
+﻿import { components } from '@octokit/openapi-types';
 
 export function timeHelper(seconds: number): string {
   return `${seconds.toFixed(3)}s`;
@@ -42,9 +42,9 @@ export class RunMeta extends Meta {
   }
 
   addTests(testSuite: TestMeta[]): void {
-    testSuite.forEach(test => {
+    for (const test of testSuite) {
       this.addTest(test);
-    });
+    }
   }
 
   addTest(test: TestMeta): void {
@@ -93,6 +93,8 @@ export class TestMeta extends Meta {
   constructor(suite: string, title: string) {
     super(title);
     this.suite = suite;
+    this.result = undefined;
+    this.duration = Number.NaN;
   }
 
   isSkipped(): boolean {
@@ -104,9 +106,7 @@ export class TestMeta extends Meta {
   }
 
   get summary(): string {
-    const dPart = this.isSkipped()
-      ? ''
-      : ` in ${timeHelper(this.duration)}`;
+    const dPart = this.isSkipped() ? '' : ` in ${timeHelper(this.duration)}`;
     return `${this.mark} **${this.title}** - ${this.result}${dPart}`;
   }
 

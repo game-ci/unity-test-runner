@@ -1,12 +1,12 @@
-import { exec } from '@actions/exec';
 import ImageTag from './image-tag';
+import { exec } from '@actions/exec';
 
-class Docker {
-  static async build(buildParameters, silent = false) {
+const Docker = {
+  async build(buildParameters, silent = false) {
     const { path, dockerfile, baseImage } = buildParameters;
     const { version } = baseImage;
 
-    const tag = ImageTag.createForAction(version);
+    const tag = new ImageTag({ version });
     const command = `docker build ${path} \
       --file ${dockerfile} \
       --build-arg IMAGE=${baseImage} \
@@ -15,19 +15,20 @@ class Docker {
     await exec(command, undefined, { silent });
 
     return tag;
-  }
+  },
 
-  static async run(image, parameters, silent = false) {
+  async run(image, parameters, silent = false) {
     const {
       unityVersion,
       workspace,
       projectPath,
+      customParameters,
       testMode,
       artifactsPath,
       useHostNetwork,
-      customParameters,
       sshAgent,
       packageMode,
+      gitPrivateToken,
       githubToken,
     } = parameters;
 
@@ -41,6 +42,7 @@ class Docker {
         --env UNITY_SERIAL \
         --env UNITY_VERSION="${unityVersion}" \
         --env PROJECT_PATH="${projectPath}" \
+        --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
@@ -60,6 +62,7 @@ class Docker {
         --env RUNNER_TOOL_CACHE \
         --env RUNNER_TEMP \
         --env RUNNER_WORKSPACE \
+        --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
         --volume "/var/run/docker.sock":"/var/run/docker.sock" \
         --volume "/home/runner/work/_temp/_github_home":"/root" \
@@ -72,7 +75,7 @@ class Docker {
         ${image}`;
 
     await exec(command, undefined, { silent });
-  }
-}
+  },
+};
 
 export default Docker;
