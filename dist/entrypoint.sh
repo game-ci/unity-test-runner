@@ -11,8 +11,7 @@ mkdir -p "$ACTIVATE_LICENSE_PATH"
 # Check if apt-get is available if in package mode (if not, we must abort since we need to install jq)
 #
 if [ "$PACKAGE_MODE" = "true" ]; then
-  echo "Running tests on a Unity package rather than a Unity project."
-  echo "Checking if apt-get is installed."
+  echo "Checking if apt-get is installed to install jq."
   apt-get --version > /dev/null 2>&1
   if [ $? -ne 0 ]; then
     echo "apt-get is not installed. Aborting..."
