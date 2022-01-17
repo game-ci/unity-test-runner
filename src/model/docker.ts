@@ -45,7 +45,6 @@ const Docker = {
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
-        --env CUSTOM_PARAMETERS="${customParameters}" \
         --env PACKAGE_MODE="${packageMode}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
