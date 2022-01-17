@@ -21,7 +21,7 @@ jobs:
       - run: yarn lint
       - run: yarn test
       - run: yarn build || { echo "build command should always succeed" ; exit 61; }
-      - run: yarn build --quiet && git diff --quiet action || { echo "ERROR - index.js is different from repository version. Forgot to run `yarn build`?" ; exit 62; }
+  #      - run: yarn build --quiet && git diff --quiet action || { echo "ERROR - index.js is different from repository version. Forgot to run `yarn build`?" ; exit 62; }
 
   testAllModesLikeInTheReadme:
     name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}

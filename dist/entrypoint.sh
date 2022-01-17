@@ -12,6 +12,7 @@ mkdir -p "$ACTIVATE_LICENSE_PATH"
 #
 
 source /steps/activate.sh
+source /steps/set_gitcredential.sh
 source /steps/run_tests.sh
 source /steps/return_license.sh
 

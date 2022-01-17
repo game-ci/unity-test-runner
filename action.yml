@@ -13,6 +13,9 @@ inputs:
   projectPath:
     required: false
     description: 'Path to the Unity project (or, in package mode, the path to the package directory) to be tested.'
+  customParameters:
+    required: false
+    description: 'Extra parameters to configure the Unity editor run.'
   testMode:
     required: false
     default: 'all'
@@ -24,14 +27,15 @@ inputs:
   useHostNetwork:
     required: false
     default: false
-    description: 'Initialises Docker using the hosts network.'
-  customParameters:
-    required: false
-    description: 'Extra parameters to configure the Unity editor run.'
+    description: 'Initialises Docker using the host network.'
   sshAgent:
     required: false
     default: ''
-    description: 'SSH Agent path to forward to the container'
+    description: 'SSH Agent path to forward to the container.'
+  gitPrivateToken:
+    required: false
+    default: ''
+    description: 'GitHub Private Access Token (PAT) to pull from GitHub.'
   githubToken:
     required: false
     default: ''
@@ -52,4 +56,4 @@ branding:
   color: 'gray-dark'
 runs:
   using: 'node12'
-  main: 'action/index.js'
+  main: 'dist/index.js'

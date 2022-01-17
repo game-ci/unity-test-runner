@@ -1,11 +1,11 @@
 import * as core from '@actions/core';
-import * as xmljs from 'xml-js';
 import * as fs from 'fs';
+import * as xmljs from 'xml-js';
+import { RunMeta, TestMeta } from './results-meta';
 import path from 'path';
-import { RunMeta, TestMeta } from './ts/results-meta.ts';
 
-class ResultsParser {
-  static async parseResults(filepath) {
+const ResultsParser = {
+  async parseResults(filepath): Promise<RunMeta> {
     if (!fs.existsSync(filepath)) {
       throw new Error(`Missing file! {"filepath": "${filepath}"}`);
     }
@@ -16,15 +16,15 @@ class ResultsParser {
     core.info(`File ${filepath} parsed...`);
 
     return ResultsParser.convertResults(path.basename(filepath), results);
-  }
+  },
 
-  static convertResults(filename, filedata) {
+  convertResults(filename, filedata): RunMeta {
     core.info(`Start analyzing results: ${filename}`);
 
     const run = filedata['test-run'];
     const runMeta = new RunMeta(filename);
     const tests = ResultsParser.convertSuite(run['test-suite']);
-    core.debug(tests);
+    core.debug(tests.toString());
 
     runMeta.total = Number(run._attributes.total);
     runMeta.failed = Number(run._attributes.failed);
@@ -34,18 +34,18 @@ class ResultsParser {
     runMeta.addTests(tests);
 
     return runMeta;
-  }
+  },
 
-  static convertSuite(suites) {
+  convertSuite(suites) {
     if (Array.isArray(suites)) {
-      const innerResult = [];
-      suites.forEach(suite => {
+      const innerResult: TestMeta[] = [];
+      for (const suite of suites) {
         innerResult.push(...ResultsParser.convertSuite(suite));
-      });
+      }
       return innerResult;
     }
 
-    const result = [];
+    const result: TestMeta[] = [];
     const innerSuite = suites['test-suite'];
     if (innerSuite) {
       result.push(...ResultsParser.convertSuite(innerSuite));
@@ -57,22 +57,22 @@ class ResultsParser {
     }
 
     return result;
-  }
+  },
 
-  static convertTests(suite, tests) {
+  convertTests(suite, tests): TestMeta[] {
     if (Array.isArray(tests)) {
-      const result = [];
-      tests.forEach(test => {
-        result.push(ResultsParser.convertTestCase(suite, test));
-      });
+      const result: TestMeta[] = [];
+      for (const testCase of tests) {
+        result.push(ResultsParser.convertTestCase(suite, testCase));
+      }
       return result;
     }
 
     return [ResultsParser.convertTestCase(suite, tests)];
-  }
+  },
 
-  static convertTestCase(suite, testCase) {
-    const { _attributes, failure } = testCase;
+  convertTestCase(suite, testCase): TestMeta {
+    const { _attributes, failure, output } = testCase;
     const { name, fullname, result, duration } = _attributes;
     const testMeta = new TestMeta(suite, name);
     testMeta.result = result;
@@ -96,6 +96,14 @@ class ResultsParser {
       return testMeta;
     }
 
+    const rawDetails = [trace];
+
+    if (output && output._cdata) {
+      rawDetails.unshift(output._cdata);
+    } else {
+      core.debug(`No console output for test case: ${fullname}`);
+    }
+
     testMeta.annotation = {
       path: point.path,
       start_line: point.line,
@@ -103,20 +111,23 @@ class ResultsParser {
       annotation_level: 'failure',
       title: fullname,
       message: failure.message._cdata ? failure.message._cdata : 'Test Failed!',
-      raw_details: trace,
+      raw_details: rawDetails.join('\n'),
+      start_column: 0,
+      end_column: 0,
+      blob_href: '',
     };
     core.info(
       `- ${testMeta.annotation.path}:${testMeta.annotation.start_line} - ${testMeta.annotation.title}`,
     );
     return testMeta;
-  }
+  },
 
-  static findAnnotationPoint(trace) {
+  findAnnotationPoint(trace) {
     // Find first entry with non-zero line number in stack trace
     const items = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/g);
     if (Array.isArray(items)) {
-      const result = [];
-      items.forEach(item => {
+      const result: { path: any; line: number }[] = [];
+      for (const item of items) {
         const match = item.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
         const point = {
           path: match ? match.groups.path : '',
@@ -125,7 +136,7 @@ class ResultsParser {
         if (point.line > 0) {
           result.push(point);
         }
-      });
+      }
       if (result.length > 0) {
         return result[0];
       }
@@ -136,7 +147,7 @@ class ResultsParser {
       path: match ? match.groups.path : '',
       line: match ? Number(match.groups.line) : 0,
     };
-  }
-}
+  },
+};
 
 export default ResultsParser;
