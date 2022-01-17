@@ -294,7 +294,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          artifactsPath: artifacts/editmode
+          artifactsPath: artifacts/packageeditmode
           packageMode: true
 
       # Upload artifacts

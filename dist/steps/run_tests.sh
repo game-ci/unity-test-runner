@@ -40,7 +40,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "Creating an empty Unity project to add the package to."
 
   unity-editor \
-    -batchMode \
+    -batchmode \
     -createProject "./TempProject" \
     -quit
 
