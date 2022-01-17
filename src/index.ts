@@ -18,6 +18,7 @@ async function run() {
       gitPrivateToken,
       githubToken,
       checkName,
+      packageMode,
     } = Input.getFromUser();
     const baseImage = new ImageTag({ version: unityVersion, customImage });
 
@@ -35,6 +36,7 @@ async function run() {
         artifactsPath,
         useHostNetwork,
         sshAgent,
+        packageMode,
         gitPrivateToken,
         githubToken,
       });
