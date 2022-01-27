@@ -36,9 +36,9 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     exit 1
   fi
 
-  echo "Package name found: ${PACKAGE_NAME}\n"
+  echo "Package name found: ${PACKAGE_NAME}"
 
-  echo "Creating an empty Unity project to add the package to.\n"
+  echo "Creating an empty Unity project to add the package to."
 
   unity-editor \
     -batchmode \
@@ -48,7 +48,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   UNITY_PROJECT_PATH="./TempProject"
 
   # use jq to append the package name to the project's Packages/manifest.json file
-  echo "Adding package to project's Packages/manifest.json dependencies...\n"
+  echo "Adding package to project's Packages/manifest.json dependencies..."
 
   PACKAGE_MANIFEST_PATH="./TempProject/Packages/manifest.json"
   if [ ! -f "$PACKAGE_MANIFEST_PATH" ]; then
@@ -57,11 +57,21 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   fi
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
-  echo "$PACKAGE_MANIFEST_JSON" | jq ".dependencies.$PACKAGE_NAME = \"file:$UNITY_PROJECT_PATH\"" > "$PACKAGE_MANIFEST_PATH"
+  echo "$PACKAGE_MANIFEST_JSON" | \
+    jq --arg package_name $PACKAGE_NAME --arg project_path $UNITY_PROJECT_PATH \
+    '.dependencies += {"package_name": "file:$project_path"}' > "$PACKAGE_MANIFEST_PATH"
 
-  echo "Adding package to project's Packages/manifest.json testables...\n"
+  echo "Adding package to project's Packages/manifest.json testables..."
+  echo ""
 
-  echo "$PACKAGE_MANIFEST_JSON" | jq ".testables = [\"$PACKAGE_NAME\"]" > "$PACKAGE_MANIFEST_PATH"
+  PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
+
+  cat "$PACKAGE_MANIFEST_PATH"
+  echo ""
+
+  echo "$PACKAGE_MANIFEST_JSON" | \
+    jq --arg package_name $PACKAGE_NAME \
+    '. += {"testables": ["$package_name"]}' > "$PACKAGE_MANIFEST_PATH"
 
   cat "$PACKAGE_MANIFEST_PATH"
   echo ""
