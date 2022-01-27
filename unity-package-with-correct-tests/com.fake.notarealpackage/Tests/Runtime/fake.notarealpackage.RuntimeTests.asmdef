@@ -1,0 +1,11 @@
+{
+    "name": "fake.notarealpackage.RuntimeTests",
+    "references": [
+        "fake.notarealpackage.Runtime"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}

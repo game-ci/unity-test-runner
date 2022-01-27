@@ -1,0 +1,6 @@
+{
+	"name": "fake.notarealpackage.Editor",
+	"references": [
+        "fake.notarealpackage.Runtime"
+    ]
+}
