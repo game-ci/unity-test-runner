@@ -264,54 +264,6 @@ jobs:
           path: artifacts/
           retention-days: 14
 
-  testPackageRunnerInAllModes:
-    name: Test package mode in all modes 📦✨
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
-        unityVersion:
-          - 2019.2.11f1
-    steps:
-      ###########################
-      #         Checkout        #
-      ###########################
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      ###########################
-      #          Cache          #
-      ###########################
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
-
-      # Configure test runner
-      - name: Run tests
-        id: allTests
-        uses: ./
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          testMode: all
-          packageMode: true
-          # Test implicit artifactsPath, by not setting it
-
-      # Upload artifacts
-      - name: Upload test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (all)
-          path: ${{ steps.allTests.outputs.artifactsPath }}
-          retention-days: 14
-
   testPackageRunnerInEditMode:
     name: Test package mode in edit mode 📦📝
     runs-on: ubuntu-latest
@@ -331,15 +283,8 @@ jobs:
           lfs: true
 
       ###########################
-      #          Cache          #
+      #  Cache(don't use yet)   #
       ###########################
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
 
       # Configure test runner
       - name: Run tests
@@ -349,7 +294,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          artifactsPath: artifacts/editmode
+          artifactsPath: artifacts/packageeditmode
           packageMode: true
 
       # Upload artifacts
@@ -358,107 +303,4 @@ jobs:
         with:
           name: Test results (edit mode)
           path: ${{ steps.editMode.outputs.artifactsPath }}
-          retention-days: 14
-
-  testPackageRunnerInPlayMode:
-    name: Test package mode in play mode 📦📺
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
-        unityVersion:
-          - 2019.2.11f1
-    steps:
-      ###########################
-      #         Checkout        #
-      ###########################
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      ###########################
-      #          Cache          #
-      ###########################
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
-
-      # Configure test runner
-      - name: Run tests
-        id: playMode
-        uses: ./
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          testMode: playmode
-          artifactsPath: artifacts/playmode
-          packageMode: true
-
-      # Upload artifacts
-      - name: Upload test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (play mode)
-          path: ${{ steps.playMode.outputs.artifactsPath }}
-          retention-days: 14
-
-  testPackageEachModeSequentially:
-    name: Test package mode in each mode sequentially 📦 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        unityVersion:
-          - 2019.2.11f1
-        projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
-    steps:
-      ###########################
-      #         Checkout        #
-      ###########################
-      - uses: actions/checkout@v2
-        with:
-          lfs: true
-
-      ###########################
-      #          Cache          #
-      ###########################
-      - uses: actions/cache@v1.1.0
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
-
-      # Configure first test runner
-      - name: Test package mode in editmode 📦📝
-        uses: ./
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          testMode: editmode
-          artifactsPath: artifacts/editmode
-
-      # Configure second test runner
-      - name: Test package mode in playmode 📦📺
-        uses: ./
-        with:
-          projectPath: ${{ matrix.projectPath }}
-          unityVersion: ${{ matrix.unityVersion }}
-          testMode: playmode
-          artifactsPath: artifacts/playmode
-
-      # Upload combined artifacts
-      - name: Upload combined test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test results (combined)
-          path: artifacts/
           retention-days: 14
