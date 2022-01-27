@@ -21,23 +21,24 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo ""
 
   ls "$UNITY_PROJECT_PATH"
+  echo ""
 
   PACKAGE_JSON_PATH="$UNITY_PROJECT_PATH/package.json"
   if [ ! -f "$PACKAGE_JSON_PATH" ]; then
       echo "Unable to locate package.json from the given package path. Aborting..."
-      exit
+      exit 1
   fi
 
   PACKAGE_NAME=$(cat "$PACKAGE_JSON_PATH" | jq ".name")
 
   if [ -z $PACKAGE_NAME ]; then 
     echo "Unable to parse package name from package.json. Aborting..."
-    exit
+    exit 1
   fi
 
-  echo "Package name found: ${PACKAGE_NAME}"
+  echo "Package name found: ${PACKAGE_NAME}\n"
 
-  echo "Creating an empty Unity project to add the package to."
+  echo "Creating an empty Unity project to add the package to.\n"
 
   unity-editor \
     -batchmode \
@@ -46,8 +47,25 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   UNITY_PROJECT_PATH="./TempProject"
 
-  # REMOVE get the current working directory for temporary debugging reasons
-  pwd
+  # use jq to append the package name to the project's Packages/manifest.json file
+  echo "Adding package to project's Packages/manifest.json dependencies...\n"
+
+  PACKAGE_MANIFEST_PATH="./TempProject/Packages/manifest.json"
+  if [ ! -f "$PACKAGE_MANIFEST_PATH" ]; then
+      echo "Packages/mainfest.json was not created properly. This indicates a problem with the Action, not with your package. Aborting..."
+      exit 1
+  fi
+
+  PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
+  echo "$PACKAGE_MANIFEST_JSON" | jq ".dependencies.$PACKAGE_NAME = \"file:$UNITY_PROJECT_PATH\"" > "$PACKAGE_MANIFEST_PATH"
+
+  echo "Adding package to project's Packages/manifest.json testables...\n"
+
+  echo "$PACKAGE_MANIFEST_JSON" | jq ".testables = [\"$PACKAGE_NAME\"]" > "$PACKAGE_MANIFEST_PATH"
+
+  cat "$PACKAGE_MANIFEST_PATH"
+  echo ""
+
 fi
 
 #
