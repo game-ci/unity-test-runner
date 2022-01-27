@@ -264,6 +264,48 @@ jobs:
           path: artifacts/
           retention-days: 14
 
+  testPackageRunnerInAllModes:
+    name: Test package mode in all modes ✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.fake.notarealpackage
+        unityVersion:
+          - 2019.2.11f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      ###########################
+      #          Cache (not yet)       #
+      ###########################
+
+
+      # Configure test runner
+      - name: Run tests
+        id: allTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          packageMode: true
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test results (all)
+          path: ${{ steps.allTests.outputs.artifactsPath }}
+          retention-days: 14
+
   testPackageRunnerInEditMode:
     name: Test package mode in edit mode 📦📝
     runs-on: ubuntu-latest
