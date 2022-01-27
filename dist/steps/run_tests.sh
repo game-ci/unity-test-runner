@@ -29,7 +29,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
       exit 1
   fi
 
-  PACKAGE_NAME=$(cat "$PACKAGE_JSON_PATH" | jq ".name")
+  PACKAGE_NAME=$(cat "$PACKAGE_JSON_PATH" | jq -r ".name")
 
   if [ -z $PACKAGE_NAME ]; then 
     echo "Unable to parse package name from package.json. Aborting..."
@@ -44,8 +44,6 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     -batchmode \
     -createProject "./TempProject" \
     -quit
-
-  UNITY_PROJECT_PATH="./TempProject"
 
   # use jq to add the package to the temp project through manually modifying Packages/manifest.json
   echo "Adding package to the temporary project's dependencies and testables..."
@@ -66,6 +64,8 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   cat "$PACKAGE_MANIFEST_PATH"
   echo ""
+
+  UNITY_PROJECT_PATH="./TempProject"
 
 fi
 
