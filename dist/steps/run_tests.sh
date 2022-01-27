@@ -58,8 +58,10 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
-    jq --arg package_name "$PACKAGE_NAME" --arg project_path "$UNITY_PROJECT_PATH" \
-    '.dependencies += {"$package_name": "file:$project_path"} | . += {"testables": ["$package_name"]}' \
+    jq \
+    --arg packageName "$PACKAGE_NAME" \
+    --arg projectPath "$UNITY_PROJECT_PATH" \
+    '.dependencies += {"$packageName": "file:$projectPath"} | . += {"testables": ["$packageName"]}' \
     > "$PACKAGE_MANIFEST_PATH"
 
   cat "$PACKAGE_MANIFEST_PATH"
