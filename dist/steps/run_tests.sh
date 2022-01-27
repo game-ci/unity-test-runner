@@ -45,6 +45,9 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     -quit
 
   UNITY_PROJECT_PATH="./TempProject"
+
+  # REMOVE get the current working directory for temporary debugging reasons
+  pwd
 fi
 
 #
