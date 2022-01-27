@@ -47,8 +47,8 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   UNITY_PROJECT_PATH="./TempProject"
 
-  # use jq to append the package name to the project's Packages/manifest.json file
-  echo "Adding package to project's Packages/manifest.json dependencies..."
+  # use jq to add the package to the temp project through manually modifying Packages/manifest.json
+  echo "Adding package to the temporary project's dependencies and testables..."
 
   PACKAGE_MANIFEST_PATH="./TempProject/Packages/manifest.json"
   if [ ! -f "$PACKAGE_MANIFEST_PATH" ]; then
@@ -58,20 +58,9 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
-    jq --arg package_name $PACKAGE_NAME --arg project_path $UNITY_PROJECT_PATH \
-    '.dependencies += {"package_name": "file:$project_path"}' > "$PACKAGE_MANIFEST_PATH"
-
-  echo "Adding package to project's Packages/manifest.json testables..."
-  echo ""
-
-  PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
-
-  cat "$PACKAGE_MANIFEST_PATH"
-  echo ""
-
-  echo "$PACKAGE_MANIFEST_JSON" | \
-    jq --arg package_name $PACKAGE_NAME \
-    '. += {"testables": ["$package_name"]}' > "$PACKAGE_MANIFEST_PATH"
+    jq --arg package_name "$PACKAGE_NAME" --arg project_path "$UNITY_PROJECT_PATH" \
+    '.dependencies += {"$package_name": "file:$project_path"} | . += {"testables": ["$package_name"]}' \
+    > "$PACKAGE_MANIFEST_PATH"
 
   cat "$PACKAGE_MANIFEST_PATH"
   echo ""
