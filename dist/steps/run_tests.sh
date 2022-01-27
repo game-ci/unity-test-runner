@@ -47,6 +47,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   # use jq to add the package to the temp project through manually modifying Packages/manifest.json
   echo "Adding package to the temporary project's dependencies and testables..."
+  echo ""
 
   PACKAGE_MANIFEST_PATH="./TempProject/Packages/manifest.json"
   if [ ! -f "$PACKAGE_MANIFEST_PATH" ]; then
@@ -62,11 +63,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     '.dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
     > "$PACKAGE_MANIFEST_PATH"
 
-  cat "$PACKAGE_MANIFEST_PATH"
-  echo ""
-
   UNITY_PROJECT_PATH="./TempProject"
-
 fi
 
 #
