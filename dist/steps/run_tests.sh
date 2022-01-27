@@ -61,7 +61,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     jq \
     --arg packageName "$PACKAGE_NAME" \
     --arg projectPath "$UNITY_PROJECT_PATH" \
-    '.dependencies += {$packageName: "file:\($projectPath)"} | . += {testables: [$packageName]}' \
+    '.dependencies += {$packageName: "file\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
     > "$PACKAGE_MANIFEST_PATH"
 
   cat "$PACKAGE_MANIFEST_PATH"
