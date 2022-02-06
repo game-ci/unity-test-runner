@@ -264,6 +264,49 @@ jobs:
           path: artifacts/
           retention-days: 14
 
+  testAllPackageModesLikeInTheReadme:
+    name: Test package mode 📦 in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-project-with-correct-tests
+        unityVersion:
+          - 2019.2.11f1
+        testMode:
+          - playmode
+          - editmode
+          packageMode: true
+
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      ###########################
+      #          Cache(not yet)       #
+      ###########################
+ 
+
+      - uses: ./
+        id: tests
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-artifacts
+          customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Test results for ${{ matrix.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+          retention-days: 14
+
   testPackageRunnerInAllModes:
     name: Test package mode in all modes 📦✨
     runs-on: ubuntu-latest
