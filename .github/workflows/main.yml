@@ -288,19 +288,19 @@ jobs:
           lfs: true
 
       - uses: ./
-        id: tests
+        id: packageTests
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
-          artifactsPath: ${{ matrix.testMode }}-artifacts
+          artifactsPath: ${{ matrix.testMode }}-packageArtifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
           packageMode: true
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Test results for ${{ matrix.testMode }}
-          path: ${{ steps.tests.outputs.artifactsPath }}
+          name: Package test results for ${{ matrix.testMode }}
+          path: ${{ steps.packageTests.outputs.artifactsPath }}
           retention-days: 14
 
   testPackageRunnerInAllModes:
@@ -323,7 +323,7 @@ jobs:
 
       # Configure test runner
       - name: Run tests
-        id: allTests
+        id: packageAllTests
         uses: ./
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -336,8 +336,8 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v2
         with:
-          name: Test results (all)
-          path: ${{ steps.allTests.outputs.artifactsPath }}
+          name: Package test results (all)
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
           retention-days: 14
 
   testPackageRunnerInEditMode:
@@ -360,7 +360,7 @@ jobs:
 
       # Configure test runner
       - name: Run tests
-        id: editMode
+        id: packageEditMode
         uses: ./
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -373,8 +373,8 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v2
         with:
-          name: Test results (edit mode)
-          path: ${{ steps.editMode.outputs.artifactsPath }}
+          name: Package test results (edit mode)
+          path: ${{ steps.packageEditMode.outputs.artifactsPath }}
           retention-days: 14
 
   testPackageRunnerInPlayMode:
@@ -397,7 +397,7 @@ jobs:
 
       # Configure test runner
       - name: Run tests
-        id: playMode
+        id: packagePlayMode
         uses: ./
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -410,8 +410,8 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v2
         with:
-          name: Test results (play mode)
-          path: ${{ steps.playMode.outputs.artifactsPath }}
+          name: Package test results (play mode)
+          path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
           retention-days: 14
 
   testPackageModeEachModeSequentially:
@@ -456,6 +456,6 @@ jobs:
       - name: Upload combined test results
         uses: actions/upload-artifact@v2
         with:
-          name: Test results (combined)
-          path: artifacts/
+          name: Package test results (combined)
+          path: packageArtifacts/
           retention-days: 14
