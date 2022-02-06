@@ -271,7 +271,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - unity-project-with-correct-tests
+          - unity-package-with-correct-tests
         unityVersion:
           - 2019.2.11f1
         testMode:
