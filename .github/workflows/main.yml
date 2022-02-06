@@ -277,7 +277,6 @@ jobs:
         testMode:
           - playmode
           - editmode
-        packageMode: true
 
     steps:
       ###########################
@@ -301,6 +300,8 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
+          packageMode: true
+
       - uses: actions/upload-artifact@v2
         with:
           name: Test results for ${{ matrix.testMode }}
