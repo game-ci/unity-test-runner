@@ -277,7 +277,7 @@ jobs:
         testMode:
           - playmode
           - editmode
-          packageMode: true
+        packageMode: true
 
     steps:
       ###########################
