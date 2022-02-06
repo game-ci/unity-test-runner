@@ -287,16 +287,6 @@ jobs:
         with:
           lfs: true
 
-      ###########################
-      #          Cache          #
-      ###########################
-      - uses: actions/cache@v2
-        with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
-          restore-keys: |
-            Library-
-
       - uses: ./
         id: tests
         with:
@@ -330,11 +320,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
-
-      ###########################
-      #          Cache (not yet)       #
-      ###########################
-
 
       # Configure test runner
       - name: Run tests
@@ -373,10 +358,6 @@ jobs:
         with:
           lfs: true
 
-      ###########################
-      #  Cache(don't use yet)   #
-      ###########################
-
       # Configure test runner
       - name: Run tests
         id: editMode
@@ -414,11 +395,6 @@ jobs:
         with:
           lfs: true
 
-      ###########################
-      #          Cache (not yet)         #
-      ###########################
-
-
       # Configure test runner
       - name: Run tests
         id: playMode
@@ -455,10 +431,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           lfs: true
-
-      ###########################
-      #          Cache  (not yet)        #
-      ###########################
 
       # Configure first test runner
       - name: Test package mode in editmode 📦📝
