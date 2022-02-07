@@ -5,14 +5,14 @@ inputs:
   unityVersion:
     required: false
     default: 'auto'
-    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt. Required if using Package Mode.'
+    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt. ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto".'
   customImage:
     required: false
     default: ''
     description: 'Specific docker image that should be used for testing the project'
   projectPath:
     required: false
-    description: 'Path to the Unity project (or, in package mode, the path to the package directory) to be tested.'
+    description: 'Path to the Unity project or package to be tested.'
   customParameters:
     required: false
     description: 'Extra parameters to configure the Unity editor run.'
@@ -47,7 +47,7 @@ inputs:
   packageMode:
     required: false
     default: false
-    description: 'Whether the tests are being run for a Unity package instead of a Unity project. NOTE: If this is true, any custom docker image you pass must be compatible with apt-get.'
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must be compatible with apt-get.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
