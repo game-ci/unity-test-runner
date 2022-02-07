@@ -439,7 +439,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          artifactsPath: artifacts/packageeditmode
+          artifactsPath: packageArtifacts/editmode
           packageMode: true
 
       # Configure second test runner
@@ -449,7 +449,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
-          artifactsPath: artifacts/packageplaymode
+          artifactsPath: packageArtifacts/playmode
           packageMode: true
 
       # Upload combined artifacts
