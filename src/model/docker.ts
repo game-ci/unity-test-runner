@@ -28,6 +28,7 @@ const Docker = {
       useHostNetwork,
       sshAgent,
       packageMode,
+      packageName,
       gitPrivateToken,
       githubToken,
     } = parameters;
@@ -46,6 +47,7 @@ const Docker = {
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env PACKAGE_MODE="${packageMode}" \
+        --env PACKAGE_NAME="${packageName}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
         --env GITHUB_REPOSITORY \

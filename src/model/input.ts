@@ -1,4 +1,5 @@
 import UnityVersionParser from './unity-version-parser';
+import fs from 'fs';
 import { getInput } from '@actions/core';
 
 const Input = {
@@ -10,6 +11,42 @@ const Input = {
     const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
 
     return validFolderName.test(folderName);
+  },
+
+  /**
+   * When in package mode, we need scrape the package's name from its package.json file
+   */
+  getPackageNameFromPackageJson(packagePath) {
+    const packageJsonPath = `${packagePath}/package.json`;
+    if (!fs.existsSync(packageJsonPath)) {
+      throw new Error(`Invalid projectPath - Cannot find package.json at ${packageJsonPath}`);
+    }
+
+    let packageJson;
+
+    try {
+      packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        throw new SyntaxError(`Unable to parse package.json contents as JSON - ${error.message}`);
+      }
+
+      throw new Error(`Unable to parse package.json contents as JSON - unknown error ocurred`);
+    }
+
+    const rawPackageName = packageJson.name;
+
+    if (typeof rawPackageName !== 'string') {
+      throw new TypeError(
+        `Unable to parse package name from package.json - package name should be string, but was ${typeof rawPackageName}`,
+      );
+    }
+
+    if (rawPackageName.length === 0) {
+      throw new Error(`Package name from package.json is a string, but is empty`);
+    }
+
+    return rawPackageName;
   },
 
   getFromUser() {
@@ -48,13 +85,19 @@ const Input = {
       throw new Error(`Invalid packageMode "${rawPackageMode}"`);
     }
 
-    // Sanitise input
+    // sanitize packageMode input and projectPath input since they are needed
+    // for input validation
+    const packageMode = rawPackageMode === 'true';
     const projectPath = rawProjectPath.replace(/\/$/, '');
+
+    // if in package mode, attempt to get the package's name
+    const packageName = packageMode ? this.getPackageNameFromPackageJson(projectPath) : '';
+
+    // Sanitise other input
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
     const unityVersion =
       rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
-    const packageMode = rawPackageMode === 'true';
 
     // Return sanitised input
     return {
@@ -70,6 +113,7 @@ const Input = {
       githubToken,
       checkName,
       packageMode,
+      packageName,
     };
   },
 };

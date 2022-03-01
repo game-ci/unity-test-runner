@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { dockerfile, workspace, actionFolder } = model_1.Action;
-            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, } = model_1.Input.getFromUser();
+            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
             try {
                 // Build docker image
@@ -58,6 +58,7 @@ function run() {
                     useHostNetwork,
                     sshAgent,
                     packageMode,
+                    packageName,
                     gitPrivateToken,
                     githubToken,
                 });
@@ -169,7 +170,7 @@ const Docker = {
     },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, gitPrivateToken, githubToken, } = parameters;
+            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, } = parameters;
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -184,6 +185,7 @@ const Docker = {
         --env TEST_MODE="${testMode}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env PACKAGE_MODE="${packageMode}" \
+        --env PACKAGE_NAME="${packageName}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
         --env GITHUB_REPOSITORY \
@@ -369,6 +371,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const unity_version_parser_1 = __importDefault(__nccwpck_require__(7049));
+const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core_1 = __nccwpck_require__(2186);
 const Input = {
     get testModes() {
@@ -377,6 +380,33 @@ const Input = {
     isValidFolderName(folderName) {
         const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
         return validFolderName.test(folderName);
+    },
+    /**
+     * When in package mode, we need scrape the package's name from its package.json file
+     */
+    getPackageNameFromPackageJson(packagePath) {
+        const packageJsonPath = `${packagePath}/package.json`;
+        if (!fs_1.default.existsSync(packageJsonPath)) {
+            throw new Error(`Invalid projectPath - Cannot find package.json at ${packageJsonPath}`);
+        }
+        let packageJson;
+        try {
+            packageJson = JSON.parse(fs_1.default.readFileSync(packageJsonPath).toString());
+        }
+        catch (error) {
+            if (error instanceof SyntaxError) {
+                throw new SyntaxError(`Unable to parse package.json contents as JSON - ${error.message}`);
+            }
+            throw new Error(`Unable to parse package.json contents as JSON - unknown error ocurred`);
+        }
+        const rawPackageName = packageJson.name;
+        if (typeof rawPackageName !== 'string') {
+            throw new TypeError(`Unable to parse package name from package.json - package name should be string, but was ${typeof rawPackageName}`);
+        }
+        if (rawPackageName.length === 0) {
+            throw new Error(`Package name from package.json is a string, but is empty`);
+        }
+        return rawPackageName;
     },
     getFromUser() {
         // Input variables specified in workflow using "with" prop.
@@ -408,12 +438,16 @@ const Input = {
         if (rawPackageMode !== 'true' && rawPackageMode !== 'false') {
             throw new Error(`Invalid packageMode "${rawPackageMode}"`);
         }
-        // Sanitise input
+        // sanitize packageMode input and projectPath input since they are needed
+        // for input validation
+        const packageMode = rawPackageMode === 'true';
         const projectPath = rawProjectPath.replace(/\/$/, '');
+        // if in package mode, attempt to get the package's name
+        const packageName = packageMode ? this.getPackageNameFromPackageJson(projectPath) : '';
+        // Sanitise other input
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
         const unityVersion = rawUnityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : rawUnityVersion;
-        const packageMode = rawPackageMode === 'true';
         // Return sanitised input
         return {
             unityVersion,
@@ -428,6 +462,7 @@ const Input = {
             githubToken,
             checkName,
             packageMode,
+            packageName,
         };
     },
 };
