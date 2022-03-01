@@ -38,7 +38,24 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   PACKAGE_MANIFEST_PATH="$TEMP_PROJECT_PATH/Packages/manifest.json"
   if [ ! -f "$PACKAGE_MANIFEST_PATH" ]; then
-      echo "Packages/mainfest.json was not created properly. This indicates a problem with the Action, not with your package. Aborting..."
+      echo "Packages/mainfest.json was not created properly. This indicates a problem with the Action, not with your package. Logging directories and aborting..."
+
+      echo ""
+      echo "###########################"
+      echo "#   Temp Project Folder   #"
+      echo "###########################"
+      echo ""
+
+      ls -a "$TEMP_PROJECT_PATH"
+
+      echo ""
+      echo "################################"
+      echo "# Temp Project Packages Folder #"
+      echo "################################"
+      echo ""
+
+      ls -a "$TEMP_PROJECT_PATH/Packages"
+
       exit 1
   fi
 
