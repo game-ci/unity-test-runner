@@ -95,4 +95,20 @@ describe('Input', () => {
       expect(Input.getPackageNameFromPackageJson('some/path')).toStrictEqual('some-package');
     });
   });
+
+  describe('verifyTestsFolderIsPresent', () => {
+    it('throws error if tests folder is not present', () => {
+      mockedFs.existsSync.mockReturnValue(false);
+
+      expect(() => Input.verifyTestsFolderIsPresent('some/path')).toThrow(
+        'Invalid projectPath - Cannot find package tests folder at some/path/Tests',
+      );
+    });
+
+    it('does not throw if tests folder is present', () => {
+      mockedFs.existsSync.mockReturnValue(true);
+
+      expect(() => Input.verifyTestsFolderIsPresent('some/path')).not.toThrow();
+    });
+  });
 });

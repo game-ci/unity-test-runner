@@ -14,7 +14,7 @@ const Input = {
   },
 
   /**
-   * When in package mode, we need scrape the package's name from its package.json file
+   * When in package mode, we need to scrape the package's name from its package.json file
    */
   getPackageNameFromPackageJson(packagePath) {
     const packageJsonPath = `${packagePath}/package.json`;
@@ -49,6 +49,17 @@ const Input = {
     return rawPackageName;
   },
 
+  /**
+   * When in package mode, we need to ensure that the Tests folder is present
+   */
+  verifyTestsFolderIsPresent(packagePath) {
+    if (!fs.existsSync(`${packagePath}/Tests`)) {
+      throw new Error(
+        `Invalid projectPath - Cannot find package tests folder at ${packagePath}/Tests`,
+      );
+    }
+  },
+
   getFromUser() {
     // Input variables specified in workflow using "with" prop.
     const rawUnityVersion = getInput('unityVersion') || 'auto';
@@ -63,6 +74,7 @@ const Input = {
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
     const rawPackageMode = getInput('packageMode') || 'false';
+    let packageName = '';
 
     // Validate input
     if (!this.testModes.includes(testMode)) {
@@ -90,8 +102,11 @@ const Input = {
     const packageMode = rawPackageMode === 'true';
     const projectPath = rawProjectPath.replace(/\/$/, '');
 
-    // if in package mode, attempt to get the package's name
-    const packageName = packageMode ? this.getPackageNameFromPackageJson(projectPath) : '';
+    // if in package mode, attempt to get the package's name, and ensure tests are present
+    if (packageMode) {
+      packageName = this.getPackageNameFromPackageJson(projectPath);
+      this.verifyTestsFolderIsPresent(projectPath);
+    }
 
     // Sanitise other input
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
