@@ -20,6 +20,7 @@ async function run() {
       checkName,
     } = Input.getFromUser();
     const baseImage = new ImageTag({ version: unityVersion, customImage });
+    const runnerTempPath = process.env.RUNNER_TEMP;
 
     try {
       // Build docker image
@@ -37,6 +38,7 @@ async function run() {
         sshAgent,
         gitPrivateToken,
         githubToken,
+        runnerTempPath,
       });
     } finally {
       // Set output
