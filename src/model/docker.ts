@@ -69,7 +69,7 @@ const Docker = {
         --env RUNNER_WORKSPACE \
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-        --volume "/var/run/docker.sock":"/var/run/docker.sock:z" \
+        --volume "/var/run/docker.sock":"/var/run/docker.sock" \
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
