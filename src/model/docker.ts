@@ -1,13 +1,15 @@
+import { existsSync, mkdirSync } from 'fs';
 import ImageTag from './image-tag';
 import { exec } from '@actions/exec';
+import path from 'path';
 
 const Docker = {
   async build(buildParameters, silent = false) {
-    const { path, dockerfile, baseImage } = buildParameters;
+    const { path: buildPath, dockerfile, baseImage } = buildParameters;
     const { version } = baseImage;
 
     const tag = new ImageTag({ version });
-    const command = `docker build ${path} \
+    const command = `docker build ${buildPath} \
       --file ${dockerfile} \
       --build-arg IMAGE=${baseImage} \
       --tag ${tag}`;
@@ -31,7 +33,13 @@ const Docker = {
       packageName,
       gitPrivateToken,
       githubToken,
+      runnerTemporaryPath,
     } = parameters;
+
+    const githubHome = path.join(runnerTemporaryPath, '_github_home');
+    if (!existsSync(githubHome)) mkdirSync(githubHome);
+    const githubWorkflow = path.join(runnerTemporaryPath, '_github_workflow');
+    if (!existsSync(githubWorkflow)) mkdirSync(githubWorkflow);
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -66,9 +74,9 @@ const Docker = {
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
         --volume "/var/run/docker.sock":"/var/run/docker.sock" \
-        --volume "/home/runner/work/_temp/_github_home":"/root" \
-        --volume "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
-        --volume "${workspace}":"/github/workspace" \
+        --volume "${githubHome}":"/root:z" \
+        --volume "${githubWorkflow}":"/github/workflow:z" \
+        --volume "${workspace}":"/github/workspace:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \

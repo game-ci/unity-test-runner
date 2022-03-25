@@ -44,6 +44,7 @@ function run() {
             const { dockerfile, workspace, actionFolder } = model_1.Action;
             const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
+            const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
                 // Build docker image
                 const actionImage = yield model_1.Docker.build({ path: actionFolder, dockerfile, baseImage });
@@ -61,6 +62,7 @@ function run() {
                     packageName,
                     gitPrivateToken,
                     githubToken,
+                    runnerTemporaryPath,
                 });
             }
             finally {
@@ -152,15 +154,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const fs_1 = __nccwpck_require__(7147);
 const image_tag_1 = __importDefault(__nccwpck_require__(7648));
 const exec_1 = __nccwpck_require__(1514);
+const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
     build(buildParameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { path, dockerfile, baseImage } = buildParameters;
+            const { path: buildPath, dockerfile, baseImage } = buildParameters;
             const { version } = baseImage;
             const tag = new image_tag_1.default({ version });
-            const command = `docker build ${path} \
+            const command = `docker build ${buildPath} \
       --file ${dockerfile} \
       --build-arg IMAGE=${baseImage} \
       --tag ${tag}`;
@@ -170,7 +174,13 @@ const Docker = {
     },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, } = parameters;
+            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
+            if (!(0, fs_1.existsSync)(githubHome))
+                (0, fs_1.mkdirSync)(githubHome);
+            const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
+            if (!(0, fs_1.existsSync)(githubWorkflow))
+                (0, fs_1.mkdirSync)(githubWorkflow);
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -204,9 +214,9 @@ const Docker = {
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
         --volume "/var/run/docker.sock":"/var/run/docker.sock" \
-        --volume "/home/runner/work/_temp/_github_home":"/root" \
-        --volume "/home/runner/work/_temp/_github_workflow":"/github/workflow" \
-        --volume "${workspace}":"/github/workspace" \
+        --volume "${githubHome}":"/root:z" \
+        --volume "${githubWorkflow}":"/github/workflow:z" \
+        --volume "${workspace}":"/github/workspace:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
