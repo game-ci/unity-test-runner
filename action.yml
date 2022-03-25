@@ -47,7 +47,7 @@ inputs:
   packageMode:
     required: false
     default: false
-    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must be compatible with apt-get.'
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity package registry are currently not supported.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
