@@ -19,6 +19,7 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
+    const coverageReport = getInput('coverageReport') || 'false';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -29,6 +30,10 @@ const Input = {
     // Validate input
     if (!this.testModes.includes(testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
+    }
+
+    if (coverageReport !== 'true' && coverageReport !== 'false') {
+      throw new Error(`Invalid coverageReport "${coverageReport}"`);
     }
 
     if (!this.isValidFolderName(rawProjectPath)) {
@@ -44,6 +49,7 @@ const Input = {
     }
 
     // Sanitise input
+    const generateCoverageReport = coverageReport === 'true';
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
@@ -57,6 +63,7 @@ const Input = {
       projectPath,
       customParameters,
       testMode,
+      generateCoverageReport,
       artifactsPath,
       useHostNetwork,
       sshAgent,

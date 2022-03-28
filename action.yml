@@ -20,6 +20,10 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
+  coverageReport:
+    required: false
+    default: false
+    description: 'Whether to generate a coverage report.'
   artifactsPath:
     required: false
     default: 'artifacts'

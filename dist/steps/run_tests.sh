@@ -14,6 +14,12 @@ echo "Using project path \"$UNITY_PROJECT_PATH\"."
 echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
+COVERAGE=""
+if [ "$GENERATE_COVERAGE_REPORT" == "true" ]; then
+    echo "Generating code coverage report."
+    COVERAGE="-enableCodeCoverage"
+fi
+
 #
 # Display custom parameters
 #
@@ -81,6 +87,8 @@ if [ "$EDIT_MODE" = "true" ]; then
     -runTests \
     -testPlatform editmode \
     -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
+    -coverageResultsPath "$FULL_ARTIFACTS_PATH" \
+    $COVERAGE \
     $CUSTOM_PARAMETERS
 
   # Catch exit code
@@ -118,6 +126,8 @@ if [ "$PLAY_MODE" = "true" ]; then
     -runTests \
     -testPlatform playmode \
     -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
+    -coverageResultsPath "$FULL_ARTIFACTS_PATH" \
+    $COVERAGE \
     $CUSTOM_PARAMETERS
 
   # Catch exit code

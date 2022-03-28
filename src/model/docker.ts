@@ -26,6 +26,7 @@ const Docker = {
       projectPath,
       customParameters,
       testMode,
+      generateCoverageReport,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -51,6 +52,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
+        --env GENERATE_COVERAGE_REPORT="${generateCoverageReport}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
