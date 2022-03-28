@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { dockerfile, workspace, actionFolder } = model_1.Action;
-            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const { unityVersion, customImage, projectPath, customParameters, testMode, generateCoverageReport, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
             const runnerTempPath = process.env.RUNNER_TEMP;
             try {
@@ -55,6 +55,7 @@ function run() {
                     projectPath,
                     customParameters,
                     testMode,
+                    generateCoverageReport,
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
@@ -172,7 +173,7 @@ const Docker = {
     },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
+            const { unityVersion, workspace, projectPath, customParameters, testMode, generateCoverageReport, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
             const githubHome = path_1.default.join(runnerTempPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
@@ -191,6 +192,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
+        --env GENERATE_COVERAGE_REPORT="${generateCoverageReport}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
@@ -392,6 +394,7 @@ const Input = {
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
+        const coverageReport = (0, core_1.getInput)('coverageReport') || 'false';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
@@ -401,6 +404,9 @@ const Input = {
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
+        }
+        if (coverageReport !== 'true' && coverageReport !== 'false') {
+            throw new Error(`Invalid coverageReport "${coverageReport}"`);
         }
         if (!this.isValidFolderName(rawProjectPath)) {
             throw new Error(`Invalid projectPath "${rawProjectPath}"`);
@@ -412,6 +418,7 @@ const Input = {
             throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
         }
         // Sanitise input
+        const generateCoverageReport = coverageReport === 'true';
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
@@ -423,6 +430,7 @@ const Input = {
             projectPath,
             customParameters,
             testMode,
+            generateCoverageReport,
             artifactsPath,
             useHostNetwork,
             sshAgent,
