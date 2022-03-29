@@ -47,9 +47,10 @@ function run() {
             const runnerTempPath = process.env.RUNNER_TEMP;
             try {
                 // Build docker image
-                const actionImage = yield model_1.Docker.build({ path: actionFolder, dockerfile, baseImage });
+                //const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
                 // Run docker image
-                yield model_1.Docker.run(actionImage, {
+                yield model_1.Docker.run(baseImage, {
+                    actionFolder,
                     unityVersion,
                     workspace,
                     projectPath,
@@ -172,7 +173,7 @@ const Docker = {
     },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
+            const { actionFolder, unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
             const githubHome = path_1.default.join(runnerTempPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
@@ -212,11 +213,15 @@ const Docker = {
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
+        --volume "${actionFolder}/steps":"/steps" \
+        --volume "${artifactsPath}/entrypoint.sh":"/entrypoint.sh" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-        ${image}`;
+        ${image} \
+        --
+        /entrypoint.sh`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
