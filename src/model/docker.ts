@@ -81,7 +81,7 @@ const Docker = {
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
         --
-        bash /entrypoint.sh` ;
+        /usr/bin/bash /entrypoint.sh` ;
 
     await exec(command, undefined, { silent });
   },
