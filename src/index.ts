@@ -24,10 +24,11 @@ async function run() {
 
     try {
       // Build docker image
-      const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
+      //const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
 
       // Run docker image
-      await Docker.run(actionImage, {
+      await Docker.run(baseImage, {
+        actionFolder,
         unityVersion,
         workspace,
         projectPath,

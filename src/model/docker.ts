@@ -21,6 +21,7 @@ const Docker = {
 
   async run(image, parameters, silent = false) {
     const {
+      actionFolder,
       unityVersion,
       workspace,
       projectPath,
@@ -72,11 +73,15 @@ const Docker = {
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
+        --volume "${actionFolder}/steps":"/steps" \
+        --volume "${artifactsPath}/entrypoint.sh":"/entrypoint.sh" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-        ${image}`;
+        ${image} \
+        --
+        /entrypoint.sh` ;
 
     await exec(command, undefined, { silent });
   },
