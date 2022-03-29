@@ -214,7 +214,7 @@ const Docker = {
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
         --volume "${actionFolder}/steps":"/steps" \
-        --volume "${artifactsPath}/entrypoint.sh":"/entrypoint.sh" \
+        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
