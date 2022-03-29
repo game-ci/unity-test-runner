@@ -221,7 +221,7 @@ const Docker = {
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
         --
-        /entrypoint.sh`;
+        bash /entrypoint.sh`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
