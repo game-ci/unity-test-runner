@@ -8,26 +8,6 @@ ACTIVATE_LICENSE_PATH="$GITHUB_WORKSPACE/_activate-license"
 mkdir -p "$ACTIVATE_LICENSE_PATH"
 
 #
-# Check if apt-get is available if in package mode (if not, we must exit since we need to install jq)
-#
-if [ "$PACKAGE_MODE" = "true" ]; then
-  echo "Checking if apt-get is installed to install jq."
-  apt-get --version > /dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    echo "apt-get is not installed. Exiting..."
-    exit 1
-  fi
-
-  # install jq
-  apt-get update \
-    &&  apt-get upgrade -y --force-yes \
-    &&  apt-get install -y --force-yes \
-        jq \
-    &&  apt-get clean \
-    &&  rm -rf /var/cache/apt/archives/* /var/lib/apt/lists/*
-fi
-
-#
 # Run steps
 #
 
