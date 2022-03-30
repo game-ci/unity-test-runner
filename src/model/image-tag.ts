@@ -123,8 +123,6 @@ class ImageTag {
     }
 
     const dockerRepoVersion = 0;
-    // TEMP REMOVE THIS
-    console.log(`DOCKER IMAGE IN USE IS ${image}:${tag}-${dockerRepoVersion}`)
     return `${image}:${tag}-${dockerRepoVersion}`;
   }
 }
