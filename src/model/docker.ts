@@ -73,8 +73,8 @@ const Docker = {
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
-        --volume "${actionFolder}/steps":"/steps" \
-        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh" \
+        --volume "${actionFolder}/steps":"/steps:z" \
+        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
