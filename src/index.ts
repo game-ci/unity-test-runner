@@ -5,7 +5,7 @@ async function run() {
   try {
     Action.checkCompatibility();
 
-    const { dockerfile, workspace, actionFolder } = Action;
+    const { workspace, actionFolder } = Action;
     const {
       unityVersion,
       customImage,
@@ -24,7 +24,6 @@ async function run() {
 
     try {
       // Build docker image
-      //const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
 
       // Run docker image
       await Docker.run(baseImage, {

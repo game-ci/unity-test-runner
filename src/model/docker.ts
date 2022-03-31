@@ -1,24 +1,8 @@
 import { existsSync, mkdirSync } from 'fs';
-import ImageTag from './image-tag';
 import { exec } from '@actions/exec';
 import path from 'path';
 
 const Docker = {
-  async build(buildParameters, silent = false) {
-    const { path: buildPath, dockerfile, baseImage } = buildParameters;
-    const { version } = baseImage;
-
-    const tag = new ImageTag({ version });
-    const command = `docker build ${buildPath} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-
-    await exec(command, undefined, { silent });
-
-    return tag;
-  },
-
   async run(image, parameters, silent = false) {
     const {
       actionFolder,
@@ -80,7 +64,7 @@ const Docker = {
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
-        /bin/bash /entrypoint.sh` ;
+        /bin/bash /entrypoint.sh`;
 
     await exec(command, undefined, { silent });
   },

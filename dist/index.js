@@ -41,13 +41,12 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             model_1.Action.checkCompatibility();
-            const { dockerfile, workspace, actionFolder } = model_1.Action;
+            const { workspace, actionFolder } = model_1.Action;
             const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
             const runnerTempPath = process.env.RUNNER_TEMP;
             try {
                 // Build docker image
-                //const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
                 // Run docker image
                 yield model_1.Docker.run(baseImage, {
                     actionFolder,
@@ -117,9 +116,6 @@ const Action = {
     get actionFolder() {
         return `${Action.rootFolder}/dist`;
     },
-    get dockerfile() {
-        return `${Action.actionFolder}/Dockerfile`;
-    },
     get workspace() {
         return process.env.GITHUB_WORKSPACE;
     },
@@ -154,23 +150,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require__(7147);
-const image_tag_1 = __importDefault(__nccwpck_require__(7648));
 const exec_1 = __nccwpck_require__(1514);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
-    build(buildParameters, silent = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { path: buildPath, dockerfile, baseImage } = buildParameters;
-            const { version } = baseImage;
-            const tag = new image_tag_1.default({ version });
-            const command = `docker build ${buildPath} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-            yield (0, exec_1.exec)(command, undefined, { silent });
-            return tag;
-        });
-    },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
             const { actionFolder, unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
@@ -220,8 +202,7 @@ const Docker = {
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
-        -- \
-        /usr/bin/bash /entrypoint.sh`;
+        /bin/bash /entrypoint.sh`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
