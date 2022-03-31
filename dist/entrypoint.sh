@@ -11,6 +11,8 @@ mkdir -p "$ACTIVATE_LICENSE_PATH"
 # Run steps
 #
 
+apt list --installed
+
 source /steps/activate.sh
 source /steps/set_gitcredential.sh
 source /steps/run_tests.sh
