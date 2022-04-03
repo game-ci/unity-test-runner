@@ -42,15 +42,13 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
-            const baseImage = new model_1.ImageTag({ editorVersion: unityVersion, customImage });
-            const runnerTempPath = process.env.RUNNER_TEMP;
+            const { editorVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const baseImage = new model_1.ImageTag({ editorVersion, customImage });
+            const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
-                // Build docker image
-                // Run docker image
                 yield model_1.Docker.run(baseImage, {
                     actionFolder,
-                    unityVersion,
+                    editorVersion,
                     workspace,
                     projectPath,
                     customParameters,
@@ -60,11 +58,10 @@ function run() {
                     sshAgent,
                     gitPrivateToken,
                     githubToken,
-                    runnerTempPath,
+                    runnerTemporaryPath,
                 });
             }
             finally {
-                // Set output
                 yield model_1.Output.setArtifactsPath(artifactsPath);
             }
             if (githubToken) {
@@ -155,11 +152,11 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { actionFolder, unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTempPath, } = parameters;
-            const githubHome = path_1.default.join(runnerTempPath, '_github_home');
+            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
-            const githubWorkflow = path_1.default.join(runnerTempPath, '_github_workflow');
+            const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
             if (!(0, fs_1.existsSync)(githubWorkflow))
                 (0, fs_1.mkdirSync)(githubWorkflow);
             const command = `docker run \
@@ -170,7 +167,7 @@ const Docker = {
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
-        --env UNITY_VERSION="${unityVersion}" \
+        --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
@@ -224,22 +221,25 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { repository = 'unityci', name = 'editor', version = '2019.2.11f1', platform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
-        if (!ImageTag.versionPattern.test(version)) {
-            throw new Error(`Invalid version "${version}".`);
+        const { editorVersion = '2019.2.11f1', targetPlatform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
+        if (!ImageTag.versionPattern.test(editorVersion)) {
+            throw new Error(`Invalid version "${editorVersion}".`);
         }
-        const builderPlatform = ImageTag.getTargetPlatformToImageSuffixMap(platform, version);
-        this.repository = repository;
-        this.name = name;
-        this.version = version;
-        this.platform = platform;
-        this.builderPlatform = builderPlatform;
+        // Either
         this.customImage = customImage;
+        // Or
+        this.repository = 'unityci';
+        this.name = 'editor';
+        this.editorVersion = editorVersion;
+        this.targetPlatform = targetPlatform;
+        this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
+        this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
+        this.imageRollingVersion = 1;
     }
     static get versionPattern() {
         return /^20\d{2}\.\d\.\w{3,4}|3$/;
     }
-    static get imageSuffixes() {
+    static get targetPlatformSuffixes() {
         return {
             generic: '',
             webgl: 'webgl',
@@ -252,11 +252,19 @@ class ImageTag {
             facebook: 'facebook',
         };
     }
-    static getTargetPlatformToImageSuffixMap(platform, version) {
-        const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } = ImageTag.imageSuffixes;
-        const [major, minor] = version.split('.').map(digit => Number(digit));
-        // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+    static getImagePlatformPrefix(platform) {
         switch (platform) {
+            case 'linux':
+                return 'ubuntu';
+            default:
+                throw new Error('The Operating System of this runner is not yet supported.');
+        }
+    }
+    static getTargetPlatformSuffix(targetPlatform, editorVersion) {
+        const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } = ImageTag.targetPlatformSuffixes;
+        const [major, minor] = editorVersion.split('.').map(digit => Number(digit));
+        // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+        switch (targetPlatform) {
             case platform_1.default.types.StandaloneOSX:
                 return mac;
             case platform_1.default.types.StandaloneWindows:
@@ -303,22 +311,21 @@ class ImageTag {
             default:
                 throw new Error(`
           Platform must be one of the ones described in the documentation.
-          "${platform}" is currently not supported.`);
+          "${targetPlatform}" is currently not supported.`);
         }
     }
     get tag() {
-        return `${this.editorVersion}-${this.targetPlatformSuffix}`.replace(/-+$/, '');
+        const versionAndTarget = `${this.editorVersion}-${this.targetPlatformSuffix}`.replace(/-+$/, '');
+        return `${this.imagePlatformPrefix}-${versionAndTarget}-${this.imageRollingVersion}`;
     }
     get image() {
         return `${this.repository}/${this.name}`.replace(/^\/+/, '');
     }
     toString() {
         const { image, tag, customImage } = this;
-        if (customImage && customImage !== '') {
+        if (customImage)
             return customImage;
-        }
-        const dockerRepoVersion = 0;
-        return `${image}:${tag}-${dockerRepoVersion}`;
+        return `${image}:${tag}`;
     }
 }
 exports["default"] = ImageTag;
@@ -373,7 +380,7 @@ const Input = {
     },
     getFromUser() {
         // Input variables specified in workflow using "with" prop.
-        const rawUnityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
+        const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
@@ -401,10 +408,10 @@ const Input = {
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
-        const unityVersion = rawUnityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : rawUnityVersion;
+        const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
         return {
-            unityVersion,
+            editorVersion,
             customImage,
             projectPath,
             customParameters,
@@ -1507,8 +1514,8 @@ class OidcClient {
             const res = yield httpclient
                 .getJson(id_token_url)
                 .catch(error => {
-                throw new Error(`Failed to get ID Token. \n
-        Error Code : ${error.statusCode}\n
+                throw new Error(`Failed to get ID Token. \n 
+        Error Code : ${error.statusCode}\n 
         Error Message: ${error.result.message}`);
             });
             const id_token = (_a = res.result) === null || _a === void 0 ? void 0 : _a.value;
@@ -18746,7 +18753,7 @@ IndexedSourceMapConsumer.prototype.sourceContentFor =
  * and an object is returned with the following properties:
  *
  *   - line: The line number in the generated source, or null.  The
- *     line number is 1-based.
+ *     line number is 1-based. 
  *   - column: The column number in the generated source, or null.
  *     The column number is 0-based.
  */
@@ -21542,7 +21549,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /************************************************************************/
 /******/ 	// The module cache
 /******/ 	var __webpack_module_cache__ = {};
-/******/
+/******/ 	
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
@@ -21556,7 +21563,7 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 			// no module.loaded needed
 /******/ 			exports: {}
 /******/ 		};
-/******/
+/******/ 	
 /******/ 		// Execute the module function
 /******/ 		var threw = true;
 /******/ 		try {
@@ -21565,24 +21572,24 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 		} finally {
 /******/ 			if(threw) delete __webpack_module_cache__[moduleId];
 /******/ 		}
-/******/
+/******/ 	
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
+/******/ 	
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
-/******/
+/******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
-/******/
+/******/ 	
 /************************************************************************/
-/******/
+/******/ 	
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
 /******/ 	var __webpack_exports__ = __nccwpck_require__(4822);
 /******/ 	module.exports = __webpack_exports__;
-/******/
+/******/ 	
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
