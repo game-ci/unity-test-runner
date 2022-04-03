@@ -7,7 +7,7 @@ async function run() {
 
     const { workspace, actionFolder } = Action;
     const {
-      unityVersion,
+      editorVersion,
       customImage,
       projectPath,
       customParameters,
@@ -19,13 +19,13 @@ async function run() {
       githubToken,
       checkName,
     } = Input.getFromUser();
-    const baseImage = new ImageTag({ version: unityVersion, customImage });
-    const runnerTempPath = process.env.RUNNER_TEMP;
+    const baseImage = new ImageTag({ editorVersion, customImage });
+    const runnerTemporaryPath = process.env.RUNNER_TEMP;
 
     try {
       await Docker.run(baseImage, {
         actionFolder,
-        unityVersion,
+        editorVersion,
         workspace,
         projectPath,
         customParameters,
@@ -35,10 +35,9 @@ async function run() {
         sshAgent,
         gitPrivateToken,
         githubToken,
-        runnerTempPath,
+        runnerTemporaryPath,
       });
     } finally {
-      // Set output
       await Output.setArtifactsPath(artifactsPath);
     }
 

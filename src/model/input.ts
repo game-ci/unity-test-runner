@@ -14,7 +14,7 @@ const Input = {
 
   getFromUser() {
     // Input variables specified in workflow using "with" prop.
-    const rawUnityVersion = getInput('unityVersion') || 'auto';
+    const unityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
@@ -47,12 +47,12 @@ const Input = {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
-    const unityVersion =
-      rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
+    const editorVersion =
+      unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
 
     // Return sanitised input
     return {
-      unityVersion,
+      editorVersion,
       customImage,
       projectPath,
       customParameters,
