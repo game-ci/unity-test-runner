@@ -6,7 +6,7 @@ const Docker = {
   async run(image, parameters, silent = false) {
     const {
       actionFolder,
-      unityVersion,
+      editorVersion,
       workspace,
       projectPath,
       customParameters,
@@ -16,12 +16,12 @@ const Docker = {
       sshAgent,
       gitPrivateToken,
       githubToken,
-      runnerTempPath,
+      runnerTemporaryPath,
     } = parameters;
 
-    const githubHome = path.join(runnerTempPath, '_github_home');
+    const githubHome = path.join(runnerTemporaryPath, '_github_home');
     if (!existsSync(githubHome)) mkdirSync(githubHome);
-    const githubWorkflow = path.join(runnerTempPath, '_github_workflow');
+    const githubWorkflow = path.join(runnerTemporaryPath, '_github_workflow');
     if (!existsSync(githubWorkflow)) mkdirSync(githubWorkflow);
 
     const command = `docker run \
@@ -32,7 +32,7 @@ const Docker = {
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
-        --env UNITY_VERSION="${unityVersion}" \
+        --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \

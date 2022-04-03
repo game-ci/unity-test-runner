@@ -1,41 +1,44 @@
 import Platform from './platform';
 
 class ImageTag {
+  public customImage?: string;
   public repository: string;
   public name: string;
-  public version: string;
-  public platform: any;
-  public builderPlatform: string;
-  public customImage: any;
+  public editorVersion: string;
+  public targetPlatform: string;
+  public targetPlatformSuffix: string;
+  public imagePlatformPrefix: string;
+  public imageRollingVersion: number;
 
   constructor(imageProperties) {
     const {
-      repository = 'unityci',
-      name = 'editor',
-      version = '2019.2.11f1',
-      platform = Platform.types.StandaloneLinux64,
+      editorVersion = '2019.2.11f1',
+      targetPlatform = Platform.types.StandaloneLinux64,
       customImage,
     } = imageProperties;
 
-    if (!ImageTag.versionPattern.test(version)) {
-      throw new Error(`Invalid version "${version}".`);
+    if (!ImageTag.versionPattern.test(editorVersion)) {
+      throw new Error(`Invalid version "${editorVersion}".`);
     }
 
-    const builderPlatform = ImageTag.getTargetPlatformToImageSuffixMap(platform, version);
-
-    this.repository = repository;
-    this.name = name;
-    this.version = version;
-    this.platform = platform;
-    this.builderPlatform = builderPlatform;
+    // Either
     this.customImage = customImage;
+
+    // Or
+    this.repository = 'unityci';
+    this.name = 'editor';
+    this.editorVersion = editorVersion;
+    this.targetPlatform = targetPlatform;
+    this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
+    this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
+    this.imageRollingVersion = 1;
   }
 
   static get versionPattern() {
     return /^20\d{2}\.\d\.\w{3,4}|3$/;
   }
 
-  static get imageSuffixes() {
+  static get targetPlatformSuffixes() {
     return {
       generic: '',
       webgl: 'webgl',
@@ -49,13 +52,22 @@ class ImageTag {
     };
   }
 
-  static getTargetPlatformToImageSuffixMap(platform, version) {
-    const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } =
-      ImageTag.imageSuffixes;
-
-    const [major, minor] = version.split('.').map(digit => Number(digit));
-    // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+  static getImagePlatformPrefix(platform) {
     switch (platform) {
+      case 'linux':
+        return 'ubuntu';
+      default:
+        throw new Error('The Operating System of this runner is not yet supported.');
+    }
+  }
+
+  static getTargetPlatformSuffix(targetPlatform, editorVersion) {
+    const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } =
+      ImageTag.targetPlatformSuffixes;
+
+    const [major, minor] = editorVersion.split('.').map(digit => Number(digit));
+    // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+    switch (targetPlatform) {
       case Platform.types.StandaloneOSX:
         return mac;
       case Platform.types.StandaloneWindows:
@@ -103,12 +115,17 @@ class ImageTag {
       default:
         throw new Error(`
           Platform must be one of the ones described in the documentation.
-          "${platform}" is currently not supported.`);
+          "${targetPlatform}" is currently not supported.`);
     }
   }
 
   get tag() {
-    return `${this.version}-${this.builderPlatform}`.replace(/-+$/, '');
+    const versionAndTarget = `${this.editorVersion}-${this.targetPlatformSuffix}`.replace(
+      /-+$/,
+      '',
+    );
+
+    return `${this.imagePlatformPrefix}-${versionAndTarget}-${this.imageRollingVersion}`;
   }
 
   get image() {
@@ -118,12 +135,9 @@ class ImageTag {
   toString() {
     const { image, tag, customImage } = this;
 
-    if (customImage && customImage !== '') {
-      return customImage;
-    }
+    if (customImage) return customImage;
 
-    const dockerRepoVersion = 0;
-    return `${image}:${tag}-${dockerRepoVersion}`;
+    return `${image}:${tag}`;
   }
 }
 
