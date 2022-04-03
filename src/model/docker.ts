@@ -1,26 +1,11 @@
 import { existsSync, mkdirSync } from 'fs';
-import ImageTag from './image-tag';
 import { exec } from '@actions/exec';
 import path from 'path';
 
 const Docker = {
-  async build(buildParameters, silent = false) {
-    const { path: buildPath, dockerfile, baseImage } = buildParameters;
-    const { version } = baseImage;
-
-    const tag = new ImageTag({ version });
-    const command = `docker build ${buildPath} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-
-    await exec(command, undefined, { silent });
-
-    return tag;
-  },
-
   async run(image, parameters, silent = false) {
     const {
+      actionFolder,
       unityVersion,
       workspace,
       projectPath,
@@ -72,11 +57,14 @@ const Docker = {
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
+        --volume "${actionFolder}/steps":"/steps:z" \
+        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-        ${image}`;
+        ${image} \
+        /bin/bash /entrypoint.sh`;
 
     await exec(command, undefined, { silent });
   },
