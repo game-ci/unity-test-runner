@@ -23,8 +23,6 @@ async function run() {
     const runnerTempPath = process.env.RUNNER_TEMP;
 
     try {
-
-      // Run docker image
       await Docker.run(baseImage, {
         actionFolder,
         unityVersion,
