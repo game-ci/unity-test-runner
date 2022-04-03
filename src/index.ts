@@ -23,7 +23,6 @@ async function run() {
     const runnerTempPath = process.env.RUNNER_TEMP;
 
     try {
-      // Build docker image
 
       // Run docker image
       await Docker.run(baseImage, {
