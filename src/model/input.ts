@@ -19,6 +19,7 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
+    const enableCodeCoverage = getInput('enableCodeCoverage') || 'false';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -29,6 +30,10 @@ const Input = {
     // Validate input
     if (!this.testModes.includes(testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
+    }
+
+    if (enableCodeCoverage !== 'true' && enableCodeCoverage !== 'false') {
+      throw new Error(`Invalid enableCodeCoverage "${enableCodeCoverage}"`);
     }
 
     if (!this.isValidFolderName(rawProjectPath)) {
@@ -57,6 +62,7 @@ const Input = {
       projectPath,
       customParameters,
       testMode,
+      enableCodeCoverage,
       artifactsPath,
       useHostNetwork,
       sshAgent,

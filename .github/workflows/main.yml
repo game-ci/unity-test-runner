@@ -78,6 +78,9 @@ jobs:
           - unity-project-with-correct-tests
         unityVersion:
           - 2019.2.11f1
+        enableCodeCovearge:
+          - true
+          - false
     steps:
       ###########################
       #         Checkout        #
@@ -104,6 +107,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
+          enableCodeCovearge: ${{ matrix.enableCodeCovearge }}
           testMode: all
           # Test implicit artifactsPath, by not setting it
 

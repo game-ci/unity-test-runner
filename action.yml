@@ -20,6 +20,10 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
+  enableCodeCoverage:
+    required: false
+    default: 'false'
+    description: 'Should code coverage results be collected for the test run.'
   artifactsPath:
     required: false
     default: 'artifacts'
