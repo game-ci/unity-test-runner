@@ -210,7 +210,7 @@ jobs:
           retention-days: 14
 
   testCodeCoveragePermutations:
-    name: Test code coverage results procedurally
+    name: Test Code Coverage 📏
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
