@@ -258,7 +258,7 @@ jobs:
       - name: Upload code coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: Code coverage results (edit mode)
+          name: Code coverage results (${{ matrix.testMode }} mode)
           path: ${{ steps.codecovtests.outputs.coverageResultsPath }}
           retention-days: 7
 

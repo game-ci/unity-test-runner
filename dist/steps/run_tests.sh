@@ -17,7 +17,15 @@ FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 #
 # Display custom parameters
 #
+
 echo "Using custom parameters $CUSTOM_PARAMETERS."
+
+#
+# Set and display the coverage results path
+#
+
+echo "Using artifacts path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
+FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
 
 # Set the modes for testing
 case $TEST_MODE in
@@ -44,16 +52,10 @@ if [ "$ENABLE_CODE_COVERAGE" = "true" ]; then
   # Configure code coverage options
   COVERAGE_OPTIONS=""
   ASSEMBLY_FILTER_OPTIONS=""
-  COVERAGE_RESULTS_OPTIONS=""
 
   # Setup assembly filters if provided
   if [ -n "$COVERAGE_ASSEMBLY_FILTERS" ]; then
     ASSEMBLY_FILTER_OPTIONS=";assemblyFilters:$COVERAGE_ASSEMBLY_FILTERS"
-  fi
-
-  # Setup coverage results path if provided
-  if [ -n "$COVERAGE_RESULTS_PATH" ]; then
-    COVERAGE_RESULTS_OPTIONS="-coverageResultsPath $COVERAGE_RESULTS_PATH"
   fi
 
   # Options to combine both playmode and editmode results
@@ -64,7 +66,7 @@ if [ "$ENABLE_CODE_COVERAGE" = "true" ]; then
   fi
 
   # Set parameters for code coverage
-  CODE_COVERAGE_PARAMETERS="-debugCodeOptimization -enableCodeCoverage -coverageOptions $COVERAGE_OPTIONS $COVERAGE_RESULTS_OPTIONS"
+  CODE_COVERAGE_PARAMETERS="-debugCodeOptimization -enableCodeCoverage -coverageOptions $COVERAGE_OPTIONS -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH"
 fi
 echo "Using code coverage parameters $CODE_COVERAGE_PARAMETERS."
 
@@ -206,13 +208,8 @@ fi
 #
 # Combine test results if needed
 #
+COMBINE_EXIT_CODE=0
 if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ] && [ "$ENABLE_CODE_COVERAGE" = "true" ]; then
-  # Setup coverage results path if provided
-  COVERAGE_RESULTS_OPTIONS=""
-  if [ -n "$COVERAGE_RESULTS_PATH" ]; then
-    COVERAGE_RESULTS_OPTIONS="-coverageResultsPath $COVERAGE_RESULTS_PATH"
-  fi
-
   echo ""
   echo "##############################"
   echo "# Combining Coverage Results #"
@@ -222,11 +219,28 @@ if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ] && [ "$ENABLE_CODE_COV
     -batchmode \
     -debugCodeOptimization \
     -enableCodeCoverage \
-    -logFile "$FULL_ARTIFACTS_PATH/coverage_combination.log" \
+    -logFile "$FULL_ARTIFACTS_PATH/combine_coverage.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
-    $COVERAGE_RESULTS_OPTIONS \
+    -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
     -coverageOptions generateHtmlReport;generateBadgeReport \
     -quit
+
+  # Catch exit code
+  COMBINE_EXIT_CODE=$?
+
+  # Print unity log output
+  cat "$FULL_ARTIFACTS_PATH/combine_coverage.log"
+
+  # Display results
+  if [ $COMBINE_EXIT_CODE -eq 0 ]; then
+    echo "Combine coverage succeeded, no failures occurred";
+  elif [ $COMBINE_EXIT_CODE -eq 2 ]; then
+    echo "Combine coverage, some tests failed";
+  elif [ $COMBINE_EXIT_CODE -eq 3 ]; then
+    echo "Combine coverage (other failure)";
+  else
+    echo "Unexpected exit code $COMBINE_EXIT_CODE";
+  fi
 fi
 
 #
@@ -239,4 +253,8 @@ fi
 
 if [ $PLAY_MODE_EXIT_CODE -gt 0 ]; then
   TEST_RUNNER_EXIT_CODE=$PLAY_MODE_EXIT_CODE
+fi
+
+if [ $COMBINE_EXIT_CODE -gt 0 ]; then
+  TEST_RUNNER_EXIT_CODE=$COMBINE_EXIT_CODE
 fi
