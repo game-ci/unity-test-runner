@@ -19,7 +19,9 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
-    const enableCodeCoverage = getInput('enableCodeCoverage') || 'false';
+    const rawEnableCodeCoverage = getInput('enableCodeCoverage') || 'false';
+    const coverageAssemblyFilters = getInput('coverageAssemblyFilters') || '';
+    const rawCoverageResultsPath = getInput('coverageResultsPath') || '';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -32,8 +34,34 @@ const Input = {
       throw new Error(`Invalid testMode ${testMode}`);
     }
 
-    if (enableCodeCoverage !== 'true' && enableCodeCoverage !== 'false') {
-      throw new Error(`Invalid enableCodeCoverage "${enableCodeCoverage}"`);
+    if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
+      throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
+    }
+
+    if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
+      throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
+    }
+
+    if (rawEnableCodeCoverage !== 'true' && coverageAssemblyFilters !== '') {
+      throw new Error(
+        `coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`,
+      );
+    }
+
+    if (coverageAssemblyFilters !== '') {
+      throw new Error(
+        `coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`,
+      );
+    }
+
+    if (rawEnableCodeCoverage !== 'true' && rawCoverageResultsPath !== '') {
+      throw new Error(
+        `coverageResultsPath should not be set if enableCodeCoverage is not enabled.`,
+      );
+    }
+
+    if (!this.isValidFolderName(rawCoverageResultsPath)) {
+      throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
     }
 
     if (!this.isValidFolderName(rawProjectPath)) {
@@ -52,6 +80,8 @@ const Input = {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
+    const enableCodeCoverage = rawEnableCodeCoverage === 'true';
+    const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
     const editorVersion =
       unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
 
@@ -63,6 +93,8 @@ const Input = {
       customParameters,
       testMode,
       enableCodeCoverage,
+      coverageAssemblyFilters,
+      coverageResultsPath,
       artifactsPath,
       useHostNetwork,
       sshAgent,

@@ -24,6 +24,14 @@ inputs:
     required: false
     default: 'false'
     description: 'Should code coverage results be collected for the test run.'
+  coverageAssemblyFilters:
+    required: false
+    default: ''
+    description: 'Optional coverage assembly filters when collecting code coverage.'
+  coverageResultsPath:
+    required: false
+    default: ''
+    description: 'Path to write coverage results to when collecting code coverage.'
   artifactsPath:
     required: false
     default: 'artifacts'

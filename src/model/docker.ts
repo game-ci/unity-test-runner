@@ -12,6 +12,8 @@ const Docker = {
       customParameters,
       testMode,
       enableCodeCoverage,
+      coverageAssemblyFilters,
+      coverageResultsPath,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -38,6 +40,8 @@ const Docker = {
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ENABLE_CODE_COVERAGE="${enableCodeCoverage}" \
+        --env COVERAGE_ASSEMBLY_FILTERS="${coverageAssemblyFilters}" \
+        --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \

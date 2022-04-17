@@ -36,6 +36,38 @@ case $TEST_MODE in
     ;;
 esac
 
+#
+# Build code coverage parameters
+#
+CODE_COVERAGE_PARAMETERS=""
+if [ "$ENABLE_CODE_COVERAGE" = "true" ]; then
+  # Configure code coverage options
+  COVERAGE_OPTIONS=""
+  ASSEMBLY_FILTER_OPTIONS=""
+  COVERAGE_RESULTS_OPTIONS=""
+
+  # Setup assembly filters if provided
+  if [ -n "$COVERAGE_ASSEMBLY_FILTERS" ]; then
+    ASSEMBLY_FILTER_OPTIONS=";assemblyFilters:$COVERAGE_ASSEMBLY_FILTERS"
+  fi
+
+  # Setup coverage results path if provided
+  if [ -n "$COVERAGE_RESULTS_PATH" ]; then
+    COVERAGE_RESULTS_OPTIONS="-coverageResultsPath $COVERAGE_RESULTS_PATH"
+  fi
+
+  # Options to combine both playmode and editmode results
+  if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ]; then
+    COVERAGE_OPTIONS="enableCyclomaticComplexity$ASSEMBLY_FILTER_OPTIONS"
+  else
+    COVERAGE_OPTIONS="enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport$ASSEMBLY_FILTER_OPTIONS"
+  fi
+
+  # Set parameters for code coverage
+  CODE_COVERAGE_PARAMETERS="-debugCodeOptimization -enableCodeCoverage -coverageOptions $COVERAGE_OPTIONS $COVERAGE_RESULTS_OPTIONS"
+fi
+echo "Using code coverage parameters $CODE_COVERAGE_PARAMETERS."
+
 # The following tests are 2019 mode (requires Unity 2019.2.11f1 or later)
 # Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html
 
@@ -81,7 +113,8 @@ if [ "$EDIT_MODE" = "true" ]; then
     -runTests \
     -testPlatform editmode \
     -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
-    $CUSTOM_PARAMETERS
+    $CUSTOM_PARAMETERS \
+    $CODE_COVERAGE_PARAMETERS
 
   # Catch exit code
   EDIT_MODE_EXIT_CODE=$?
@@ -118,7 +151,8 @@ if [ "$PLAY_MODE" = "true" ]; then
     -runTests \
     -testPlatform playmode \
     -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
-    $CUSTOM_PARAMETERS
+    $CUSTOM_PARAMETERS \
+    $CODE_COVERAGE_PARAMETERS
 
   # Catch exit code
   PLAY_MODE_EXIT_CODE=$?
@@ -167,6 +201,32 @@ if [ "$PLAY_MODE" = "true" ]; then
   echo ""
   cat "$FULL_ARTIFACTS_PATH/playmode-results.xml"
   cat "$FULL_ARTIFACTS_PATH/playmode-results.xml" | grep test-run | grep Passed
+fi
+
+#
+# Combine test results if needed
+#
+if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ] && [ "$ENABLE_CODE_COVERAGE" = "true" ]; then
+  # Setup coverage results path if provided
+  COVERAGE_RESULTS_OPTIONS=""
+  if [ -n "$COVERAGE_RESULTS_PATH" ]; then
+    COVERAGE_RESULTS_OPTIONS="-coverageResultsPath $COVERAGE_RESULTS_PATH"
+  fi
+
+  echo ""
+  echo "##############################"
+  echo "# Combining Coverage Results #"
+  echo "##############################"
+  echo ""
+  unity-editor \
+    -batchmode \
+    -debugCodeOptimization \
+    -enableCodeCoverage \
+    -logFile "$FULL_ARTIFACTS_PATH/coverage_combination.log" \
+    -projectPath "$UNITY_PROJECT_PATH" \
+    $COVERAGE_RESULTS_OPTIONS \
+    -coverageOptions generateHtmlReport;generateBadgeReport \
+    -quit
 fi
 
 #

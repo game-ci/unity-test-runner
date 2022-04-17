@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, enableCodeCoverage, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, enableCodeCoverage, coverageAssemblyFilters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
@@ -54,6 +54,8 @@ function run() {
                     customParameters,
                     testMode,
                     enableCodeCoverage,
+                    coverageAssemblyFilters,
+                    coverageResultsPath,
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
@@ -153,7 +155,7 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, enableCodeCoverage, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, enableCodeCoverage, coverageAssemblyFilters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
             const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
@@ -173,6 +175,8 @@ const Docker = {
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
         --env ENABLE_CODE_COVERAGE="${enableCodeCoverage}" \
+        --env COVERAGE_ASSEMBLY_FILTERS="${coverageAssemblyFilters}" \
+        --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
@@ -387,7 +391,9 @@ const Input = {
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
-        const enableCodeCoverage = (0, core_1.getInput)('enableCodeCoverage') || 'false';
+        const rawEnableCodeCoverage = (0, core_1.getInput)('enableCodeCoverage') || 'false';
+        const coverageAssemblyFilters = (0, core_1.getInput)('coverageAssemblyFilters') || '';
+        const rawCoverageResultsPath = (0, core_1.getInput)('coverageResultsPath') || '';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
@@ -398,8 +404,23 @@ const Input = {
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
         }
-        if (enableCodeCoverage !== 'true' && enableCodeCoverage !== 'false') {
-            throw new Error(`Invalid enableCodeCoverage "${enableCodeCoverage}"`);
+        if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
+            throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
+        }
+        if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
+            throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
+        }
+        if (rawEnableCodeCoverage !== 'true' && coverageAssemblyFilters !== '') {
+            throw new Error(`coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`);
+        }
+        if (coverageAssemblyFilters !== '') {
+            throw new Error(`coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`);
+        }
+        if (rawEnableCodeCoverage !== 'true' && rawCoverageResultsPath !== '') {
+            throw new Error(`coverageResultsPath should not be set if enableCodeCoverage is not enabled.`);
+        }
+        if (!this.isValidFolderName(rawCoverageResultsPath)) {
+            throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
         }
         if (!this.isValidFolderName(rawProjectPath)) {
             throw new Error(`Invalid projectPath "${rawProjectPath}"`);
@@ -414,6 +435,8 @@ const Input = {
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
+        const enableCodeCoverage = rawEnableCodeCoverage === 'true';
+        const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
         const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
         return {
@@ -423,6 +446,8 @@ const Input = {
             customParameters,
             testMode,
             enableCodeCoverage,
+            coverageAssemblyFilters,
+            coverageResultsPath,
             artifactsPath,
             useHostNetwork,
             sshAgent,
