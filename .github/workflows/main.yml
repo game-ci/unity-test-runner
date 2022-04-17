@@ -252,7 +252,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
-          artifactsPath: codecoverage/${{ matrix.projectPath }}
+          enableCodeCovearge: ${{ matrix.enableCodeCovearge }}
 
       # Upload artifacts
       - name: Upload code coverage results
