@@ -222,7 +222,7 @@ if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ] && [ "$ENABLE_CODE_COV
     -logFile "$FULL_ARTIFACTS_PATH/combine_coverage.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
     -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
-    -coverageOptions generateHtmlReport;generateBadgeReport \
+    -coverageOptions "generateHtmlReport;generateBadgeReport" \
     -quit
 
   # Catch exit code
