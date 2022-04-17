@@ -21,7 +21,7 @@ const Input = {
     const testMode = (getInput('testMode') || 'all').toLowerCase();
     const rawEnableCodeCoverage = getInput('enableCodeCoverage') || 'false';
     const coverageAssemblyFilters = getInput('coverageAssemblyFilters') || '';
-    const rawCoverageResultsPath = getInput('coverageResultsPath') || '';
+    const rawCoverageResultsPath = getInput('coverageResultsPath') || 'CodeCoverage';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -36,28 +36,6 @@ const Input = {
 
     if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
       throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
-    }
-
-    if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
-      throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
-    }
-
-    if (rawEnableCodeCoverage !== 'true' && coverageAssemblyFilters !== '') {
-      throw new Error(
-        `coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`,
-      );
-    }
-
-    if (coverageAssemblyFilters !== '') {
-      throw new Error(
-        `coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`,
-      );
-    }
-
-    if (rawEnableCodeCoverage !== 'true' && rawCoverageResultsPath !== '') {
-      throw new Error(
-        `coverageResultsPath should not be set if enableCodeCoverage is not enabled.`,
-      );
     }
 
     if (!this.isValidFolderName(rawCoverageResultsPath)) {

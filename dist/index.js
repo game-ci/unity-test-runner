@@ -66,6 +66,7 @@ function run() {
             }
             finally {
                 yield model_1.Output.setArtifactsPath(artifactsPath);
+                yield model_1.Output.setCoverageResultsPath(coverageResultsPath);
             }
             if (githubToken) {
                 const failedTestCount = yield model_1.ResultsCheck.createCheck(artifactsPath, githubToken, checkName);
@@ -393,7 +394,7 @@ const Input = {
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
         const rawEnableCodeCoverage = (0, core_1.getInput)('enableCodeCoverage') || 'false';
         const coverageAssemblyFilters = (0, core_1.getInput)('coverageAssemblyFilters') || '';
-        const rawCoverageResultsPath = (0, core_1.getInput)('coverageResultsPath') || '';
+        const rawCoverageResultsPath = (0, core_1.getInput)('coverageResultsPath') || 'CodeCoverage';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
@@ -406,18 +407,6 @@ const Input = {
         }
         if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
             throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
-        }
-        if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
-            throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
-        }
-        if (rawEnableCodeCoverage !== 'true' && coverageAssemblyFilters !== '') {
-            throw new Error(`coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`);
-        }
-        if (coverageAssemblyFilters !== '') {
-            throw new Error(`coverageAssemblyFilters should not be set if enableCodeCoverage is not enabled.`);
-        }
-        if (rawEnableCodeCoverage !== 'true' && rawCoverageResultsPath !== '') {
-            throw new Error(`coverageResultsPath should not be set if enableCodeCoverage is not enabled.`);
         }
         if (!this.isValidFolderName(rawCoverageResultsPath)) {
             throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
@@ -501,6 +490,11 @@ const Output = {
     setArtifactsPath(artifactsPath) {
         return __awaiter(this, void 0, void 0, function* () {
             yield core.setOutput('artifactsPath', artifactsPath);
+        });
+    },
+    setCoverageResultsPath(coverageResultsPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield core.setOutput('coverageResultsPath', coverageResultsPath);
         });
     },
 };

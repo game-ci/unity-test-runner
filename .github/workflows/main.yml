@@ -78,9 +78,6 @@ jobs:
           - unity-project-with-correct-tests
         unityVersion:
           - 2019.2.11f1
-        enableCodeCovearge:
-          - true
-          - false
     steps:
       ###########################
       #         Checkout        #
@@ -107,7 +104,6 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
-          enableCodeCovearge: ${{ matrix.enableCodeCovearge }}
           testMode: all
           # Test implicit artifactsPath, by not setting it
 
@@ -212,6 +208,59 @@ jobs:
           name: Test results (play mode)
           path: ${{ steps.playMode.outputs.artifactsPath }}
           retention-days: 14
+
+  testCodeCoveragePermutations:
+    name: Test code coverage results procedurally
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        enableCodeCovearge:
+          - true
+        unityVersion:
+          - 2019.2.11f1
+        projectPath:
+          - unity-project-with-correct-tests
+        testMode:
+          - playmode
+          - editmode
+          - All
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      ###########################
+      #          Cache          #
+      ###########################
+      - uses: actions/cache@v3
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
+
+      # Configure test runner
+      - name: Run tests
+        id: codecovtests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: codecoverage/${{ matrix.projectPath }}
+
+      # Upload artifacts
+      - name: Upload code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Code coverage results (edit mode)
+          path: ${{ steps.codecovtests.outputs.coverageResultsPath }}
+          retention-days: 7
 
   testEachModeSequentially:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)

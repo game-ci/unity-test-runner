@@ -45,6 +45,7 @@ async function run() {
       });
     } finally {
       await Output.setArtifactsPath(artifactsPath);
+      await Output.setCoverageResultsPath(coverageResultsPath);
     }
 
     if (githubToken) {
