@@ -30,7 +30,7 @@ inputs:
     description: 'Optional coverage assembly filters when collecting code coverage.'
   coverageResultsPath:
     required: false
-    default: ''
+    default: 'CodeCoverage'
     description: 'Path to write coverage results to when collecting code coverage.'
   artifactsPath:
     required: false
@@ -59,6 +59,8 @@ inputs:
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored'
+  coverageResultsPath:
+    description: 'Path where the code coverage results are stored'
 branding:
   icon: 'box'
   color: 'gray-dark'

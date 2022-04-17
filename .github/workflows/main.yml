@@ -224,7 +224,7 @@ jobs:
         testMode:
           - playmode
           - editmode
-          - All
+          - all
     steps:
       ###########################
       #         Checkout        #
