@@ -215,7 +215,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        enableCodeCovearge:
+        enableCodeCoverage:
           - true
         unityVersion:
           - 2019.2.11f1
@@ -252,7 +252,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
-          enableCodeCovearge: ${{ matrix.enableCodeCovearge }}
+          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
 
       # Upload artifacts
       - name: Upload code coverage results
