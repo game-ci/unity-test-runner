@@ -209,7 +209,7 @@ jobs:
           path: ${{ steps.playMode.outputs.artifactsPath }}
           retention-days: 14
 
-  testCodeCoveragePermutations:
+  testCodeCoverage:
     name: Test Code Coverage 📏
     runs-on: ubuntu-latest
     strategy:
@@ -221,6 +221,8 @@ jobs:
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
+        coverageAssemblyFilters:
+          - '+MyScripts'
         testMode:
           - playmode
           - editmode
@@ -253,6 +255,7 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
           enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
+          coverageAssemblyFilters: ${{ matrix.coverageAssemblyFilters }}
 
       # Upload artifacts
       - name: Upload code coverage results
@@ -272,6 +275,8 @@ jobs:
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
+        enableCodeCoverage:
+          - true
     steps:
       ###########################
       #         Checkout        #
@@ -299,6 +304,8 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
           artifactsPath: artifacts/editmode
+          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
+          coverageResultsPath: CodeCoverage/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
@@ -308,6 +315,8 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
           artifactsPath: artifacts/playmode
+          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
+          coverageResultsPath: CodeCoverage/playmode
 
       # Upload combined artifacts
       - name: Upload combined test results
