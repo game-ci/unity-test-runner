@@ -58,9 +58,9 @@ inputs:
     description: 'Name for the check run that is created when a github token is provided.'
 outputs:
   artifactsPath:
-    description: 'Path where the artifacts are stored'
+    description: 'Path where the artifacts are stored.'
   coverageResultsPath:
-    description: 'Path where the code coverage results are stored'
+    description: 'Path where the code coverage results are stored.'
 branding:
   icon: 'box'
   color: 'gray-dark'
