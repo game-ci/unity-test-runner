@@ -11,8 +11,7 @@ const Docker = {
       projectPath,
       customParameters,
       testMode,
-      enableCodeCoverage,
-      coverageAssemblyFilters,
+      coverageParameters,
       coverageResultsPath,
       artifactsPath,
       useHostNetwork,
@@ -39,8 +38,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
-        --env ENABLE_CODE_COVERAGE="${enableCodeCoverage}" \
-        --env COVERAGE_ASSEMBLY_FILTERS="${coverageAssemblyFilters}" \
+        --env COVERAGE_OPTIONS="${coverageParameters}" \
         --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \

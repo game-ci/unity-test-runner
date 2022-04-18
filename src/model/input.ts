@@ -19,8 +19,7 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
-    const rawEnableCodeCoverage = getInput('enableCodeCoverage') || 'false';
-    const coverageAssemblyFilters = getInput('coverageAssemblyFilters') || '';
+    const coverageParameters = getInput('coverageParameters') || '';
     const rawCoverageResultsPath = getInput('coverageResultsPath') || 'CodeCoverage';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
@@ -32,10 +31,6 @@ const Input = {
     // Validate input
     if (!this.testModes.includes(testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
-    }
-
-    if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
-      throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
     }
 
     if (!this.isValidFolderName(rawCoverageResultsPath)) {
@@ -58,7 +53,6 @@ const Input = {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
-    const enableCodeCoverage = rawEnableCodeCoverage === 'true';
     const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
     const editorVersion =
       unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
@@ -70,8 +64,7 @@ const Input = {
       projectPath,
       customParameters,
       testMode,
-      enableCodeCoverage,
-      coverageAssemblyFilters,
+      coverageParameters,
       coverageResultsPath,
       artifactsPath,
       useHostNetwork,

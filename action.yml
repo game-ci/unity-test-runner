@@ -20,17 +20,13 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
-  enableCodeCoverage:
+  coverageParameters:
     required: false
-    default: 'false'
-    description: 'Should code coverage results be collected for the test run.'
-  coverageAssemblyFilters:
-    required: false
-    default: ''
-    description: 'Optional coverage assembly filters when collecting code coverage.'
+    default: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport'
+    description: 'Optional coverage parameters for the -coverageOptions argument.'
   coverageResultsPath:
     required: false
-    default: 'CodeCoverage'
+    default: 'coverage'
     description: 'Path to write coverage results to when collecting code coverage.'
   artifactsPath:
     required: false

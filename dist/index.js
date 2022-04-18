@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, enableCodeCoverage, coverageAssemblyFilters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageParameters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
@@ -53,8 +53,7 @@ function run() {
                     projectPath,
                     customParameters,
                     testMode,
-                    enableCodeCoverage,
-                    coverageAssemblyFilters,
+                    coverageParameters,
                     coverageResultsPath,
                     artifactsPath,
                     useHostNetwork,
@@ -156,7 +155,7 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, enableCodeCoverage, coverageAssemblyFilters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageParameters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
             const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
@@ -175,8 +174,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_MODE="${testMode}" \
-        --env ENABLE_CODE_COVERAGE="${enableCodeCoverage}" \
-        --env COVERAGE_ASSEMBLY_FILTERS="${coverageAssemblyFilters}" \
+        --env COVERAGE_OPTIONS="${coverageParameters}" \
         --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
@@ -392,8 +390,7 @@ const Input = {
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
-        const rawEnableCodeCoverage = (0, core_1.getInput)('enableCodeCoverage') || 'false';
-        const coverageAssemblyFilters = (0, core_1.getInput)('coverageAssemblyFilters') || '';
+        const coverageParameters = (0, core_1.getInput)('coverageParameters') || '';
         const rawCoverageResultsPath = (0, core_1.getInput)('coverageResultsPath') || 'CodeCoverage';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
@@ -404,9 +401,6 @@ const Input = {
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
-        }
-        if (rawEnableCodeCoverage !== 'true' && rawEnableCodeCoverage !== 'false') {
-            throw new Error(`Invalid enableCodeCoverage "${rawEnableCodeCoverage}"`);
         }
         if (!this.isValidFolderName(rawCoverageResultsPath)) {
             throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
@@ -424,7 +418,6 @@ const Input = {
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
-        const enableCodeCoverage = rawEnableCodeCoverage === 'true';
         const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
         const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
@@ -434,8 +427,7 @@ const Input = {
             projectPath,
             customParameters,
             testMode,
-            enableCodeCoverage,
-            coverageAssemblyFilters,
+            coverageParameters,
             coverageResultsPath,
             artifactsPath,
             useHostNetwork,

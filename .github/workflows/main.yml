@@ -215,14 +215,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        enableCodeCoverage:
-          - true
         unityVersion:
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
-        coverageAssemblyFilters:
-          - '+MyScripts'
         testMode:
           - playmode
           - editmode
@@ -248,21 +244,20 @@ jobs:
 
       # Configure test runner
       - name: Run tests
-        id: codecovtests
+        id: coveragetests
         uses: ./
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: ${{ matrix.testMode }}
-          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
-          coverageAssemblyFilters: ${{ matrix.coverageAssemblyFilters }}
+          coverageParameters: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
 
       # Upload artifacts
       - name: Upload code coverage results
         uses: actions/upload-artifact@v3
         with:
           name: Code coverage results (${{ matrix.testMode }} mode)
-          path: ${{ steps.codecovtests.outputs.coverageResultsPath }}
+          path: coverage
           retention-days: 7
 
   testEachModeSequentially:
@@ -275,8 +270,6 @@ jobs:
           - 2019.2.11f1
         projectPath:
           - unity-project-with-correct-tests
-        enableCodeCoverage:
-          - true
     steps:
       ###########################
       #         Checkout        #
@@ -304,8 +297,7 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
           artifactsPath: artifacts/editmode
-          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
-          coverageResultsPath: CodeCoverage/editmode
+          coverageResultsPath: coverage/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
@@ -315,8 +307,7 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
           artifactsPath: artifacts/playmode
-          enableCodeCoverage: ${{ matrix.enableCodeCoverage }}
-          coverageResultsPath: CodeCoverage/playmode
+          coverageResultsPath: coverage/playmode
 
       # Upload combined artifacts
       - name: Upload combined test results
