@@ -55,12 +55,10 @@ echo "###########################"
 echo ""
 ls -alh $UNITY_PROJECT_PATH
 
-IFS=';' read -ra test_platforms <<< "$TEST_PLATFORMS"
-
 #
 # Testing for each platform
 #
-for $platform in "${test_platforms[@]}"; do
+for $platform in ${TEST_PLATFORMS//,/ }; do
   echo ""
   echo "###########################"
   echo "#   Testing in $platform  #"
