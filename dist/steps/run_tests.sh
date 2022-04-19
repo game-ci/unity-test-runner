@@ -18,7 +18,7 @@ FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 # Set and display the coverage results path
 #
 
-echo "Using artifacts path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
+echo "Using coverage results path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
 FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
 
 #
@@ -65,7 +65,7 @@ for platform in ${TEST_PLATFORMS//;/ }; do
   echo "###########################"
   echo ""
 
-  if [[ "$platform" -eq "COMBINE_RESULTS" ]]; then
+  if [[ "$platform" != "COMBINE_RESULTS" ]]; then
     runTests="-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
   else
     runTests="-quit"
@@ -77,7 +77,9 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     -projectPath "$UNITY_PROJECT_PATH" \
     -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
     $runTests \
-    "$COVERAGE_OPTIONS" \
+    -enableCodeCoverage \
+    -debugCodeOptimization \
+    -coverageOptions "$COVERAGE_OPTIONS" \
     $CUSTOM_PARAMETERS
 
   # Catch exit code
@@ -107,7 +109,7 @@ for platform in ${TEST_PLATFORMS//;/ }; do
   echo "###########################"
   echo ""
 
-  if [[ "$platform" -eq "COMBINE_RESULTS" ]]; then
+  if [[ "$platform" != "COMBINE_RESULTS" ]]; then
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml"
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml" | grep test-run | grep Passed
   fi

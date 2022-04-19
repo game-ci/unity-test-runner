@@ -28,12 +28,6 @@ const Docker = {
     const testPlatforms = (
       testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]
     ).join(';');
-    const coverageOptions = [
-      '-enableCodeCoverage',
-      '-debugCodeOptimization',
-      '-coverageOptions',
-      coverageParameters,
-    ].join(' ');
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -47,7 +41,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_PLATFORMS="${testPlatforms}" \
-        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_OPTIONS="${coverageParameters}" \
         --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \

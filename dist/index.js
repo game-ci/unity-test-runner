@@ -163,12 +163,6 @@ const Docker = {
             if (!(0, fs_1.existsSync)(githubWorkflow))
                 (0, fs_1.mkdirSync)(githubWorkflow);
             const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
-            const coverageOptions = [
-                '-enableCodeCoverage',
-                '-debugCodeOptimization',
-                '-coverageOptions',
-                coverageParameters,
-            ].join(' ');
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -181,7 +175,7 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_PLATFORMS="${testPlatforms}" \
-        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_OPTIONS="${coverageParameters}" \
         --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
