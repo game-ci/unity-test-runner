@@ -67,7 +67,7 @@ for $platform in "${test_platforms[@]}"; do
   echo "###########################"
   echo ""
   
-  if [ $platform -ne "COMBINE_RESULTS" ]; then;
+  if [ $platform -ne "COMBINE_RESULTS" ]; then
     $runTests = "-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
   else
     $runTests = "-quit"
