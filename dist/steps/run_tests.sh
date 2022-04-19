@@ -58,7 +58,7 @@ ls -alh $UNITY_PROJECT_PATH
 #
 # Testing for each platform
 #
-for $platform in ${TEST_PLATFORMS//,/ }; do
+for platform in ${TEST_PLATFORMS//;/ }; do
   echo ""
   echo "###########################"
   echo "#   Testing in $platform  #"
