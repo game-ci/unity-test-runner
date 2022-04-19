@@ -64,9 +64,8 @@ for platform in ${TEST_PLATFORMS//;/ }; do
   echo "#   Testing in $platform  #"
   echo "###########################"
   echo ""
-  
-  runTests=""
-  if [ $platform -ne "COMBINE_RESULTS" ]; then
+
+  if [[ "$platform" -eq "COMBINE_RESULTS" ]]; then
     runTests="-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
   else
     runTests="-quit"
@@ -107,7 +106,8 @@ for platform in ${TEST_PLATFORMS//;/ }; do
   echo "#    $platform Results    #"
   echo "###########################"
   echo ""
-  if [ $platform -ne "COMBINE_RESULTS" ]; then
+
+  if [[ "$platform" -eq "COMBINE_RESULTS" ]]; then
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml"
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml" | grep test-run | grep Passed
   fi
