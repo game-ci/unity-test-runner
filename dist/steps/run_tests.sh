@@ -15,6 +15,13 @@ echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
 #
+# Set and display the coverage results path
+#
+
+echo "Using artifacts path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
+FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
+
+#
 # Display custom parameters
 #
 
@@ -69,85 +76,52 @@ echo "###########################"
 echo ""
 ls -alh $UNITY_PROJECT_PATH
 
+IFS=';' read -ra test_platforms <<< "$TEST_PLATFORMS"
+
 #
-# Testing in EditMode
+# Testing for each platform
 #
-EDIT_MODE_EXIT_CODE=0
-if [ "$EDIT_MODE" = "true" ]; then
+for $platform in "${test_platforms[@]}"; do
   echo ""
   echo "###########################"
-  echo "#   Testing in EditMode   #"
+  echo "#   Testing in $platform  #"
   echo "###########################"
   echo ""
-  unity-editor \
-    -batchmode \
-    -logFile "$FULL_ARTIFACTS_PATH/editmode.log" \
-    -projectPath "$UNITY_PROJECT_PATH" \
-    -runTests \
-    -testPlatform editmode \
-    -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
-    -enableCodeCoverage \
-    -debugCodeOptimization \
-    -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
-    -coverageOptions "$COVERAGE_OPTIONS" \
-    $CUSTOM_PARAMETERS
-
-  # Catch exit code
-  EDIT_MODE_EXIT_CODE=$?
-
-  # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/editmode.log"
-
-  # Display results
-  if [ $EDIT_MODE_EXIT_CODE -eq 0 ]; then
-    echo "Run succeeded, no failures occurred";
-  elif [ $EDIT_MODE_EXIT_CODE -eq 2 ]; then
-    echo "Run succeeded, some tests failed";
-  elif [ $EDIT_MODE_EXIT_CODE -eq 3 ]; then
-    echo "Run failure (other failure)";
+  
+  if [ $platform -ne "COMBINE_RESULTS" ]; then;
+    $runTests = "-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
   else
-    echo "Unexpected exit code $EDIT_MODE_EXIT_CODE";
+    $runTests = "-quit"
   fi
-fi
 
-#
-# Testing in PlayMode
-#
-PLAY_MODE_EXIT_CODE=0
-if [ "$PLAY_MODE" = "true" ]; then
-  echo ""
-  echo "###########################"
-  echo "#   Testing in PlayMode   #"
-  echo "###########################"
-  echo ""
   unity-editor \
     -batchmode \
-    -logFile "$FULL_ARTIFACTS_PATH/playmode.log" \
+    -logFile "$FULL_ARTIFACTS_PATH/$platform.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
-    -runTests \
-    -testPlatform playmode \
-    -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
-    -enableCodeCoverage \
-    -debugCodeOptimization \
     -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
-    -coverageOptions "$COVERAGE_OPTIONS" \
+    $runTests \
+    "$COVERAGE_OPTIONS" \
     $CUSTOM_PARAMETERS
 
   # Catch exit code
-  PLAY_MODE_EXIT_CODE=$?
+  TEST_EXIT_CODE=$?
 
   # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/playmode.log"
+  cat "$FULL_ARTIFACTS_PATH/$platform.log"
 
   # Display results
-  if [ $PLAY_MODE_EXIT_CODE -eq 0 ]; then
+  if [ $TEST_EXIT_CODE -eq 0 ]; then
     echo "Run succeeded, no failures occurred";
-  elif [ $PLAY_MODE_EXIT_CODE -eq 2 ]; then
+  elif [ $TEST_EXIT_CODE -eq 2 ]; then
     echo "Run succeeded, some tests failed";
-  elif [ $PLAY_MODE_EXIT_CODE -eq 3 ]; then
+  elif [ $TEST_EXIT_CODE -eq 3 ]; then
     echo "Run failure (other failure)";
   else
-    echo "Unexpected exit code $PLAY_MODE_EXIT_CODE";
+    echo "Unexpected exit code $TEST_EXIT_CODE";
+  fi
+
+  if [ $TEST_EXIT_CODE -gt 0 ]; then
+    TEST_RUNNER_EXIT_CODE=$TEST_EXIT_CODE
   fi
 fi
 
@@ -180,57 +154,4 @@ if [ "$PLAY_MODE" = "true" ]; then
   echo ""
   cat "$FULL_ARTIFACTS_PATH/playmode-results.xml"
   cat "$FULL_ARTIFACTS_PATH/playmode-results.xml" | grep test-run | grep Passed
-fi
-
-#
-# Combine test results if needed
-#
-COMBINE_EXIT_CODE=0
-if [ "$EDIT_MODE" = "true" ] && [ "$PLAY_MODE" = "true" ] && [ "$COVERAGE" = "true" ]; then
-  echo ""
-  echo "##############################"
-  echo "# Combining Coverage Results #"
-  echo "##############################"
-  echo ""
-  unity-editor \
-    -batchmode \
-    -projectPath "$UNITY_PROJECT_PATH" \
-    -enableCodeCoverage \
-    -debugCodeOptimization \
-    -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
-    -coverageOptions "$COVERAGE_OPTIONS" \
-    -quit
-
-  # Catch exit code
-  COMBINE_EXIT_CODE=$?
-
-  # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/combine_coverage.log"
-
-  # Display results
-  if [ $COMBINE_EXIT_CODE -eq 0 ]; then
-    echo "Combine coverage succeeded, no failures occurred";
-  elif [ $COMBINE_EXIT_CODE -eq 2 ]; then
-    echo "Combine coverage, some tests failed";
-  elif [ $COMBINE_EXIT_CODE -eq 3 ]; then
-    echo "Combine coverage (other failure)";
-  else
-    echo "Unexpected exit code $COMBINE_EXIT_CODE";
-  fi
-fi
-
-#
-# Exit
-#
-
-if [ $EDIT_MODE_EXIT_CODE -gt 0 ]; then
-  TEST_RUNNER_EXIT_CODE=$EDIT_MODE_EXIT_CODE
-fi
-
-if [ $PLAY_MODE_EXIT_CODE -gt 0 ]; then
-  TEST_RUNNER_EXIT_CODE=$PLAY_MODE_EXIT_CODE
-fi
-
-if [ $COMBINE_EXIT_CODE -gt 0 ]; then
-  TEST_RUNNER_EXIT_CODE=$COMBINE_EXIT_CODE
 fi

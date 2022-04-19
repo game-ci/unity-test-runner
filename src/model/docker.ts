@@ -25,6 +25,15 @@ const Docker = {
     if (!existsSync(githubHome)) mkdirSync(githubHome);
     const githubWorkflow = path.join(runnerTemporaryPath, '_github_workflow');
     if (!existsSync(githubWorkflow)) mkdirSync(githubWorkflow);
+    const testPlatforms = (
+      testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]
+    ).join(';');
+    const coverageOptions = [
+      '-enableCodeCoverage',
+      '-debugCodeOptimization',
+      '-coverageOptions',
+      coverageParameters,
+    ].join(' ');
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -37,8 +46,8 @@ const Docker = {
         --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
-        --env TEST_MODE="${testMode}" \
-        --env COVERAGE_OPTIONS="${coverageParameters}" \
+        --env TEST_PLATFORMS="${testPlatforms}" \
+        --env COVERAGE_OPTIONS="${coverageOptions}" \
         --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
