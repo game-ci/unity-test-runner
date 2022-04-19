@@ -106,8 +106,8 @@ for $platform in ${TEST_PLATFORMS//,/ }; do
   echo "#    $platform Results    #"
   echo "###########################"
   echo ""
-  if [ $platform -ne "COMBINE_RESULTS" ]; then;
+  if [ $platform -ne "COMBINE_RESULTS" ]; then
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml"
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml" | grep test-run | grep Passed
   fi
-fi
+done
