@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageParameters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
@@ -53,8 +53,7 @@ function run() {
                     projectPath,
                     customParameters,
                     testMode,
-                    coverageParameters,
-                    coverageResultsPath,
+                    coverageOptions,
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
@@ -65,7 +64,7 @@ function run() {
             }
             finally {
                 yield model_1.Output.setArtifactsPath(artifactsPath);
-                yield model_1.Output.setCoverageResultsPath(coverageResultsPath);
+                yield model_1.Output.setCoveragePath('CodeCoverage');
             }
             if (githubToken) {
                 const failedTestCount = yield model_1.ResultsCheck.createCheck(artifactsPath, githubToken, checkName);
@@ -155,7 +154,7 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageParameters, coverageResultsPath, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
             const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
@@ -175,8 +174,8 @@ const Docker = {
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
         --env TEST_PLATFORMS="${testPlatforms}" \
-        --env COVERAGE_OPTIONS="${coverageParameters}" \
-        --env COVERAGE_RESULTS_PATH="${coverageResultsPath}" \
+        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_RESULTS_PATH="CodeCoverage" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \
@@ -391,8 +390,7 @@ const Input = {
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
-        const coverageParameters = (0, core_1.getInput)('coverageParameters') || '';
-        const rawCoverageResultsPath = (0, core_1.getInput)('coverageResultsPath') || 'CodeCoverage';
+        const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
@@ -402,9 +400,6 @@ const Input = {
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
-        }
-        if (!this.isValidFolderName(rawCoverageResultsPath)) {
-            throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
         }
         if (!this.isValidFolderName(rawProjectPath)) {
             throw new Error(`Invalid projectPath "${rawProjectPath}"`);
@@ -419,7 +414,6 @@ const Input = {
         const projectPath = rawProjectPath.replace(/\/$/, '');
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
-        const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
         const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
         return {
@@ -428,8 +422,7 @@ const Input = {
             projectPath,
             customParameters,
             testMode,
-            coverageParameters,
-            coverageResultsPath,
+            coverageOptions,
             artifactsPath,
             useHostNetwork,
             sshAgent,
@@ -485,9 +478,9 @@ const Output = {
             yield core.setOutput('artifactsPath', artifactsPath);
         });
     },
-    setCoverageResultsPath(coverageResultsPath) {
+    setCoveragePath(coveragePath) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield core.setOutput('coverageResultsPath', coverageResultsPath);
+            yield core.setOutput('coveragePath', coveragePath);
         });
     },
 };

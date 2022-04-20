@@ -105,8 +105,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
-          coverageParameters: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
-          coverageResultsPath: 'artifacts'
+          coverageOptions: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
           # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
@@ -115,6 +114,14 @@ jobs:
         with:
           name: Test results (all)
           path: ${{ steps.allTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.allTests.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInEditMode:
@@ -164,6 +171,14 @@ jobs:
           path: ${{ steps.editMode.outputs.artifactsPath }}
           retention-days: 14
 
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.allTests.outputs.coveragePath }}
+          retention-days: 14
+
   testRunnerInPlayMode:
     name: Test play mode 📺
     runs-on: ubuntu-latest
@@ -211,6 +226,14 @@ jobs:
           path: ${{ steps.playMode.outputs.artifactsPath }}
           retention-days: 14
 
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.allTests.outputs.coveragePath }}
+          retention-days: 14
+
   testEachModeSequentially:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
     runs-on: ubuntu-latest
@@ -248,7 +271,6 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
           artifactsPath: artifacts/editmode
-          coverageResultsPath: artifacts/editmode
 
       # Configure second test runner
       - name: Tests in playmode 📺
@@ -258,7 +280,6 @@ jobs:
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
           artifactsPath: artifacts/playmode
-          coverageResultsPath: artifacts/playmode
 
       # Upload combined artifacts
       - name: Upload combined test results

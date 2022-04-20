@@ -20,14 +20,10 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
-  coverageParameters:
+  coverageOptions:
     required: false
     default: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport'
     description: 'Optional coverage parameters for the -coverageOptions argument.'
-  coverageResultsPath:
-    required: false
-    default: 'coverage'
-    description: 'Path to write coverage results to when collecting code coverage.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -55,7 +51,7 @@ inputs:
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'
-  coverageResultsPath:
+  coveragePath:
     description: 'Path where the code coverage results are stored.'
 branding:
   icon: 'box'

@@ -99,7 +99,7 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     echo "Unexpected exit code $TEST_EXIT_CODE";
   fi
 
-  if [ $TEST_EXIT_CODE -gt 0 ]; then
+  if [ $TEST_EXIT_CODE -ne 0 ]; then
     TEST_RUNNER_EXIT_CODE=$TEST_EXIT_CODE
   fi
 

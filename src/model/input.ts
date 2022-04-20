@@ -19,8 +19,7 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
-    const coverageParameters = getInput('coverageParameters') || '';
-    const rawCoverageResultsPath = getInput('coverageResultsPath') || 'CodeCoverage';
+    const coverageOptions = getInput('coverageOptions') || '';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -31,10 +30,6 @@ const Input = {
     // Validate input
     if (!this.testModes.includes(testMode)) {
       throw new Error(`Invalid testMode ${testMode}`);
-    }
-
-    if (!this.isValidFolderName(rawCoverageResultsPath)) {
-      throw new Error(`Invalid coverageResultsPath "${rawCoverageResultsPath}"`);
     }
 
     if (!this.isValidFolderName(rawProjectPath)) {
@@ -53,7 +48,6 @@ const Input = {
     const projectPath = rawProjectPath.replace(/\/$/, '');
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
-    const coverageResultsPath = rawCoverageResultsPath.replace(/\/$/, '');
     const editorVersion =
       unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
 
@@ -64,8 +58,7 @@ const Input = {
       projectPath,
       customParameters,
       testMode,
-      coverageParameters,
-      coverageResultsPath,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,
