@@ -176,7 +176,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Coverage results (all)
-          path: ${{ steps.allTests.outputs.coveragePath }}
+          path: ${{ steps.editMode.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInPlayMode:
@@ -231,7 +231,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Coverage results (all)
-          path: ${{ steps.allTests.outputs.coveragePath }}
+          path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
   testEachModeSequentially:
