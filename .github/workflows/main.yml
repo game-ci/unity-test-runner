@@ -175,7 +175,7 @@ jobs:
       - name: Upload coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: Coverage results (all)
+          name: Coverage results (edit mode)
           path: ${{ steps.editMode.outputs.coveragePath }}
           retention-days: 14
 
@@ -230,7 +230,7 @@ jobs:
       - name: Upload coverage results
         uses: actions/upload-artifact@v3
         with:
-          name: Coverage results (all)
+          name: Coverage results (play mode)
           path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
