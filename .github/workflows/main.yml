@@ -105,7 +105,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
-          coverageOptions: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
           # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
