@@ -22,7 +22,7 @@ inputs:
     description: 'The type of tests to be run by the test runner.'
   coverageOptions:
     required: false
-    default: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport'
+    default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
     description: 'Optional coverage parameters for the -coverageOptions argument.'
   artifactsPath:
     required: false
