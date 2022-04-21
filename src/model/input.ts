@@ -19,6 +19,7 @@ const Input = {
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
+    const coverageOptions = getInput('coverageOptions') || '';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -57,6 +58,7 @@ const Input = {
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,

@@ -20,6 +20,10 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
+  coverageOptions:
+    required: false
+    default: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport'
+    description: 'Optional coverage parameters for the -coverageOptions argument.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -46,7 +50,9 @@ inputs:
     description: 'Name for the check run that is created when a github token is provided.'
 outputs:
   artifactsPath:
-    description: 'Path where the artifacts are stored'
+    description: 'Path where the artifacts are stored.'
+  coveragePath:
+    description: 'Path where the code coverage results are stored.'
 branding:
   icon: 'box'
   color: 'gray-dark'

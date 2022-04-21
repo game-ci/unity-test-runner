@@ -105,6 +105,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
+          coverageOptions: 'enableCyclomaticComplexity;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
           # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
@@ -113,6 +114,14 @@ jobs:
         with:
           name: Test results (all)
           path: ${{ steps.allTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.allTests.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInEditMode:
@@ -162,6 +171,14 @@ jobs:
           path: ${{ steps.editMode.outputs.artifactsPath }}
           retention-days: 14
 
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (edit mode)
+          path: ${{ steps.editMode.outputs.coveragePath }}
+          retention-days: 14
+
   testRunnerInPlayMode:
     name: Test play mode 📺
     runs-on: ubuntu-latest
@@ -207,6 +224,14 @@ jobs:
         with:
           name: Test results (play mode)
           path: ${{ steps.playMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (play mode)
+          path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
   testEachModeSequentially:

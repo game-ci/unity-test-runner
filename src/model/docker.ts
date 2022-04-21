@@ -11,6 +11,7 @@ const Docker = {
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -23,6 +24,9 @@ const Docker = {
     if (!existsSync(githubHome)) mkdirSync(githubHome);
     const githubWorkflow = path.join(runnerTemporaryPath, '_github_workflow');
     if (!existsSync(githubWorkflow)) mkdirSync(githubWorkflow);
+    const testPlatforms = (
+      testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]
+    ).join(';');
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -35,7 +39,9 @@ const Docker = {
         --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
-        --env TEST_MODE="${testMode}" \
+        --env TEST_PLATFORMS="${testPlatforms}" \
+        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_RESULTS_PATH="CodeCoverage" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env GITHUB_REF \
         --env GITHUB_SHA \

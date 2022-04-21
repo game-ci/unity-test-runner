@@ -12,6 +12,7 @@ async function run() {
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -30,6 +31,7 @@ async function run() {
         projectPath,
         customParameters,
         testMode,
+        coverageOptions,
         artifactsPath,
         useHostNetwork,
         sshAgent,
@@ -39,6 +41,7 @@ async function run() {
       });
     } finally {
       await Output.setArtifactsPath(artifactsPath);
+      await Output.setCoveragePath('CodeCoverage');
     }
 
     if (githubToken) {
