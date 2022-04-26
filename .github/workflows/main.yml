@@ -354,6 +354,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
           packageMode: true
           # Test implicit artifactsPath, by not setting it
 
@@ -363,6 +364,14 @@ jobs:
         with:
           name: Package test results (all)
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
           retention-days: 14
 
   testPackageRunnerInEditMode:
@@ -402,6 +411,14 @@ jobs:
           path: ${{ steps.packageEditMode.outputs.artifactsPath }}
           retention-days: 14
 
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (edit mode)
+          path: ${{ steps.packageEditMode.outputs.coveragePath }}
+          retention-days: 14
+
   testPackageRunnerInPlayMode:
     name: Test package mode in play mode 📦📺
     runs-on: ubuntu-latest
@@ -437,6 +454,14 @@ jobs:
         with:
           name: Package test results (play mode)
           path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (play mode)
+          path: ${{ steps.packagePlayMode.outputs.coveragePath }}
           retention-days: 14
 
   testPackageModeEachModeSequentially:
