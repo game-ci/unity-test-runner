@@ -59,6 +59,8 @@ if [ "$PACKAGE_MODE" = "true" ]; then
       exit 1
   fi
 
+  cat "$PACKAGE_MANIFEST_PATH"
+
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
     jq \
