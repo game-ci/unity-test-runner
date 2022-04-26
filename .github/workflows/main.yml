@@ -62,7 +62,7 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Test results for ${{ matrix.testMode }}
           path: ${{ steps.tests.outputs.artifactsPath }}
@@ -105,14 +105,23 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
           # Test implicit artifactsPath, by not setting it
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Test results (all)
           path: ${{ steps.allTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (all)
+          path: ${{ steps.allTests.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInEditMode:
@@ -156,10 +165,18 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Test results (edit mode)
           path: ${{ steps.editMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (edit mode)
+          path: ${{ steps.editMode.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInPlayMode:
@@ -203,10 +220,18 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Test results (play mode)
           path: ${{ steps.playMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Coverage results (play mode)
+          path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
   testEachModeSequentially:
@@ -258,7 +283,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Test results (combined)
           path: artifacts/

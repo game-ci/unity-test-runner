@@ -5,13 +5,14 @@ async function run() {
   try {
     Action.checkCompatibility();
 
-    const { dockerfile, workspace, actionFolder } = Action;
+    const { workspace, actionFolder } = Action;
     const {
-      unityVersion,
+      editorVersion,
       customImage,
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -21,20 +22,18 @@ async function run() {
       packageMode,
       packageName,
     } = Input.getFromUser();
-    const baseImage = new ImageTag({ version: unityVersion, customImage });
+    const baseImage = new ImageTag({ editorVersion, customImage });
     const runnerTemporaryPath = process.env.RUNNER_TEMP;
 
     try {
-      // Build docker image
-      const actionImage = await Docker.build({ path: actionFolder, dockerfile, baseImage });
-
-      // Run docker image
-      await Docker.run(actionImage, {
-        unityVersion,
+      await Docker.run(baseImage, {
+        actionFolder,
+        editorVersion,
         workspace,
         projectPath,
         customParameters,
         testMode,
+        coverageOptions,
         artifactsPath,
         useHostNetwork,
         sshAgent,
@@ -45,8 +44,8 @@ async function run() {
         runnerTemporaryPath,
       });
     } finally {
-      // Set output
       await Output.setArtifactsPath(artifactsPath);
+      await Output.setCoveragePath('CodeCoverage');
     }
 
     if (githubToken) {

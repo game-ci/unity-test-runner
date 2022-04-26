@@ -1,31 +1,17 @@
 import { existsSync, mkdirSync } from 'fs';
-import ImageTag from './image-tag';
 import { exec } from '@actions/exec';
 import path from 'path';
 
 const Docker = {
-  async build(buildParameters, silent = false) {
-    const { path: buildPath, dockerfile, baseImage } = buildParameters;
-    const { version } = baseImage;
-
-    const tag = new ImageTag({ version });
-    const command = `docker build ${buildPath} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-
-    await exec(command, undefined, { silent });
-
-    return tag;
-  },
-
   async run(image, parameters, silent = false) {
     const {
-      unityVersion,
+      actionFolder,
+      editorVersion,
       workspace,
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,
@@ -40,6 +26,9 @@ const Docker = {
     if (!existsSync(githubHome)) mkdirSync(githubHome);
     const githubWorkflow = path.join(runnerTemporaryPath, '_github_workflow');
     if (!existsSync(githubWorkflow)) mkdirSync(githubWorkflow);
+    const testPlatforms = (
+      testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]
+    ).join(';');
 
     const command = `docker run \
         --workdir /github/workspace \
@@ -49,10 +38,12 @@ const Docker = {
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
-        --env UNITY_VERSION="${unityVersion}" \
+        --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
-        --env TEST_MODE="${testMode}" \
+        --env TEST_PLATFORMS="${testPlatforms}" \
+        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_RESULTS_PATH="CodeCoverage" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env PACKAGE_MODE="${packageMode}" \
         --env PACKAGE_NAME="${packageName}" \
@@ -73,15 +64,17 @@ const Docker = {
         --env RUNNER_WORKSPACE \
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-        --volume "/var/run/docker.sock":"/var/run/docker.sock" \
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
+        --volume "${actionFolder}/steps":"/steps:z" \
+        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-        ${image}`;
+        ${image} \
+        /bin/bash /entrypoint.sh`;
 
     await exec(command, undefined, { silent });
   },

@@ -20,6 +20,10 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
+  coverageOptions:
+    required: false
+    default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
+    description: 'Optional coverage parameters for the -coverageOptions argument.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -50,7 +54,9 @@ inputs:
     description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity package registry are currently not supported.'
 outputs:
   artifactsPath:
-    description: 'Path where the artifacts are stored'
+    description: 'Path where the artifacts are stored.'
+  coveragePath:
+    description: 'Path where the code coverage results are stored.'
 branding:
   icon: 'box'
   color: 'gray-dark'

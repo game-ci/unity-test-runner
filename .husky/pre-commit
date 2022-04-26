@@ -8,4 +8,6 @@ fi
 yarn lint-staged
 yarn lint
 yarn test
+
 yarn build
+git add dist

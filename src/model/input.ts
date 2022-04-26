@@ -62,11 +62,12 @@ const Input = {
 
   getFromUser() {
     // Input variables specified in workflow using "with" prop.
-    const rawUnityVersion = getInput('unityVersion') || 'auto';
+    const unityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
+    const coverageOptions = getInput('coverageOptions') || '';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
@@ -111,16 +112,17 @@ const Input = {
     // Sanitise other input
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
-    const unityVersion =
-      rawUnityVersion === 'auto' ? UnityVersionParser.read(projectPath) : rawUnityVersion;
+    const editorVersion =
+      unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
 
     // Return sanitised input
     return {
-      unityVersion,
+      editorVersion,
       customImage,
       projectPath,
       customParameters,
       testMode,
+      coverageOptions,
       artifactsPath,
       useHostNetwork,
       sshAgent,

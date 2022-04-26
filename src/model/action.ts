@@ -29,10 +29,6 @@ const Action = {
     return `${Action.rootFolder}/dist`;
   },
 
-  get dockerfile() {
-    return `${Action.actionFolder}/Dockerfile`;
-  },
-
   get workspace() {
     return process.env.GITHUB_WORKSPACE;
   },

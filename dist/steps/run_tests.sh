@@ -78,26 +78,17 @@ echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
 FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
 
 #
+# Set and display the coverage results path
+#
+
+echo "Using coverage results path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
+FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
+
+#
 # Display custom parameters
 #
-echo "Using custom parameters $CUSTOM_PARAMETERS."
 
-# Set the modes for testing
-case $TEST_MODE in
-  editmode)
-    echo "Edit mode selected for testing."
-    EDIT_MODE=true
-    ;;
-  playmode)
-    echo "Play mode selected for testing."
-    PLAY_MODE=true
-    ;;
-  *)
-    echo "All modes selected for testing."
-    EDIT_MODE=true
-    PLAY_MODE=true
-    ;;
-esac
+echo "Using custom parameters $CUSTOM_PARAMETERS."
 
 # The following tests are 2019 mode (requires Unity 2019.2.11f1 or later)
 # Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html
@@ -128,118 +119,61 @@ echo ""
 ls -alh $UNITY_PROJECT_PATH
 
 #
-# Testing in EditMode
+# Testing for each platform
 #
-EDIT_MODE_EXIT_CODE=0
-if [ "$EDIT_MODE" = "true" ]; then
+for platform in ${TEST_PLATFORMS//;/ }; do
   echo ""
   echo "###########################"
-  echo "#   Testing in EditMode   #"
+  echo "#   Testing in $platform  #"
   echo "###########################"
   echo ""
+
+  if [[ "$platform" != "COMBINE_RESULTS" ]]; then
+    runTests="-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
+  else
+    runTests="-quit"
+  fi
+
   unity-editor \
     -batchmode \
-    -logFile "$FULL_ARTIFACTS_PATH/editmode.log" \
+    -logFile "$FULL_ARTIFACTS_PATH/$platform.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
-    -runTests \
-    -testPlatform editmode \
-    -testResults "$FULL_ARTIFACTS_PATH/editmode-results.xml" \
+    -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
+    $runTests \
+    -enableCodeCoverage \
+    -debugCodeOptimization \
+    -coverageOptions "$COVERAGE_OPTIONS" \
     $CUSTOM_PARAMETERS
 
   # Catch exit code
-  EDIT_MODE_EXIT_CODE=$?
+  TEST_EXIT_CODE=$?
 
   # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/editmode.log"
+  cat "$FULL_ARTIFACTS_PATH/$platform.log"
 
   # Display results
-  if [ $EDIT_MODE_EXIT_CODE -eq 0 ]; then
+  if [ $TEST_EXIT_CODE -eq 0 ]; then
     echo "Run succeeded, no failures occurred";
-  elif [ $EDIT_MODE_EXIT_CODE -eq 2 ]; then
+  elif [ $TEST_EXIT_CODE -eq 2 ]; then
     echo "Run succeeded, some tests failed";
-  elif [ $EDIT_MODE_EXIT_CODE -eq 3 ]; then
+  elif [ $TEST_EXIT_CODE -eq 3 ]; then
     echo "Run failure (other failure)";
   else
-    echo "Unexpected exit code $EDIT_MODE_EXIT_CODE";
+    echo "Unexpected exit code $TEST_EXIT_CODE";
   fi
-fi
 
-#
-# Testing in PlayMode
-#
-PLAY_MODE_EXIT_CODE=0
-if [ "$PLAY_MODE" = "true" ]; then
-  echo ""
-  echo "###########################"
-  echo "#   Testing in PlayMode   #"
-  echo "###########################"
-  echo ""
-  unity-editor \
-    -batchmode \
-    -logFile "$FULL_ARTIFACTS_PATH/playmode.log" \
-    -projectPath "$UNITY_PROJECT_PATH" \
-    -runTests \
-    -testPlatform playmode \
-    -testResults "$FULL_ARTIFACTS_PATH/playmode-results.xml" \
-    $CUSTOM_PARAMETERS
-
-  # Catch exit code
-  PLAY_MODE_EXIT_CODE=$?
-
-  # Print unity log output
-  cat "$FULL_ARTIFACTS_PATH/playmode.log"
-
-  # Display results
-  if [ $PLAY_MODE_EXIT_CODE -eq 0 ]; then
-    echo "Run succeeded, no failures occurred";
-  elif [ $PLAY_MODE_EXIT_CODE -eq 2 ]; then
-    echo "Run succeeded, some tests failed";
-  elif [ $PLAY_MODE_EXIT_CODE -eq 3 ]; then
-    echo "Run failure (other failure)";
-  else
-    echo "Unexpected exit code $PLAY_MODE_EXIT_CODE";
+  if [ $TEST_EXIT_CODE -ne 0 ]; then
+    TEST_RUNNER_EXIT_CODE=$TEST_EXIT_CODE
   fi
-fi
 
-#
-# Results
-#
-
-echo ""
-echo "###########################"
-echo "#    Project directory    #"
-echo "###########################"
-echo ""
-ls -alh $UNITY_PROJECT_PATH
-
-if [ "$EDIT_MODE" = "true" ]; then
   echo ""
   echo "###########################"
-  echo "#    Edit Mode Results    #"
+  echo "#    $platform Results    #"
   echo "###########################"
   echo ""
-  cat "$FULL_ARTIFACTS_PATH/editmode-results.xml"
-  cat "$FULL_ARTIFACTS_PATH/editmode-results.xml" | grep test-run | grep Passed
-fi
 
-if [ "$PLAY_MODE" = "true" ]; then
-  echo ""
-  echo "###########################"
-  echo "#    Play Mode Results    #"
-  echo "###########################"
-  echo ""
-  cat "$FULL_ARTIFACTS_PATH/playmode-results.xml"
-  cat "$FULL_ARTIFACTS_PATH/playmode-results.xml" | grep test-run | grep Passed
-fi
-
-#
-# Exit
-#
-
-if [ $EDIT_MODE_EXIT_CODE -gt 0 ]; then
-  TEST_RUNNER_EXIT_CODE=$EDIT_MODE_EXIT_CODE
-fi
-
-if [ $PLAY_MODE_EXIT_CODE -gt 0 ]; then
-  TEST_RUNNER_EXIT_CODE=$PLAY_MODE_EXIT_CODE
-fi
+  if [[ "$platform" != "COMBINE_RESULTS" ]]; then
+    cat "$FULL_ARTIFACTS_PATH/$platform-results.xml"
+    cat "$FULL_ARTIFACTS_PATH/$platform-results.xml" | grep test-run | grep Passed
+  fi
+done

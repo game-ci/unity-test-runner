@@ -41,20 +41,19 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             model_1.Action.checkCompatibility();
-            const { dockerfile, workspace, actionFolder } = model_1.Action;
-            const { unityVersion, customImage, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, } = model_1.Input.getFromUser();
-            const baseImage = new model_1.ImageTag({ version: unityVersion, customImage });
+            const { workspace, actionFolder } = model_1.Action;
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, } = model_1.Input.getFromUser();
+            const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
-                // Build docker image
-                const actionImage = yield model_1.Docker.build({ path: actionFolder, dockerfile, baseImage });
-                // Run docker image
-                yield model_1.Docker.run(actionImage, {
-                    unityVersion,
+                yield model_1.Docker.run(baseImage, {
+                    actionFolder,
+                    editorVersion,
                     workspace,
                     projectPath,
                     customParameters,
                     testMode,
+                    coverageOptions,
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
@@ -66,8 +65,8 @@ function run() {
                 });
             }
             finally {
-                // Set output
                 yield model_1.Output.setArtifactsPath(artifactsPath);
+                yield model_1.Output.setCoveragePath('CodeCoverage');
             }
             if (githubToken) {
                 const failedTestCount = yield model_1.ResultsCheck.createCheck(artifactsPath, githubToken, checkName);
@@ -118,9 +117,6 @@ const Action = {
     get actionFolder() {
         return `${Action.rootFolder}/dist`;
     },
-    get dockerfile() {
-        return `${Action.actionFolder}/Dockerfile`;
-    },
     get workspace() {
         return process.env.GITHUB_WORKSPACE;
     },
@@ -155,32 +151,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __nccwpck_require__(7147);
-const image_tag_1 = __importDefault(__nccwpck_require__(7648));
 const exec_1 = __nccwpck_require__(1514);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const Docker = {
-    build(buildParameters, silent = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const { path: buildPath, dockerfile, baseImage } = buildParameters;
-            const { version } = baseImage;
-            const tag = new image_tag_1.default({ version });
-            const command = `docker build ${buildPath} \
-      --file ${dockerfile} \
-      --build-arg IMAGE=${baseImage} \
-      --tag ${tag}`;
-            yield (0, exec_1.exec)(command, undefined, { silent });
-            return tag;
-        });
-    },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { unityVersion, workspace, projectPath, customParameters, testMode, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+            const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
             const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
             if (!(0, fs_1.existsSync)(githubHome))
                 (0, fs_1.mkdirSync)(githubHome);
             const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
             if (!(0, fs_1.existsSync)(githubWorkflow))
                 (0, fs_1.mkdirSync)(githubWorkflow);
+            const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -189,10 +172,12 @@ const Docker = {
         --env UNITY_EMAIL \
         --env UNITY_PASSWORD \
         --env UNITY_SERIAL \
-        --env UNITY_VERSION="${unityVersion}" \
+        --env UNITY_VERSION="${editorVersion}" \
         --env PROJECT_PATH="${projectPath}" \
         --env CUSTOM_PARAMETERS="${customParameters}" \
-        --env TEST_MODE="${testMode}" \
+        --env TEST_PLATFORMS="${testPlatforms}" \
+        --env COVERAGE_OPTIONS="${coverageOptions}" \
+        --env COVERAGE_RESULTS_PATH="CodeCoverage" \
         --env ARTIFACTS_PATH="${artifactsPath}" \
         --env PACKAGE_MODE="${packageMode}" \
         --env PACKAGE_NAME="${packageName}" \
@@ -213,15 +198,17 @@ const Docker = {
         --env RUNNER_WORKSPACE \
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-        --volume "/var/run/docker.sock":"/var/run/docker.sock" \
         --volume "${githubHome}":"/root:z" \
         --volume "${githubWorkflow}":"/github/workflow:z" \
         --volume "${workspace}":"/github/workspace:z" \
+        --volume "${actionFolder}/steps":"/steps:z" \
+        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh:z" \
         ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
         ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-        ${image}`;
+        ${image} \
+        /bin/bash /entrypoint.sh`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
@@ -243,22 +230,25 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { repository = 'unityci', name = 'editor', version = '2019.2.11f1', platform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
-        if (!ImageTag.versionPattern.test(version)) {
-            throw new Error(`Invalid version "${version}".`);
+        const { editorVersion = '2019.2.11f1', targetPlatform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
+        if (!ImageTag.versionPattern.test(editorVersion)) {
+            throw new Error(`Invalid version "${editorVersion}".`);
         }
-        const builderPlatform = ImageTag.getTargetPlatformToImageSuffixMap(platform, version);
-        this.repository = repository;
-        this.name = name;
-        this.version = version;
-        this.platform = platform;
-        this.builderPlatform = builderPlatform;
+        // Either
         this.customImage = customImage;
+        // Or
+        this.repository = 'unityci';
+        this.name = 'editor';
+        this.editorVersion = editorVersion;
+        this.targetPlatform = targetPlatform;
+        this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
+        this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
+        this.imageRollingVersion = 1;
     }
     static get versionPattern() {
         return /^20\d{2}\.\d\.\w{3,4}|3$/;
     }
-    static get imageSuffixes() {
+    static get targetPlatformSuffixes() {
         return {
             generic: '',
             webgl: 'webgl',
@@ -271,11 +261,19 @@ class ImageTag {
             facebook: 'facebook',
         };
     }
-    static getTargetPlatformToImageSuffixMap(platform, version) {
-        const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } = ImageTag.imageSuffixes;
-        const [major, minor] = version.split('.').map(digit => Number(digit));
-        // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+    static getImagePlatformPrefix(platform) {
         switch (platform) {
+            case 'linux':
+                return 'ubuntu';
+            default:
+                throw new Error('The Operating System of this runner is not yet supported.');
+        }
+    }
+    static getTargetPlatformSuffix(targetPlatform, editorVersion) {
+        const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } = ImageTag.targetPlatformSuffixes;
+        const [major, minor] = editorVersion.split('.').map(digit => Number(digit));
+        // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
+        switch (targetPlatform) {
             case platform_1.default.types.StandaloneOSX:
                 return mac;
             case platform_1.default.types.StandaloneWindows:
@@ -322,22 +320,21 @@ class ImageTag {
             default:
                 throw new Error(`
           Platform must be one of the ones described in the documentation.
-          "${platform}" is currently not supported.`);
+          "${targetPlatform}" is currently not supported.`);
         }
     }
     get tag() {
-        return `${this.version}-${this.builderPlatform}`.replace(/-+$/, '');
+        const versionAndTarget = `${this.editorVersion}-${this.targetPlatformSuffix}`.replace(/-+$/, '');
+        return `${this.imagePlatformPrefix}-${versionAndTarget}-${this.imageRollingVersion}`;
     }
     get image() {
         return `${this.repository}/${this.name}`.replace(/^\/+/, '');
     }
     toString() {
         const { image, tag, customImage } = this;
-        if (customImage && customImage !== '') {
+        if (customImage)
             return customImage;
-        }
-        const dockerRepoVersion = 0;
-        return `${image}:${tag}-${dockerRepoVersion}`;
+        return `${image}:${tag}`;
     }
 }
 exports["default"] = ImageTag;
@@ -428,11 +425,12 @@ const Input = {
     },
     getFromUser() {
         // Input variables specified in workflow using "with" prop.
-        const rawUnityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
+        const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
+        const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
@@ -469,14 +467,15 @@ const Input = {
         // Sanitise other input
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
-        const unityVersion = rawUnityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : rawUnityVersion;
+        const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
         return {
-            unityVersion,
+            editorVersion,
             customImage,
             projectPath,
             customParameters,
             testMode,
+            coverageOptions,
             artifactsPath,
             useHostNetwork,
             sshAgent,
@@ -532,6 +531,11 @@ const Output = {
     setArtifactsPath(artifactsPath) {
         return __awaiter(this, void 0, void 0, function* () {
             yield core.setOutput('artifactsPath', artifactsPath);
+        });
+    },
+    setCoveragePath(coveragePath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield core.setOutput('coveragePath', coveragePath);
         });
     },
 };
