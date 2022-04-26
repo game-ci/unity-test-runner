@@ -59,15 +59,15 @@ if [ "$PACKAGE_MODE" = "true" ]; then
       exit 1
   fi
 
-  cat "$PACKAGE_MANIFEST_PATH"
-
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
     jq \
     --arg packageName "$PACKAGE_NAME" \
     --arg projectPath "$UNITY_PROJECT_PATH" \
-    '.dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
+    '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} | .dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
     > "$PACKAGE_MANIFEST_PATH"
+
+  cat "$PACKAGE_MANIFEST_PATH"
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
 fi
