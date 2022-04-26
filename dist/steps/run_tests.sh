@@ -67,8 +67,6 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} | .dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
     > "$PACKAGE_MANIFEST_PATH"
 
-  cat "$PACKAGE_MANIFEST_PATH"
-
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
 fi
 
