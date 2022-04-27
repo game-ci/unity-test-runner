@@ -23,7 +23,7 @@ inputs:
   coverageOptions:
     required: false
     default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
-    description: 'Optional coverage parameters for the -coverageOptions argument.'
+    description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass test assemblies from the package you want covered with the assemblyFilter option.'
   artifactsPath:
     required: false
     default: 'artifacts'

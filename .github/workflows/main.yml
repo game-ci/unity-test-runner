@@ -354,7 +354,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
-          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+MyScripts'
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
           packageMode: true
           # Test implicit artifactsPath, by not setting it
 
@@ -400,6 +400,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
           artifactsPath: artifacts/packageeditmode
           packageMode: true
 
@@ -445,6 +446,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
           artifactsPath: artifacts/packageplaymode
           packageMode: true
 
