@@ -14,19 +14,6 @@ echo "Using project path \"$UNITY_PROJECT_PATH\"."
 if [ "$PACKAGE_MODE" = "true" ]; then
   echo "Running tests on a Unity package rather than a Unity project."
 
-  ACTIVATE_LICENSE_FILE_NAME="_activate-license"
-
-  if [ -f "$ACTIVATE_LICENSE_FILE_NAME"]; then
-    echo "Package is in repository root. Copying package to temporary directory to avoid Unity Errors."
-
-    ROOT_FOLDER_NAME=$(echo "${PWD##*/}")
-    COPIED_PACKAGE_DIR_NAME="copiedPackage"
-
-    rsync -r "$GITHUB_WORKSPACE" "$COPIED_PACKAGE_DIR_NAME" --exclude "ACTIVATE_LICENSE_FILE_NAME" 
-
-    UNITY_PROJECT_PATH="$COPIED_PACKAGE_DIR_NAME/$ROOT_FOLDER_NAME"
-  fi
-
   echo ""
   echo "###########################"
   echo "#    Package Folder       #"
