@@ -16,7 +16,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   ACTIVATE_LICENSE_FILE_NAME="_activate-license"
 
-  #if [ -f "$UNITY_PROJECT_PATH/$ACTIVATE_LICENSE_FILE_NAME" ]; then
+  if [ -f "$UNITY_PROJECT_PATH/$ACTIVATE_LICENSE_FILE_NAME" ]; then
     echo "Package is in repository root. Copying package to temporary directory to avoid Unity Errors."
 
     ROOT_FOLDER_NAME=$(echo "${PWD##*/}")
@@ -25,7 +25,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     rsync -r "$GITHUB_WORKSPACE" "$COPIED_PACKAGE_DIR_NAME" --exclude "ACTIVATE_LICENSE_FILE_NAME" 
 
     UNITY_PROJECT_PATH="$COPIED_PACKAGE_DIR_NAME/$ROOT_FOLDER_NAME"
-  #fi
+  fi
 
   echo ""
   echo "###########################"
