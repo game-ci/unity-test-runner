@@ -107,9 +107,6 @@ const Input = {
     if (packageMode) {
       packageName = this.getPackageNameFromPackageJson(projectPath);
       this.verifyTestsFolderIsPresent(projectPath);
-
-      // eslint-disable-next-line no-console
-      console.log(fs.readdirSync(projectPath));
     }
 
     // Sanitise other input
