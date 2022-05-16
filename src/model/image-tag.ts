@@ -56,6 +56,8 @@ class ImageTag {
     switch (platform) {
       case 'linux':
         return 'ubuntu';
+      case 'win32':
+        return 'windows';
       default:
         throw new Error('The Operating System of this runner is not yet supported.');
     }

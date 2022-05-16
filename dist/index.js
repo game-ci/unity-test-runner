@@ -95,7 +95,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const Action = {
     get supportedPlatforms() {
-        return ['linux'];
+        return ['linux', 'win32'];
     },
     get isRunningLocally() {
         return process.env.RUNNER_WORKSPACE === undefined;
@@ -162,6 +162,43 @@ const Docker = {
             if (!(0, fs_1.existsSync)(githubWorkflow))
                 (0, fs_1.mkdirSync)(githubWorkflow);
             const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
+            const dockerPaths = new Map([
+                [
+                    'linux',
+                    new Map([
+                        ['shell', '/bin/bash'],
+                        ['sshAgent', '/ssh-agent'],
+                        ['githubHome', '/root'],
+                        ['githubWorkflow', '/github/workflow'],
+                        ['githubWorkspace', '/github/workspace'],
+                        ['stepsPathParent', `${actionFolder}/steps`],
+                        ['stepsPathContainer', '/steps'],
+                        ['entrypointPathParent', `${actionFolder}/entrypoint.sh`],
+                        ['entrypointPathContainer', '/entrypoint.sh'],
+                        ['knownHostsParent', ' /home/runner/.ssh/known_hosts'],
+                        ['knownHostsContainer', '/root/.ssh/known_hosts'],
+                    ]),
+                ],
+                [
+                    'win32',
+                    new Map([
+                        ['shell', 'powershell'],
+                        ['sshAgent', 'C:\\ssh-agent'],
+                        ['githubHome', 'C:\\root'],
+                        ['githubWorkflow', 'C:\\github\\workflow'],
+                        ['githubWorkspace', 'C:\\github\\workspace'],
+                        ['stepsPathParent', `${actionFolder}\\steps`],
+                        ['stepsPathContainer', 'C:\\steps'],
+                        ['entrypointPathParent', `${actionFolder}\\entrypoint.ps1`],
+                        ['entrypointPathContainer', 'C:\\entrypoint.ps1'],
+                        ['knownHostsParent', 'C:\\Users\\Administrator\\.ssh\\known_hosts'],
+                        ['knownHostsContainer', 'C:\\root\\.ssh\\known_hosts'],
+                    ]),
+                ],
+            ]);
+            const currentDockerPath = dockerPaths.get(process.platform);
+            const bindMountZ = process.platform === 'linux' ? ':z' : '';
+            const bindMountRO = process.platform === 'linux' ? ':ro' : '';
             const command = `docker run \
         --workdir /github/workspace \
         --rm \
@@ -193,18 +230,20 @@ const Docker = {
         --env RUNNER_TEMP \
         --env RUNNER_WORKSPACE \
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
-        ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-        --volume "${githubHome}":"/root:z" \
-        --volume "${githubWorkflow}":"/github/workflow:z" \
-        --volume "${workspace}":"/github/workspace:z" \
-        --volume "${actionFolder}/steps":"/steps:z" \
-        --volume "${actionFolder}/entrypoint.sh":"/entrypoint.sh:z" \
-        ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
-        ${sshAgent ? '--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro' : ''} \
+        ${sshAgent ? `--env SSH_AUTH_SOCK=${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('sshAgent')}` : ''} \
+        --volume "${githubHome}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubHome')}${bindMountZ}" \
+        --volume "${githubWorkflow}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkflow')}${bindMountZ}" \
+        --volume "${workspace}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkspace')}${bindMountZ}" \
+        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathParent')}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathContainer')}${bindMountZ}" \
+        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathParent')}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathContainer')}${bindMountZ}" \
+        ${sshAgent ? `--volume ${sshAgent}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('sshAgent')}` : ''} \
+        ${sshAgent
+                ? `--volume ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('knownHostParent')}${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('knownHostContainer')}${bindMountRO}`
+                : ''} \
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
-        /bin/bash /entrypoint.sh`;
+        ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('shell')} ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathContainer')}`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
@@ -261,6 +300,8 @@ class ImageTag {
         switch (platform) {
             case 'linux':
                 return 'ubuntu';
+            case 'win32':
+                return 'windows';
             default:
                 throw new Error('The Operating System of this runner is not yet supported.');
         }
