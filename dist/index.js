@@ -166,15 +166,15 @@ const Docker = {
                 [
                     'linux',
                     new Map([
-                        ['shell', '/bin/bash'],
+                        ['shellCommand', '/bin/bash /dist/entrypoint.sh'],
                         ['sshAgent', '/ssh-agent'],
                         ['githubHome', '/root'],
                         ['githubWorkflow', '/github/workflow'],
                         ['githubWorkspace', '/github/workspace'],
                         ['stepsPathParent', `${actionFolder}/steps`],
                         ['stepsPathContainer', '/steps'],
-                        ['entrypointPathParent', `${actionFolder}/entrypoint.sh`],
-                        ['entrypointPathContainer', '/entrypoint.sh'],
+                        ['entrypointPathParent', `${actionFolder}/`],
+                        ['entrypointPathContainer', '/dist'],
                         ['knownHostsParent', ' /home/runner/.ssh/known_hosts'],
                         ['knownHostsContainer', '/root/.ssh/known_hosts'],
                     ]),
@@ -182,15 +182,15 @@ const Docker = {
                 [
                     'win32',
                     new Map([
-                        ['shell', 'powershell'],
+                        ['shellCommand', 'powershell C:\\dist\\entrypoint.ps1'],
                         ['sshAgent', 'C:\\ssh-agent'],
                         ['githubHome', 'C:\\root'],
                         ['githubWorkflow', 'C:\\github\\workflow'],
                         ['githubWorkspace', 'C:\\github\\workspace'],
                         ['stepsPathParent', `${actionFolder}\\steps`],
                         ['stepsPathContainer', 'C:\\steps'],
-                        ['entrypointPathParent', `${actionFolder}\\entrypoint.ps1`],
-                        ['entrypointPathContainer', 'C:\\entrypoint.ps1'],
+                        ['entrypointPathParent', `${actionFolder}\\`],
+                        ['entrypointPathContainer', 'C:\\dist'],
                         ['knownHostsParent', 'C:\\Users\\Administrator\\.ssh\\known_hosts'],
                         ['knownHostsContainer', 'C:\\root\\.ssh\\known_hosts'],
                     ]),
@@ -222,7 +222,7 @@ const Docker = {
         --env GITHUB_HEAD_REF \
         --env GITHUB_BASE_REF \
         --env GITHUB_EVENT_NAME \
-        --env GITHUB_WORKSPACE=/github/workspace \
+        --env GITHUB_WORKSPACE="${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkspace')}" \
         --env GITHUB_ACTION \
         --env GITHUB_EVENT_PATH \
         --env RUNNER_OS \
@@ -231,11 +231,11 @@ const Docker = {
         --env RUNNER_WORKSPACE \
         --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
         ${sshAgent ? `--env SSH_AUTH_SOCK=${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('sshAgent')}` : ''} \
-        --volume "${githubHome}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubHome')}${bindMountZ}" \
-        --volume "${githubWorkflow}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkflow')}${bindMountZ}" \
-        --volume "${workspace}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkspace')}${bindMountZ}" \
-        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathParent')}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathContainer')}${bindMountZ}" \
-        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathParent')}":"${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathContainer')}${bindMountZ}" \
+        --volume "${githubHome}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubHome')}${bindMountZ}" \
+        --volume "${githubWorkflow}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkflow')}${bindMountZ}" \
+        --volume "${workspace}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('githubWorkspace')}${bindMountZ}" \
+        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathParent')}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('stepsPathContainer')}${bindMountZ}" \
+        --volume "${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathParent')}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathContainer')}${bindMountZ}" \
         ${sshAgent ? `--volume ${sshAgent}:${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('sshAgent')}` : ''} \
         ${sshAgent
                 ? `--volume ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('knownHostParent')}${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('knownHostContainer')}${bindMountRO}`
@@ -243,7 +243,7 @@ const Docker = {
         ${useHostNetwork ? '--net=host' : ''} \
         ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
         ${image} \
-        ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('shell')} ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('entrypointPathContainer')}`;
+        ${currentDockerPath === null || currentDockerPath === void 0 ? void 0 : currentDockerPath.get('shellCommand')}`;
             yield (0, exec_1.exec)(command, undefined, { silent });
         });
     },
