@@ -90,6 +90,10 @@ const ResultsParser = {
     }
 
     const trace = failure['stack-trace']._cdata;
+    if (trace === undefined) {
+      core.warning(`No cdata in stack trace for test case: ${fullname}`);
+      return testMeta;
+    }
     const point = ResultsParser.findAnnotationPoint(trace);
     if (!point.path || !point.line) {
       core.warning(`Not able to find annotation point for failed test! Test trace: ${trace}`);
