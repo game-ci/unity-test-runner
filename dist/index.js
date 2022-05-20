@@ -265,7 +265,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { editorVersion = '2019.2.11f1', targetPlatform = platform_1.default.types.StandaloneLinux64, customImage, } = imageProperties;
+        const { editorVersion = '2019.2.11f1', targetPlatform = ImageTag.getImagePlatformType(process.platform), customImage, } = imageProperties;
         if (!ImageTag.versionPattern.test(editorVersion)) {
             throw new Error(`Invalid version "${editorVersion}".`);
         }
@@ -288,7 +288,7 @@ class ImageTag {
             generic: '',
             webgl: 'webgl',
             mac: 'mac-mono',
-            windows: 'windows-mono',
+            windows: 'windows-il2cpp',
             linux: 'base',
             linuxIl2cpp: 'linux-il2cpp',
             android: 'android',
@@ -303,7 +303,17 @@ class ImageTag {
             case 'win32':
                 return 'windows';
             default:
-                throw new Error('The Operating System of this runner is not yet supported.');
+                throw new Error(`The Operating System of this runner, "${platform}", is not yet supported.`);
+        }
+    }
+    static getImagePlatformType(platform) {
+        switch (platform) {
+            case 'linux':
+                return platform_1.default.types.StandaloneLinux64;
+            case 'win32':
+                return platform_1.default.types.StandaloneWindows;
+            default:
+                throw new Error(`The Operating System of this runner, "${platform}", is not yet supported.`);
         }
     }
     static getTargetPlatformSuffix(targetPlatform, editorVersion) {
