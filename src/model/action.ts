@@ -2,7 +2,7 @@ import path from 'path';
 
 const Action = {
   get supportedPlatforms() {
-    return ['linux'];
+    return ['linux', 'win32'];
   },
 
   get isRunningLocally() {
