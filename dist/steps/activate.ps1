@@ -30,6 +30,7 @@ if ( ($null -ne ${env:UNITY_LICENSE}) -or ($null -ne ${env:UNITY_LICENSE_FILE}) 
     }
     $convert = (Get-Content -Raw $FILE_PATH) -replace "`r`n","`n"
     [io.file]::WriteAllText($FILE_PATH, $convert)
+    Get-ChildItem -Path $FILE_PATH
 
     # Activate license
     $ACTIVATION_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "C:\Program Files\Unity\Hub\Editor\${env:UNITY_VERSION}\editor\Unity.exe" -ArgumentList "-batchmode -nographics -logFile $ACTIVATE_LICENSE_PATH\activate.log -quit -manualLicenseFile $FILE_PATH"
