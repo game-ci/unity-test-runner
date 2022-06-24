@@ -48,6 +48,10 @@ inputs:
     required: false
     default: 'Test Results'
     description: 'Name for the check run that is created when a github token is provided.'
+  chownFilesTo:
+    required: false
+    default: ''
+    description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the resulting build artifacts'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'

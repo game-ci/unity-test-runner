@@ -114,3 +114,19 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     cat "$FULL_ARTIFACTS_PATH/$platform-results.xml" | grep test-run | grep Passed
   fi
 done
+
+#
+# Permissions
+#
+
+# Make a given user owner of all artifacts
+if [[ -n "$CHOWN_FILES_TO" ]]; then
+  chown -R "$CHOWN_FILES_TO" "$UNITY_PROJECT_PATH"
+  chown -R "$CHOWN_FILES_TO" "$FULL_ARTIFACTS_PATH"
+  chown -R "$CHOWN_FILES_TO" "$FULL_COVERAGE_RESULTS_PATH"
+fi
+
+# Add read permissions for everyone to all artifacts
+chmod -R a+r "$UNITY_PROJECT_PATH"
+chmod -R a+r "$FULL_ARTIFACTS_PATH"
+chmod -R a+r "$FULL_COVERAGE_RESULTS_PATH"

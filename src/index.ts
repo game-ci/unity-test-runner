@@ -19,6 +19,7 @@ async function run() {
       gitPrivateToken,
       githubToken,
       checkName,
+      chownFilesTo,
     } = Input.getFromUser();
     const baseImage = new ImageTag({ editorVersion, customImage });
     const runnerTemporaryPath = process.env.RUNNER_TEMP;
@@ -38,6 +39,7 @@ async function run() {
         gitPrivateToken,
         githubToken,
         runnerTemporaryPath,
+        chownFilesTo,
       });
     } finally {
       await Output.setArtifactsPath(artifactsPath);
