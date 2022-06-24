@@ -169,7 +169,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -208,6 +208,7 @@ const Docker = {
                 --env RUNNER_TEMP \
                 --env RUNNER_WORKSPACE \
                 --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
+                --env CHOWN_FILES_TO="${chownFilesTo}" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
                 --volume "${githubHome}:/root:z" \
                 --volume "${githubWorkflow}:/github/workflow:z" \
@@ -222,7 +223,7 @@ const Docker = {
                 /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -261,6 +262,7 @@ const Docker = {
                 --env RUNNER_TEMP \
                 --env RUNNER_WORKSPACE \
                 --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
+                --env CHOWN_FILES_TO="${chownFilesTo}" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
                 --volume "${githubHome}":"c:/root" \
                 --volume "${githubWorkflow}":"c:/github/workflow" \
@@ -477,6 +479,7 @@ const Input = {
         const gitPrivateToken = (0, core_1.getInput)('gitPrivateToken') || '';
         const githubToken = (0, core_1.getInput)('githubToken') || '';
         const checkName = (0, core_1.getInput)('checkName') || 'Test Results';
+        const chownFilesTo = (0, core_1.getInput)('chownFilesTo') || '';
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
@@ -509,6 +512,7 @@ const Input = {
             gitPrivateToken,
             githubToken,
             checkName,
+            chownFilesTo,
         };
     },
 };
