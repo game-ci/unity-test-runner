@@ -52,6 +52,10 @@ inputs:
     required: false
     default: false
     description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity package registry are currently not supported.'
+  chownFilesTo:
+    required: false
+    default: ''
+    description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the resulting build artifacts'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'

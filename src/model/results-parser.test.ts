@@ -114,6 +114,24 @@ describe('ResultsParser', () => {
       expect(result.annotation).toBeUndefined();
     });
 
+    test('no cdata in stack trace', () => {
+      const result = ResultsParser.convertTestCase('Test Suite', {
+        _attributes: {
+          name: 'Test Name',
+          duration: '3.14',
+        },
+        failure: {
+          message: { _cdata: 'Message CDATA' },
+          'stack-trace': {},
+        },
+      });
+
+      expect(result.suite).toBe('Test Suite');
+      expect(result.title).toBe('Test Name');
+      expect(result.duration).toBe(3.14);
+      expect(result.annotation).toBeUndefined();
+    });
+
     test('no annotation path', () => {
       const result = ResultsParser.convertTestCase('Test Suite', {
         _attributes: {

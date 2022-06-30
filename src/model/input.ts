@@ -76,6 +76,7 @@ const Input = {
     const checkName = getInput('checkName') || 'Test Results';
     const rawPackageMode = getInput('packageMode') || 'false';
     let packageName = '';
+    const chownFilesTo = getInput('chownFilesTo') || '';
 
     // Validate input
     if (!this.testModes.includes(testMode)) {
@@ -131,6 +132,7 @@ const Input = {
       checkName,
       packageMode,
       packageName,
+      chownFilesTo,
     };
   },
 };

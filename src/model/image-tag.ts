@@ -13,7 +13,7 @@ class ImageTag {
   constructor(imageProperties) {
     const {
       editorVersion = '2019.2.11f1',
-      targetPlatform = Platform.types.StandaloneLinux64,
+      targetPlatform = ImageTag.getImagePlatformType(process.platform),
       customImage,
     } = imageProperties;
 
@@ -43,7 +43,7 @@ class ImageTag {
       generic: '',
       webgl: 'webgl',
       mac: 'mac-mono',
-      windows: 'windows-mono',
+      windows: 'windows-il2cpp',
       linux: 'base',
       linuxIl2cpp: 'linux-il2cpp',
       android: 'android',
@@ -56,8 +56,25 @@ class ImageTag {
     switch (platform) {
       case 'linux':
         return 'ubuntu';
+      case 'win32':
+        return 'windows';
       default:
-        throw new Error('The Operating System of this runner is not yet supported.');
+        throw new Error(
+          `The Operating System of this runner, "${platform}", is not yet supported.`,
+        );
+    }
+  }
+
+  static getImagePlatformType(platform) {
+    switch (platform) {
+      case 'linux':
+        return Platform.types.StandaloneLinux64;
+      case 'win32':
+        return Platform.types.StandaloneWindows;
+      default:
+        throw new Error(
+          `The Operating System of this runner, "${platform}", is not yet supported.`,
+        );
     }
   }
 
