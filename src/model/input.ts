@@ -108,7 +108,7 @@ const Input = {
     if (packageMode) {
       if (unityVersion === 'auto') {
         throw new Error(
-          'Package mode is enabled, but unityVersion is set to "auto". Please manually set the unityVersion.',
+          'Package Mode is enabled, but unityVersion is set to "auto". unityVersion must manually be set in Package Mode.',
         );
       }
 
