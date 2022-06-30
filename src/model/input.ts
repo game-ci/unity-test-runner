@@ -106,6 +106,12 @@ const Input = {
 
     // if in package mode, attempt to get the package's name, and ensure tests are present
     if (packageMode) {
+      if (unityVersion === 'auto') {
+        throw new Error(
+          'Package mode is enabled, but unityVersion is set to "auto". Please manually set the unityVersion.',
+        );
+      }
+
       packageName = this.getPackageNameFromPackageJson(projectPath);
       this.verifyTestsFolderIsPresent(projectPath);
     }
