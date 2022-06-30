@@ -8,6 +8,35 @@ UNITY_PROJECT_PATH="$GITHUB_WORKSPACE/$PROJECT_PATH"
 echo "Using project path \"$UNITY_PROJECT_PATH\"."
 
 #
+# Set and display the artifacts path
+#
+
+echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
+FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
+
+#
+# Set and display the coverage results path
+#
+
+echo "Using coverage results path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
+FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
+
+#
+# Display custom parameters
+#
+
+echo "Using custom parameters $CUSTOM_PARAMETERS."
+
+# The following tests are 2019 mode (requires Unity 2019.2.11f1 or later)
+# Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html
+
+#
+# Display the unity version
+#
+
+echo "Using Unity version \"$UNITY_VERSION\" to test."
+
+#
 # Create an empty project for testing if in package mode
 #
 
@@ -70,34 +99,6 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
 fi
 
-#
-# Set and display the artifacts path
-#
-
-echo "Using artifacts path \"$ARTIFACTS_PATH\" to save test results."
-FULL_ARTIFACTS_PATH=$GITHUB_WORKSPACE/$ARTIFACTS_PATH
-
-#
-# Set and display the coverage results path
-#
-
-echo "Using coverage results path \"$COVERAGE_RESULTS_PATH\" to save test coverage results."
-FULL_COVERAGE_RESULTS_PATH=$GITHUB_WORKSPACE/$COVERAGE_RESULTS_PATH
-
-#
-# Display custom parameters
-#
-
-echo "Using custom parameters $CUSTOM_PARAMETERS."
-
-# The following tests are 2019 mode (requires Unity 2019.2.11f1 or later)
-# Reference: https://docs.unity3d.com/2019.3/Documentation/Manual/CommandLineArguments.html
-
-#
-# Display the unity version
-#
-
-echo "Using Unity version \"$UNITY_VERSION\" to test."
 
 #
 # Overall info
