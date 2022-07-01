@@ -49,8 +49,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "###########################"
   echo ""
 
-  ls -ld "$UNITY_PROJECT_PATH"
-  ls -a  "$UNITY_PROJECT_PATH"
+  ls -la  "$UNITY_PROJECT_PATH"
   echo ""
 
   echo "Creating an empty Unity project to add the package $PACKAGE_NAME to."
