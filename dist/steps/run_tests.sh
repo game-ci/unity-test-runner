@@ -49,6 +49,12 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "###########################"
   echo ""
 
+  # delete the file _activate-license if it exists
+  if [ -f "$UNITY_PROJECT_PATH/_activate-license" ]; then
+    echo "Deleting _activate-license file."
+    rm "$UNITY_PROJECT_PATH/_activate-license"
+  fi
+
   ls "$UNITY_PROJECT_PATH"
   echo ""
 
