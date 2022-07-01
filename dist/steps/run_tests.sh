@@ -49,6 +49,22 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   echo "###########################"
   echo ""
 
+  # remove .git folder, .github folder, and _activate-license file if they exist
+  if [ -d "$UNITY_PROJECT_PATH/.git" ]; then
+    echo "Removing .git folder."
+    rm -rf "$UNITY_PROJECT_PATH/.git"
+  fi
+
+  if [ -d "$UNITY_PROJECT_PATH/.github" ]; then
+    echo "Removing .github folder."
+    rm -rf "$UNITY_PROJECT_PATH/.github"
+  fi
+
+  if [ -f "$UNITY_PROJECT_PATH/_activate-license" ]; then
+    echo "Removing _activate-license file."
+    rm -f "$UNITY_PROJECT_PATH/_activate-license"
+  fi
+
   ls -a  "$UNITY_PROJECT_PATH"
   echo ""
 
