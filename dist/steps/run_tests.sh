@@ -60,9 +60,9 @@ if [ "$PACKAGE_MODE" = "true" ]; then
     rm -rf "$UNITY_PROJECT_PATH/.github"
   fi
 
-  if [ -f "$UNITY_PROJECT_PATH/_activate-license" ]; then
+  if [ -d "$UNITY_PROJECT_PATH/_activate-license" ]; then
     echo "Removing _activate-license file."
-    rm -f "$UNITY_PROJECT_PATH/_activate-license"
+    rm -rf "$UNITY_PROJECT_PATH/_activate-license"
   fi
 
   ls -a  "$UNITY_PROJECT_PATH"
