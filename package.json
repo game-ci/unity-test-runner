@@ -15,7 +15,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@actions/core": "^1.9.1",
+    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
     "@actions/github": "^5.0.0",
     "@octokit/openapi-types": "^11.2.0",
