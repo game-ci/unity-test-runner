@@ -42,7 +42,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, chownFilesTo, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerTemporaryPath = process.env.RUNNER_TEMP;
             try {
@@ -61,6 +61,7 @@ function run() {
                     githubToken,
                     runnerTemporaryPath,
                     chownFilesTo,
+                    unityLicensingServer,
                 });
             }
             finally {
@@ -170,7 +171,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -186,6 +187,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
@@ -216,6 +218,7 @@ const Docker = {
                 --volume "${workspace}:/github/workspace:z" \
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
+                --volume "${actionFolder}/resources:/resources:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''} \
                 ${useHostNetwork ? '--net=host' : ''} \
@@ -224,7 +227,7 @@ const Docker = {
                 /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -240,6 +243,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
@@ -471,6 +475,7 @@ const Input = {
         const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
+        const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
         const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';
@@ -514,6 +519,7 @@ const Input = {
             githubToken,
             checkName,
             chownFilesTo,
+            unityLicensingServer,
         };
     },
 };

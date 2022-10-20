@@ -68,7 +68,7 @@ const Input = {
       githubToken,
       checkName,
       chownFilesTo,
-      unityLicensingServer
+      unityLicensingServer,
     };
   },
 };

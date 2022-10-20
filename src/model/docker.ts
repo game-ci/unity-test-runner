@@ -34,7 +34,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
-      unityLicensingServer
+      unityLicensingServer,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -111,7 +111,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
-      unityLicensingServer
+      unityLicensingServer,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
