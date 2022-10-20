@@ -17,6 +17,7 @@ const Input = {
     const unityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
+    const unityLicensingServer = getInput('unityLicensingServer') || '';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
     const coverageOptions = getInput('coverageOptions') || '';
@@ -67,6 +68,7 @@ const Input = {
       githubToken,
       checkName,
       chownFilesTo,
+      unityLicensingServer
     };
   },
 };

@@ -34,6 +34,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      unityLicensingServer
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -52,6 +53,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
@@ -82,6 +84,7 @@ const Docker = {
                 --volume "${workspace}:/github/workspace:z" \
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
+                --volume "${actionFolder}/resources:/resources:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${
                   sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''
@@ -108,6 +111,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      unityLicensingServer
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -126,6 +130,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \

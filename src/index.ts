@@ -20,6 +20,7 @@ async function run() {
       githubToken,
       checkName,
       chownFilesTo,
+      unityLicensingServer
     } = Input.getFromUser();
     const baseImage = new ImageTag({ editorVersion, customImage });
     const runnerTemporaryPath = process.env.RUNNER_TEMP;
@@ -40,6 +41,7 @@ async function run() {
         githubToken,
         runnerTemporaryPath,
         chownFilesTo,
+        unityLicensingServer
       });
     } finally {
       await Output.setArtifactsPath(artifactsPath);
