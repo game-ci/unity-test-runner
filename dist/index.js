@@ -175,7 +175,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -191,6 +191,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \

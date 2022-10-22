@@ -40,6 +40,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      unityLicensingServer,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -58,6 +59,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
