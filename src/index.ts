@@ -1,6 +1,5 @@
-import { basename } from 'path';
-
 import { run as main } from './main';
+import path from 'path';
 import { run as post } from './post';
 
 /*
@@ -13,8 +12,8 @@ import { run as post } from './post';
  * the argv[1] is going to be the full path to the script.
  * In case index.js would be marked executable and executed directly without the argv[1] it defaults to "main.js".
  */
-async function run([_, name = 'main.js']: string[]) {
-  const script = basename(name);
+async function run([, name = 'main.js']: string[]) {
+  const script = path.basename(name);
 
   switch (script) {
     case 'main.js':
