@@ -15,9 +15,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const path_1 = __nccwpck_require__(1017);
 const main_1 = __nccwpck_require__(3109);
+const path_1 = __importDefault(__nccwpck_require__(1017));
 const post_1 = __nccwpck_require__(95);
 /*
  * GitHub Action can provide multiple executable entrypoints (pre, main, post),
@@ -29,9 +32,9 @@ const post_1 = __nccwpck_require__(95);
  * the argv[1] is going to be the full path to the script.
  * In case index.js would be marked executable and executed directly without the argv[1] it defaults to "main.js".
  */
-function run([_, name = 'main.js']) {
+function run([, name = 'main.js']) {
     return __awaiter(this, void 0, void 0, function* () {
-        const script = (0, path_1.basename)(name);
+        const script = path_1.default.basename(name);
         switch (script) {
             case 'main.js':
                 yield (0, main_1.run)();
