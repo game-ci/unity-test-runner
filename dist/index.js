@@ -6,6 +6,57 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 "use strict";
 
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const main_1 = __nccwpck_require__(3109);
+const path_1 = __importDefault(__nccwpck_require__(1017));
+const post_1 = __nccwpck_require__(95);
+/*
+ * GitHub Action can provide multiple executable entrypoints (pre, main, post),
+ * but it is complicated process to generate multiple `.js` files with `ncc`.
+ * So we rather generate just one entrypoint, that is symlinked to multiple locations (main.js and post.js).
+ * Then when GitHub Action Runner executes it as `node path/to/main.js` and `node path/to/post.js`,
+ * it can read arguments it was executed with and decide which file to execute.
+ * The argv[0] is going to be a full path to `node` executable and
+ * the argv[1] is going to be the full path to the script.
+ * In case index.js would be marked executable and executed directly without the argv[1] it defaults to "main.js".
+ */
+function run([, name = 'main.js']) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const script = path_1.default.basename(name);
+        switch (script) {
+            case 'main.js':
+                yield (0, main_1.run)();
+                break;
+            case 'post.js':
+                yield (0, post_1.run)();
+                break;
+            default:
+                throw new Error(`Unknown script argument: '${script}'`);
+        }
+    });
+}
+run(process.argv);
+
+
+/***/ }),
+
+/***/ 3109:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
@@ -35,6 +86,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const model_1 = __nccwpck_require__(1359);
 function run() {
@@ -44,10 +96,9 @@ function run() {
             const { workspace, actionFolder } = model_1.Action;
             const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
-            const runnerTemporaryPath = process.env.RUNNER_TEMP;
+            const runnerContext = model_1.Action.runnerContext();
             try {
-                yield model_1.Docker.run(baseImage, {
-                    actionFolder,
+                yield model_1.Docker.run(baseImage, Object.assign({ actionFolder,
                     editorVersion,
                     workspace,
                     projectPath,
@@ -59,10 +110,8 @@ function run() {
                     sshAgent,
                     gitPrivateToken,
                     githubToken,
-                    runnerTemporaryPath,
                     chownFilesTo,
-                    unityLicensingServer,
-                });
+                    unityLicensingServer }, runnerContext));
             }
             finally {
                 yield model_1.Output.setArtifactsPath(artifactsPath);
@@ -80,7 +129,7 @@ function run() {
         }
     });
 }
-run();
+exports.run = run;
 
 
 /***/ }),
@@ -120,6 +169,15 @@ const Action = {
     get workspace() {
         return process.env.GITHUB_WORKSPACE;
     },
+    runnerContext() {
+        var _a, _b;
+        const runnerTemporaryPath = (_a = process.env.RUNNER_TEMP) !== null && _a !== void 0 ? _a : process.cwd();
+        const githubAction = (_b = process.env.GITHUB_ACTION) !== null && _b !== void 0 ? _b : process.pid.toString();
+        return {
+            runnerTemporaryPath,
+            githubAction,
+        };
+    },
     checkCompatibility() {
         const currentPlatform = process.platform;
         if (!Action.supportedPlatforms.includes(currentPlatform)) {
@@ -154,7 +212,30 @@ const fs_1 = __nccwpck_require__(7147);
 const licensing_server_setup_1 = __importDefault(__nccwpck_require__(6089));
 const exec_1 = __nccwpck_require__(1514);
 const path_1 = __importDefault(__nccwpck_require__(1017));
+/**
+ * Build a path for a docker --cidfile parameter. Docker will store the the created container.
+ * This path is stable for the whole execution of the action, so it can be executed with the same parameters
+ * multiple times and get the same result.
+ */
+const containerIdFilePath = parameters => {
+    const { runnerTemporaryPath, githubAction } = parameters;
+    return path_1.default.join(runnerTemporaryPath, `container_${githubAction}`);
+};
 const Docker = {
+    /**
+     *  Remove a possible leftover container created by `Docker.run`.
+     */
+    ensureContainerRemoval(parameters) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cidfile = containerIdFilePath(parameters);
+            if (!(0, fs_1.existsSync)(cidfile)) {
+                return;
+            }
+            const container = (0, fs_1.readFileSync)(cidfile, 'ascii').trim();
+            yield (0, exec_1.exec)(`docker`, ['rm', '--force', '--volumes', container], { silent: true });
+            (0, fs_1.rmSync)(cidfile);
+        });
+    },
     run(image, parameters, silent = false) {
         return __awaiter(this, void 0, void 0, function* () {
             let runCommand = '';
@@ -182,9 +263,11 @@ const Docker = {
         const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
         if (!(0, fs_1.existsSync)(githubWorkflow))
             (0, fs_1.mkdirSync)(githubWorkflow);
+        const cidfile = containerIdFilePath(parameters);
         const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
         return `docker run \
                 --workdir /github/workspace \
+                --cidfile "${cidfile}" \
                 --rm \
                 --env UNITY_LICENSE \
                 --env UNITY_LICENSE_FILE \
@@ -235,12 +318,14 @@ const Docker = {
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
+        const cidfile = containerIdFilePath(parameters);
         const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
         if (!(0, fs_1.existsSync)(githubWorkflow))
             (0, fs_1.mkdirSync)(githubWorkflow);
         const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
         return `docker run \
                 --workdir /github/workspace \
+                --cidfile "${cidfile}" \
                 --rm \
                 --env UNITY_LICENSE \
                 --env UNITY_LICENSE_FILE \
@@ -1154,6 +1239,63 @@ const UnityVersionParser = {
     },
 };
 exports["default"] = UnityVersionParser;
+
+
+/***/ }),
+
+/***/ 95:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
+const core = __importStar(__nccwpck_require__(2186));
+const action_1 = __importDefault(__nccwpck_require__(9088));
+const model_1 = __nccwpck_require__(1359);
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const parameters = action_1.default.runnerContext();
+            yield model_1.Docker.ensureContainerRemoval(parameters);
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
+}
+exports.run = run;
 
 
 /***/ }),
