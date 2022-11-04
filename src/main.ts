@@ -20,6 +20,7 @@ export async function run() {
       githubToken,
       checkName,
       chownFilesTo,
+      unityLicensingServer,
     } = Input.getFromUser();
     const baseImage = new ImageTag({ editorVersion, customImage });
     const runnerContext = Action.runnerContext();
@@ -39,6 +40,7 @@ export async function run() {
         gitPrivateToken,
         githubToken,
         chownFilesTo,
+        unityLicensingServer,
         ...runnerContext,
       });
     } finally {

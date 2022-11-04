@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readFileSync, rmSync } from 'fs';
+import LicensingServerSetup from './licensing-server-setup';
 import type { RunnerContext } from './action';
 import { exec } from '@actions/exec';
 import path from 'path';
@@ -30,6 +31,11 @@ const Docker = {
 
   async run(image, parameters, silent = false) {
     let runCommand = '';
+
+    if (parameters.unityLicensingServer !== '') {
+      LicensingServerSetup.Setup(parameters.unityLicensingServer, parameters.actionFolder);
+    }
+
     switch (process.platform) {
       case 'linux':
         runCommand = this.getLinuxCommand(image, parameters);
@@ -60,6 +66,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      unityLicensingServer,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -80,6 +87,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
@@ -110,6 +118,7 @@ const Docker = {
                 --volume "${workspace}:/github/workspace:z" \
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
+                --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${
                   sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''
@@ -136,6 +145,7 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      unityLicensingServer,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -156,6 +166,7 @@ const Docker = {
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
                 --env UNITY_SERIAL \
+                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
                 --env CUSTOM_PARAMETERS="${customParameters}" \
