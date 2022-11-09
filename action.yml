@@ -52,6 +52,10 @@ inputs:
     required: false
     default: ''
     description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the resulting build artifacts'
+  unityLicensingServer:
+    required: false
+    default: ''
+    description: 'Url to a unity license server for acquiring floating licenses.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'
