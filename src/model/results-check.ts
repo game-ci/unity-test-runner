@@ -76,13 +76,11 @@ const ResultsCheck = {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
-    const maxLen = 65534;
-    if(output.length > maxLen)
-    {
-      core.warning(`Output too long (${output.length}) truncating to ${maxLen}`);
-      output = output.substring(0, maxLen);
+    const maxLength = 65_534;
+    if (output.length > maxLength) {
+      core.warning(`Output too long (${output.length}) truncating to ${maxLength}`);
+      output = output.slice(0, maxLength);
     }
-
 
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
