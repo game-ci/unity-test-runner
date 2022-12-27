@@ -24,8 +24,8 @@ jobs:
   #      - run: yarn build --quiet && git diff --quiet action || { echo "ERROR - index.js is different from repository version. Forgot to run `yarn build`?" ; exit 62; }
 
   testAllModesLikeInTheReadme:
-    name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }} on system ${{ matrix.system }}
+    runs-on: ${{ matrix.system }}
     strategy:
       fail-fast: false
       matrix:
@@ -36,6 +36,9 @@ jobs:
         testMode:
           - playmode
           - editmode
+        system:
+          - ubuntu-latest
+          - macos-latest
     steps:
       ###########################
       #         Checkout        #

@@ -5,7 +5,11 @@ import path from 'path';
 describe('Action', () => {
   describe('compatibility check', () => {
     it('throws for anything other than linux or windows', () => {
-      if (process.platform !== 'linux' && process.platform !== 'win32') {
+      if (
+        process.platform !== 'linux' &&
+        process.platform !== 'win32' &&
+        process.platform !== 'darwin'
+      ) {
         expect(() => Action.checkCompatibility()).toThrow();
       } else {
         expect(() => Action.checkCompatibility()).not.toThrow();

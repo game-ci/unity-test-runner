@@ -46,6 +46,15 @@ const Platform = {
         return false;
     }
   },
+
+  isMac(platform) {
+    switch (platform) {
+      case Platform.types.StandaloneOSX:
+        return true;
+      default:
+        return false;
+    }
+  },
 };
 
 export default Platform;

@@ -34,4 +34,14 @@ describe('Platform', () => {
       expect(Platform.isAndroid(Platform.types.StandaloneWindows64)).toStrictEqual(false);
     });
   });
+
+  describe('isMac', () => {
+    it('returns true for MacOS', () => {
+      expect(Platform.isMac(Platform.types.StandaloneOSX)).toStrictEqual(true);
+    });
+
+    it('returns false for windows', () => {
+      expect(Platform.isMac(Platform.types.StandaloneWindows64)).toStrictEqual(false);
+    });
+  });
 });

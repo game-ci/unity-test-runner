@@ -98,20 +98,35 @@ function run() {
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerContext = model_1.Action.runnerContext();
             try {
-                yield model_1.Docker.run(baseImage, Object.assign({ actionFolder,
-                    editorVersion,
-                    workspace,
-                    projectPath,
-                    customParameters,
-                    testMode,
-                    coverageOptions,
-                    artifactsPath,
-                    useHostNetwork,
-                    sshAgent,
-                    gitPrivateToken,
-                    githubToken,
-                    chownFilesTo,
-                    unityLicensingServer }, runnerContext));
+                yield (process.platform === 'darwin'
+                    ? model_1.MacRunner.run(Object.assign({ actionFolder,
+                        editorVersion,
+                        workspace,
+                        projectPath,
+                        customParameters,
+                        testMode,
+                        coverageOptions,
+                        artifactsPath,
+                        useHostNetwork,
+                        sshAgent,
+                        gitPrivateToken,
+                        githubToken,
+                        chownFilesTo,
+                        unityLicensingServer }, runnerContext))
+                    : model_1.Docker.run(baseImage, Object.assign({ actionFolder,
+                        editorVersion,
+                        workspace,
+                        projectPath,
+                        customParameters,
+                        testMode,
+                        coverageOptions,
+                        artifactsPath,
+                        useHostNetwork,
+                        sshAgent,
+                        gitPrivateToken,
+                        githubToken,
+                        chownFilesTo,
+                        unityLicensingServer }, runnerContext)));
             }
             finally {
                 yield model_1.Output.setArtifactsPath(artifactsPath);
@@ -146,7 +161,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const Action = {
     get supportedPlatforms() {
-        return ['linux', 'win32'];
+        return ['linux', 'win32', 'darwin'];
     },
     get isRunningLocally() {
         return process.env.RUNNER_WORKSPACE === undefined;
@@ -427,6 +442,8 @@ class ImageTag {
                 return 'ubuntu';
             case 'win32':
                 return 'windows';
+            case 'darwin':
+                return 'macos';
             default:
                 throw new Error(`The Operating System of this runner, "${platform}", is not yet supported.`);
         }
@@ -437,6 +454,8 @@ class ImageTag {
                 return platform_1.default.types.StandaloneLinux64;
             case 'win32':
                 return platform_1.default.types.StandaloneWindows;
+            case 'darwin':
+                return platform_1.default.types.StandaloneOSX;
             default:
                 throw new Error(`The Operating System of this runner, "${platform}", is not yet supported.`);
         }
@@ -523,7 +542,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ResultsCheck = exports.Output = exports.Input = exports.ImageTag = exports.Docker = exports.Action = void 0;
+exports.ResultsCheck = exports.Output = exports.MacRunner = exports.Input = exports.ImageTag = exports.Docker = exports.Action = void 0;
 var action_1 = __nccwpck_require__(9088);
 Object.defineProperty(exports, "Action", ({ enumerable: true, get: function () { return __importDefault(action_1).default; } }));
 var docker_1 = __nccwpck_require__(6934);
@@ -532,6 +551,8 @@ var image_tag_1 = __nccwpck_require__(7648);
 Object.defineProperty(exports, "ImageTag", ({ enumerable: true, get: function () { return __importDefault(image_tag_1).default; } }));
 var input_1 = __nccwpck_require__(1933);
 Object.defineProperty(exports, "Input", ({ enumerable: true, get: function () { return __importDefault(input_1).default; } }));
+var mac_runner_1 = __nccwpck_require__(6460);
+Object.defineProperty(exports, "MacRunner", ({ enumerable: true, get: function () { return __importDefault(mac_runner_1).default; } }));
 var output_1 = __nccwpck_require__(5487);
 Object.defineProperty(exports, "Output", ({ enumerable: true, get: function () { return __importDefault(output_1).default; } }));
 var results_check_1 = __nccwpck_require__(9183);
@@ -665,6 +686,97 @@ exports["default"] = LicensingServerSetup;
 
 /***/ }),
 
+/***/ 6460:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const fs_1 = __nccwpck_require__(7147);
+const licensing_server_setup_1 = __importDefault(__nccwpck_require__(6089));
+const exec_1 = __nccwpck_require__(1514);
+const path_1 = __importDefault(__nccwpck_require__(1017));
+const MacRunner = {
+    run(parameters, silent = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (parameters.unityLicensingServer !== '') {
+                licensing_server_setup_1.default.Setup(parameters.unityLicensingServer, parameters.actionFolder);
+            }
+            const runCommand = this.getMacCommand(parameters);
+            yield (0, exec_1.exec)(runCommand, undefined, { silent });
+        });
+    },
+    getMacCommand(parameters) {
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
+        if (!(0, fs_1.existsSync)(githubHome))
+            (0, fs_1.mkdirSync)(githubHome);
+        const githubWorkflow = path_1.default.join(runnerTemporaryPath, '_github_workflow');
+        if (!(0, fs_1.existsSync)(githubWorkflow))
+            (0, fs_1.mkdirSync)(githubWorkflow);
+        const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
+        return `cd "${workspace}"
+                ln -s /root "${githubHome}"
+                ln -s /github/workflow "${githubWorkflow}"
+                ln -s /github/workspace "${workspace}"
+                ln -s /steps "${actionFolder}/steps"
+                ln -s /entrypoint.sh "${actionFolder}/entrypoint.sh"
+                ln -s /usr/share/unity3d/config "${actionFolder}/unity-config"
+                ${sshAgent ? `ln -s /ssh-agent ${sshAgent}` : ''}
+                ${sshAgent ? `ln -s /root/.ssh/known_hosts /home/runner/.ssh/known_hosts` : ''}
+                env \
+                UNITY_LICENSE= \
+                UNITY_LICENSE_FILE= \
+                UNITY_EMAIL= \
+                UNITY_PASSWORD= \
+                UNITY_SERIAL= \
+                UNITY_LICENSING_SERVER="${unityLicensingServer}" \
+                UNITY_VERSION="${editorVersion}" \
+                PROJECT_PATH="${projectPath}" \
+                CUSTOM_PARAMETERS="${customParameters}" \
+                TEST_PLATFORMS="${testPlatforms}" \
+                COVERAGE_OPTIONS="${coverageOptions}" \
+                COVERAGE_RESULTS_PATH="CodeCoverage" \
+                ARTIFACTS_PATH="${artifactsPath}" \
+                GITHUB_REF= \
+                GITHUB_SHA= \
+                GITHUB_REPOSITORY= \
+                GITHUB_ACTOR= \
+                GITHUB_WORKFLOW= \
+                GITHUB_HEAD_REF= \
+                GITHUB_BASE_REF= \
+                GITHUB_EVENT_NAME= \
+                GITHUB_WORKSPACE="/github/workspace" \
+                GITHUB_ACTION= \
+                GITHUB_EVENT_PATH= \
+                RUNNER_OS= \
+                RUNNER_TOOL_CACHE= \
+                RUNNER_TEMP= \
+                RUNNER_WORKSPACE= \
+                GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
+                CHOWN_FILES_TO="${chownFilesTo}" \
+                ${sshAgent ? `SSH_AUTH_SOCK=/ssh-agent` : ''} \
+                USE_EXIT_CODE=${githubToken ? 'false' : 'true'} \
+                /bin/bash -c /entrypoint.sh`;
+    },
+};
+exports["default"] = MacRunner;
+
+
+/***/ }),
+
 /***/ 5487:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -763,6 +875,14 @@ const Platform = {
     isAndroid(platform) {
         switch (platform) {
             case Platform.types.Android:
+                return true;
+            default:
+                return false;
+        }
+    },
+    isMac(platform) {
+        switch (platform) {
+            case Platform.types.StandaloneOSX:
                 return true;
             default:
                 return false;

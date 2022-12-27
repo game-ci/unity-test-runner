@@ -7,7 +7,7 @@ export interface RunnerContext {
 
 const Action = {
   get supportedPlatforms() {
-    return ['linux', 'win32'];
+    return ['linux', 'win32', 'darwin'];
   },
 
   get isRunningLocally() {
