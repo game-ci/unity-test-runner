@@ -23,6 +23,12 @@ source /steps/return_license.sh
 rm -r "$ACTIVATE_LICENSE_PATH"
 
 #
+# Create base .ssh directory
+#
+
+mkdir -m 700 -p ~/.ssh
+
+#
 # Instructions for debugging
 #
 

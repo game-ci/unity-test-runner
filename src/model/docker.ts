@@ -77,6 +77,7 @@ const Docker = {
     const testPlatforms = (
       testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]
     ).join(';');
+    const runnerUserHome = process.env['HOME'];
 
     return `docker run \
                 --workdir /github/workspace \
@@ -121,7 +122,9 @@ const Docker = {
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${
-                  sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''
+                  sshAgent
+                    ? `--volume ${runnerUserHome}/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
+                    : ''
                 } \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
