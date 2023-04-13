@@ -116,6 +116,7 @@ const Docker = {
                 --volume "${githubHome}:/root:z" \
                 --volume "${githubWorkflow}:/github/workflow:z" \
                 --volume "${workspace}:/github/workspace:z" \
+                --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \

@@ -59,16 +59,36 @@ ls -alh $UNITY_PROJECT_PATH
 # Testing for each platform
 #
 for platform in ${TEST_PLATFORMS//;/ }; do
-  echo ""
-  echo "###########################"
-  echo "#   Testing in $platform  #"
-  echo "###########################"
-  echo ""
+  if [[ "$platform" == "standalone" ]]; then
+    echo ""
+    echo "###########################"
+    echo "#   Building Standalone   #"
+    echo "###########################"
+    echo ""
 
-  if [[ "$platform" != "COMBINE_RESULTS" ]]; then
-    runTests="-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
+    # Create directories if they do not exist
+    mkdir -p "$UNITY_PROJECT_PATH/Assets/Editor/"
+    mkdir -p "$UNITY_PROJECT_PATH/Assets/Player/"
+    # Copy the scripts
+    cp -R "$ACTION_FOLDER/UnityStandaloneScripts/Assets/Editor/" "$UNITY_PROJECT_PATH/Assets/Editor/"
+    cp -R "$ACTION_FOLDER/UnityStandaloneScripts/Assets/Player/" "$UNITY_PROJECT_PATH/Assets/Player/"
+    # Verify recursive paths
+    ls -Ralph "$UNITY_PROJECT_PATH/Assets/Editor/"
+    ls -Ralph "$UNITY_PROJECT_PATH/Assets/Player/"
+
+    runTests="-runTests -testPlatform StandaloneLinux64 -builtTestRunnerPath $UNITY_PROJECT_PATH/Build/UnityTestRunner-Standalone"
   else
-    runTests="-quit"
+    echo ""
+    echo "###########################"
+    echo "#   Testing in $platform  #"
+    echo "###########################"
+    echo ""
+
+    if [[ "$platform" != "COMBINE_RESULTS" ]]; then
+      runTests="-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
+    else
+      runTests="-quit"
+    fi
   fi
 
   unity-editor \
@@ -87,6 +107,28 @@ for platform in ${TEST_PLATFORMS//;/ }; do
 
   # Print unity log output
   cat "$FULL_ARTIFACTS_PATH/$platform.log"
+
+  if [[ $TEST_EXIT_CODE -eq 0 && "$platform" == "standalone" ]]; then
+    echo ""
+    echo "###########################"
+    echo "#    Testing Standalone   #"
+    echo "###########################"
+    echo ""
+
+    # Not sure how to get code coverage with this method.
+    xvfb-run -a -e /dev/stdout "$UNITY_PROJECT_PATH/Build/UnityTestRunner-Standalone" \
+      -batchmode \
+      -nographics \
+      -logFile "$FULL_ARTIFACTS_PATH/$platform-player.log" \
+      -testResults "$FULL_ARTIFACTS_PATH/$platform-results.xml"
+
+    # Catch exit code
+    TEST_EXIT_CODE=$?
+
+    # Player log gets spammed with connection failed messages from the PlayerConnection,
+    # so we don't print it here. If there was an issue with the player tests, users can inspect
+    # the log from the arifacts.
+  fi
 
   # Display results
   if [ $TEST_EXIT_CODE -eq 0 ]; then

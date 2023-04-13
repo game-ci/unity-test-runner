@@ -3,7 +3,7 @@ import { getInput } from '@actions/core';
 
 const Input = {
   get testModes() {
-    return ['all', 'playmode', 'editmode'];
+    return ['all', 'playmode', 'editmode', 'standalone'];
   },
 
   isValidFolderName(folderName) {
