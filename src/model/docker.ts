@@ -193,6 +193,7 @@ const Docker = {
                 --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
                 --env CHOWN_FILES_TO="${chownFilesTo}" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
+                --volume "${actionFolder}/test-standalone-scripts":"c:/UnityStandaloneScripts" \
                 --volume "${githubHome}":"c:/root" \
                 --volume "${githubWorkflow}":"c:/github/workflow" \
                 --volume "${workspace}":"c:/github/workspace" \
