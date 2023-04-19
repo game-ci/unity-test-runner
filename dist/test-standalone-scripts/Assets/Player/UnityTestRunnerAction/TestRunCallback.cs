@@ -52,7 +52,7 @@ namespace UnityTestRunnerAction
             string testResultsPath = commandLineArgs[Array.IndexOf(commandLineArgs, "-testResults") + 1];
             using (var writer = XmlWriter.Create(testResultsPath, new XmlWriterSettings() { Indent = true }))
             {
-                // We have to manually add the outer test-run node since testResults.ToXml doesn't include it...
+                // Manually add the outer test-run node, because testResults.ToXml doesn't include it.
 
                 var testRunNode = new TNode(k_TestRunNode);
 
