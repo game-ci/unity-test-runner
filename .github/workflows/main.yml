@@ -32,7 +32,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
         testMode:
           - playmode
           - editmode
@@ -78,7 +78,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
     steps:
       ###########################
       #         Checkout        #
@@ -132,7 +132,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
@@ -189,7 +189,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
     steps:
       ###########################
       #         Checkout        #
@@ -244,7 +244,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
     steps:
       ###########################
       #         Checkout        #
@@ -343,7 +343,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.2.11f1
+          - 2019.2.21f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
