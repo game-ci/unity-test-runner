@@ -115,7 +115,9 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     echo "###########################"
     echo ""
 
-    # Not sure how to get code coverage with this method.
+    # Code Coverage currently only supports code ran in the Editor and not in Standalone/Player.
+    # https://docs.unity.cn/Packages/com.unity.testtools.codecoverage@1.1/manual/TechnicalDetails.html#how-it-works
+    
     xvfb-run -a -e /dev/stdout "$UNITY_PROJECT_PATH/Build/UnityTestRunner-Standalone" \
       -batchmode \
       -nographics \

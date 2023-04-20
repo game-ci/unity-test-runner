@@ -116,6 +116,9 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
 
     if ( ( $TEST_EXIT_CODE -eq 0 ) -and ( "$platform" -eq "standalone" ) )
     {
+        # Code Coverage currently only supports code ran in the Editor and not in Standalone/Player.
+        # https://docs.unity.cn/Packages/com.unity.testtools.codecoverage@1.1/manual/TechnicalDetails.html#how-it-works
+        
         $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "$UNITY_PROJECT_PATH\Build\UnityTestRunner-Standalone.exe" -ArgumentList "-batchmode -nographics -logFile $FULL_ARTIFACTS_PATH\$platform-player.log -testResults $FULL_ARTIFACTS_PATH\$platform-results.xml"
 
         # Catch exit code
