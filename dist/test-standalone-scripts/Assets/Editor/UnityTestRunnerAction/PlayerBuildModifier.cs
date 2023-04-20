@@ -16,8 +16,8 @@ namespace UnityTestRunnerAction
         private static bool s_RunningPlayerTests;
         public BuildPlayerOptions ModifyOptions(BuildPlayerOptions playerOptions)
         {
-            // Do not launch the player after the build completes.
-            playerOptions.options &= ~BuildOptions.AutoRunPlayer;
+            // Do not launch the player after the build completes. Disable the PlayerConnection.
+            playerOptions.options &= ~(BuildOptions.AutoRunPlayer | BuildOptions.ConnectToHost | BuildOptions.WaitForPlayerConnection);
 
             // Not supporting Mac currently.
             playerOptions.target = SystemInfo.operatingSystemFamily == OperatingSystemFamily.Windows ? BuildTarget.StandaloneWindows64 : BuildTarget.StandaloneLinux64;

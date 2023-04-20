@@ -111,16 +111,19 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
     # Catch exit code
     $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
 
+    # Print unity log output
+    Get-Content "$FULL_ARTIFACTS_PATH/$platform.log"
+
     if ( ( $TEST_EXIT_CODE -eq 0 ) -and ( "$platform" -eq "standalone" ) )
     {
         $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "$UNITY_PROJECT_PATH\Build\UnityTestRunner-Standalone.exe" -ArgumentList "-batchmode -nographics -logFile $FULL_ARTIFACTS_PATH\$platform-player.log -testResults $FULL_ARTIFACTS_PATH\$platform-results.xml"
 
         # Catch exit code
         $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
-    }
 
-    # Print unity log output
-    Get-Content "$FULL_ARTIFACTS_PATH/$platform.log"
+        # Print player log output
+        Get-Content "$FULL_ARTIFACTS_PATH/$platform-player.log"
+    }
 
     # Display results
     if ($TEST_EXIT_CODE -eq 0)

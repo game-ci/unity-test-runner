@@ -125,9 +125,8 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     # Catch exit code
     TEST_EXIT_CODE=$?
 
-    # Player log gets spammed with connection failed messages from the PlayerConnection,
-    # so we don't print it here. If there was an issue with the player tests, users can inspect
-    # the log from the arifacts.
+    # Print player log output
+    cat "$FULL_ARTIFACTS_PATH/$platform-player.log"
   fi
 
   # Display results
