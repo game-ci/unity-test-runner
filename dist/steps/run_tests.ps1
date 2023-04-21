@@ -58,19 +58,52 @@ Get-ChildItem -Hidden -Path $UNITY_PROJECT_PATH
 #
 foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
 {
-    Write-Output ""
-    Write-Output "###########################"
-    Write-Output "#   Testing in $platform  #"
-    Write-Output "###########################"
-    Write-Output ""
-
-    if ( $platform -ne "COMBINE_RESULTS" )
+    if ( "$platform" -eq "standalone" )
     {
-        $runTests = "-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
+        Write-Output ""
+        Write-Output "###########################"
+        Write-Output "#   Building Standalone   #"
+        Write-Output "###########################"
+        Write-Output ""
+  
+        # Create directories if they do not exist
+        if(-Not (Test-Path -Path $Env:UNITY_PROJECT_PATH\Assets\Editor))
+        {
+            # We use -Force to suppress output, doesn't overwrite anything
+            New-Item -ItemType Directory -Force -Path $Env:UNITY_PROJECT_PATH\Assets\Editor
+        }
+        if(-Not (Test-Path -Path $Env:UNITY_PROJECT_PATH\Assets\Player))
+        {
+            # We use -Force to suppress output, doesn't overwrite anything
+            New-Item -ItemType Directory -Force -Path $Env:UNITY_PROJECT_PATH\Assets\Player
+        }
+
+        # Copy the scripts
+        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Editor" -Destination $Env:UNITY_PROJECT_PATH\Assets\Editor -Recurse
+        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Player" -Destination $Env:UNITY_PROJECT_PATH\Assets\Player -Recurse
+
+        # Verify recursive paths
+        Get-ChildItem -Path $Env:UNITY_PROJECT_PATH\Assets\Editor -Recurse
+        Get-ChildItem -Path $Env:UNITY_PROJECT_PATH\Assets\Player -Recurse
+    
+        $runTests="-runTests -testPlatform StandaloneWindows64 -builtTestRunnerPath $UNITY_PROJECT_PATH\Build\UnityTestRunner-Standalone.exe"
     }
     else
     {
-        $runTests = "-quit"
+        Write-Output ""
+        Write-Output "###########################"
+        Write-Output "#   Testing in $platform  #"
+        Write-Output "###########################"
+        Write-Output ""
+
+        if ( $platform -ne "COMBINE_RESULTS" )
+        {
+            $runTests = "-runTests -testPlatform $platform -testResults $FULL_ARTIFACTS_PATH/$platform-results.xml"
+        }
+        else
+        {
+            $runTests = "-quit"
+        }
     }
 
     $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "C:\Program Files\Unity\Hub\Editor\${env:UNITY_VERSION}\editor\Unity.exe" -ArgumentList "-batchmode -logFile $FULL_ARTIFACTS_PATH\$platform.log -projectPath $UNITY_PROJECT_PATH -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH $runTests -enableCodeCoverage -debugCodeOptimization -coverageOptions ${env:COVERAGE_OPTIONS} ${env:CUSTOM_PARAMETERS}"
@@ -80,6 +113,20 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
 
     # Print unity log output
     Get-Content "$FULL_ARTIFACTS_PATH/$platform.log"
+
+    if ( ( $TEST_EXIT_CODE -eq 0 ) -and ( "$platform" -eq "standalone" ) )
+    {
+        # Code Coverage currently only supports code ran in the Editor and not in Standalone/Player.
+        # https://docs.unity.cn/Packages/com.unity.testtools.codecoverage@1.1/manual/TechnicalDetails.html#how-it-works
+        
+        $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "$UNITY_PROJECT_PATH\Build\UnityTestRunner-Standalone.exe" -ArgumentList "-batchmode -nographics -logFile $FULL_ARTIFACTS_PATH\$platform-player.log -testResults $FULL_ARTIFACTS_PATH\$platform-results.xml"
+
+        # Catch exit code
+        $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
+
+        # Print player log output
+        Get-Content "$FULL_ARTIFACTS_PATH/$platform-player.log"
+    }
 
     # Display results
     if ($TEST_EXIT_CODE -eq 0)
