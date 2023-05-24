@@ -2,8 +2,9 @@ import Input from './input';
 import fs from 'fs';
 
 jest.mock('./unity-version-parser');
-jest.mock('fs');
-const mockedFs = fs as jest.Mocked<typeof fs>;
+
+const mockedFsExistsSync = jest.spyOn(fs, 'existsSync');
+const mockedFsReadFileSync = jest.spyOn(fs, 'readFileSync');
 
 describe('Input', () => {
   describe('getFromUser', () => {
@@ -39,7 +40,7 @@ describe('Input', () => {
 
   describe('getPackageNameFromPackageJson', () => {
     it('throws error if package.json cannot be found at the given project path', () => {
-      mockedFs.existsSync.mockReturnValue(false);
+      mockedFsExistsSync.mockReturnValue(false);
 
       expect(() => Input.getPackageNameFromPackageJson('some/path')).toThrow(
         'Invalid projectPath - Cannot find package.json at some/path/package.json',
@@ -47,8 +48,8 @@ describe('Input', () => {
     });
 
     it('throws error if package.json contents cannot be parsed', () => {
-      mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readFileSync.mockReturnValue(Buffer.from('DefinitelyNotJSON'));
+      mockedFsExistsSync.mockReturnValue(true);
+      mockedFsReadFileSync.mockReturnValue(Buffer.from('DefinitelyNotJSON'));
 
       expect(() => Input.getPackageNameFromPackageJson('some/path')).toThrow(
         /Unable to parse package.json contents as JSON/,
@@ -56,8 +57,8 @@ describe('Input', () => {
     });
 
     it('throws error if name field in package.json is not present', () => {
-      mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readFileSync.mockReturnValue(
+      mockedFsExistsSync.mockReturnValue(true);
+      mockedFsReadFileSync.mockReturnValue(
         Buffer.from(JSON.stringify({ notName: 'some-package', alsoNotName: 'some-package' })),
       );
 
@@ -67,8 +68,8 @@ describe('Input', () => {
     });
 
     it('throws error if name field in package.json is present but not a string', () => {
-      mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readFileSync.mockReturnValue(
+      mockedFsExistsSync.mockReturnValue(true);
+      mockedFsReadFileSync.mockReturnValue(
         Buffer.from(JSON.stringify({ name: 3, notName: 'some-package' })),
       );
 
@@ -78,8 +79,8 @@ describe('Input', () => {
     });
 
     it('throws error if name field in package.json is present but empty', () => {
-      mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readFileSync.mockReturnValue(Buffer.from(JSON.stringify({ name: '', notName: 3 })));
+      mockedFsExistsSync.mockReturnValue(true);
+      mockedFsReadFileSync.mockReturnValue(Buffer.from(JSON.stringify({ name: '', notName: 3 })));
 
       expect(() => Input.getPackageNameFromPackageJson('some/path')).toThrow(
         'Package name from package.json is a string, but is empty',
@@ -87,8 +88,8 @@ describe('Input', () => {
     });
 
     it('returns the name field in package.json if it is present as a non-empty string', () => {
-      mockedFs.existsSync.mockReturnValue(true);
-      mockedFs.readFileSync.mockReturnValue(
+      mockedFsExistsSync.mockReturnValue(true);
+      mockedFsReadFileSync.mockReturnValue(
         Buffer.from(JSON.stringify({ name: 'some-package', notName: 'not-what-we-want' })),
       );
 
@@ -98,7 +99,7 @@ describe('Input', () => {
 
   describe('verifyTestsFolderIsPresent', () => {
     it('throws error if tests folder is not present', () => {
-      mockedFs.existsSync.mockReturnValue(false);
+      mockedFsExistsSync.mockReturnValue(false);
 
       expect(() => Input.verifyTestsFolderIsPresent('some/path')).toThrow(
         'Invalid projectPath - Cannot find package tests folder at some/path/Tests',
@@ -106,7 +107,7 @@ describe('Input', () => {
     });
 
     it('does not throw if tests folder is present', () => {
-      mockedFs.existsSync.mockReturnValue(true);
+      mockedFsExistsSync.mockReturnValue(true);
 
       expect(() => Input.verifyTestsFolderIsPresent('some/path')).not.toThrow();
     });
