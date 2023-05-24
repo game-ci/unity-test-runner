@@ -22,7 +22,7 @@ inputs:
     description: 'The type of tests to be run by the test runner.'
   coverageOptions:
     required: false
-    default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport'
+    default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear'
     description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass test assemblies from the package you want covered with the assemblyFilter option.'
   artifactsPath:
     required: false
@@ -56,6 +56,10 @@ inputs:
     required: false
     default: ''
     description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the resulting build artifacts'
+  unityLicensingServer:
+    required: false
+    default: ''
+    description: 'Url to a unity license server for acquiring floating licenses.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'
@@ -65,5 +69,6 @@ branding:
   icon: 'box'
   color: 'gray-dark'
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'node16'
+  main: 'dist/main.js'
+  post: 'dist/post.js'

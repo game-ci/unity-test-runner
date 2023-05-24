@@ -1,5 +1,10 @@
 import path from 'path';
 
+export interface RunnerContext {
+  runnerTemporaryPath: string;
+  githubAction: string;
+}
+
 const Action = {
   get supportedPlatforms() {
     return ['linux', 'win32'];
@@ -31,6 +36,16 @@ const Action = {
 
   get workspace() {
     return process.env.GITHUB_WORKSPACE;
+  },
+
+  runnerContext(): RunnerContext {
+    const runnerTemporaryPath = process.env.RUNNER_TEMP ?? process.cwd();
+    const githubAction = process.env.GITHUB_ACTION ?? process.pid.toString();
+
+    return {
+      runnerTemporaryPath,
+      githubAction,
+    };
   },
 
   checkCompatibility() {

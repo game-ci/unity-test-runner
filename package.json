@@ -8,14 +8,14 @@
   "license": "MIT",
   "scripts": {
     "prebuild": "yarn",
-    "build": "tsc && ncc build lib --source-map --license licenses.txt",
-    "lint": "prettier --check \"src/**/*.{js,ts}\" && eslint src/**/*.ts",
+    "build": "tsc && ncc build lib/index.js --source-map --license licenses.txt",
+    "lint": "prettier --check \"src/**/*.{js,ts}\" && eslint src --ext .js,.ts --max-warnings=0",
     "format": "prettier --write \"src/**/*.{js,ts}\"",
     "test": "jest",
     "prepare": "husky install"
   },
   "dependencies": {
-    "@actions/core": "^1.6.0",
+    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
     "@actions/github": "^5.0.0",
     "@octokit/openapi-types": "^11.2.0",
