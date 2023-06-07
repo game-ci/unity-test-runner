@@ -51,7 +51,7 @@ inputs:
   packageMode:
     required: false
     default: false
-    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity package registry are currently not supported.'
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, the action can only be run on Linux runners, and any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity Registry are currently not supported.'
   chownFilesTo:
     required: false
     default: ''
