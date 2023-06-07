@@ -1,4 +1,4 @@
-﻿interface CommonAttributes {
+interface CommonAttributes {
   id: string;
   result: string;
   asserts: string;
