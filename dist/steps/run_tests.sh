@@ -43,13 +43,6 @@ echo "Using Unity version \"$UNITY_VERSION\" to test."
 if [ "$PACKAGE_MODE" = "true" ]; then
   echo "Running tests on a Unity package rather than a Unity project."
 
-  if ! command -v jq &> /dev/null
-  then
-      echo "jq could not be found. This is required for package mode, and is likely the result of using a custom Docker image. Please use the default image or install jq to your custom image."
-      exit
-  fi
-
-
   echo ""
   echo "###########################"
   echo "#    Package Folder       #"
