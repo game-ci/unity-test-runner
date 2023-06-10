@@ -1,4 +1,4 @@
-if ($null -eq ${env:GIT_PRIVATE_TOKEN})
+﻿if ($null -eq ${env:GIT_PRIVATE_TOKEN})
 {
     Write-Output "GIT_PRIVATE_TOKEN unset skipping"
 }

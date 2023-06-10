@@ -1,4 +1,4 @@
-import { components } from '@octokit/openapi-types';
+﻿import { components } from '@octokit/openapi-types';
 
 export function timeHelper(seconds: number): string {
   return `${seconds.toFixed(3)}s`;

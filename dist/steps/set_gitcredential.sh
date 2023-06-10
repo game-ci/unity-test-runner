@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 
 if [ -z "${GIT_PRIVATE_TOKEN}" ]
 then
