@@ -9,7 +9,7 @@ inputs:
   customImage:
     required: false
     default: ''
-    description: 'Specific docker image that should be used for testing the project. If packageMode is true, this image must be compatible with apt-get.'
+    description: 'Specific docker image that should be used for testing the project. If packageMode is true, this image must have jq installed.'
   projectPath:
     required: false
     description: 'Path to the Unity project or package to be tested.'
@@ -51,7 +51,7 @@ inputs:
   packageMode:
     required: false
     default: false
-    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, any custom docker image passed to this action must have `jq` installed. NOTE: packages with dependencies outside of the Unity package registry are currently not supported.'
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, the action can only be run on Linux runners, and any custom docker image passed to this action must have `jq` installed. NOTE: may not work properly for packages with dependencies outside of the Unity Registry.'
   chownFilesTo:
     required: false
     default: ''
