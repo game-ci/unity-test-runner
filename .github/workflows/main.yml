@@ -407,7 +407,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
+          - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
           - 2019.2.11f1
         testMode:
@@ -446,7 +446,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
+          - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
           - 2019.2.11f1
     steps:
@@ -465,7 +465,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: all
-          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
           packageMode: true
           # Test implicit artifactsPath, by not setting it
 
@@ -494,7 +494,7 @@ jobs:
         unityVersion:
           - 2019.2.11f1
         projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
+          - unity-package-with-correct-tests/com.example.testpackage
     steps:
       ###########################
       #         Checkout        #
@@ -511,7 +511,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: editmode
-          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
           artifactsPath: artifacts/packageeditmode
           packageMode: true
 
@@ -538,7 +538,7 @@ jobs:
       fail-fast: false
       matrix:
         projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
+          - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
           - 2019.2.11f1
     steps:
@@ -557,7 +557,7 @@ jobs:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
           testMode: playmode
-          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+fake.notarealpackage.*,-*Tests*'
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
           artifactsPath: artifacts/packageplaymode
           packageMode: true
 
@@ -586,7 +586,7 @@ jobs:
         unityVersion:
           - 2019.2.11f1
         projectPath:
-          - unity-package-with-correct-tests/com.fake.notarealpackage
+          - unity-package-with-correct-tests/com.example.testpackage
     steps:
       ###########################
       #         Checkout        #

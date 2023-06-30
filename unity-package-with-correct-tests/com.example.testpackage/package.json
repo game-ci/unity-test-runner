@@ -1,0 +1,18 @@
+{
+  "name": "com.example.testpackage",
+  "version": "0.0.1",
+  "displayName": "Test Package",
+  "description": "Test Package",
+  "unity": "2019.2",
+  "unityRelease": "11f1",
+  "keywords": [
+    "nothing"
+  ],
+  "author": {
+    "name": "Example Author",
+    "email": "author@example.com",
+    "url": "example.com"
+  },
+  "type": "tool",
+  "hideInEditor": false
+}
