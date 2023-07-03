@@ -4,7 +4,7 @@
 
 GitHub Action to
 [run tests](https://github.com/marketplace/actions/unity-test-runner)
-for any Unity project.
+for any Unity project and _some_ Unity packages.
 
 Part of the <a href="https://game.ci">GameCI</a> open source project.
 <br />

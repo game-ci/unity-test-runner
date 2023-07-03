@@ -62,6 +62,8 @@ const Docker = {
       artifactsPath,
       useHostNetwork,
       sshAgent,
+      packageMode,
+      packageName,
       gitPrivateToken,
       githubToken,
       runnerTemporaryPath,
@@ -95,6 +97,8 @@ const Docker = {
                 --env COVERAGE_OPTIONS="${coverageOptions}" \
                 --env COVERAGE_RESULTS_PATH="CodeCoverage" \
                 --env ARTIFACTS_PATH="${artifactsPath}" \
+                --env PACKAGE_MODE="${packageMode}" \
+                --env PACKAGE_NAME="${packageName}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \
@@ -142,6 +146,8 @@ const Docker = {
       artifactsPath,
       useHostNetwork,
       sshAgent,
+      packageMode,
+      packageName,
       gitPrivateToken,
       githubToken,
       runnerTemporaryPath,
@@ -175,6 +181,8 @@ const Docker = {
                 --env COVERAGE_OPTIONS="${coverageOptions}" \
                 --env COVERAGE_RESULTS_PATH="CodeCoverage" \
                 --env ARTIFACTS_PATH="${artifactsPath}" \
+                --env PACKAGE_MODE="${packageMode}" \
+                --env PACKAGE_NAME="${packageName}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \

@@ -5,14 +5,14 @@ inputs:
   unityVersion:
     required: false
     default: 'auto'
-    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt'
+    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt. ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto".'
   customImage:
     required: false
     default: ''
-    description: 'Specific docker image that should be used for testing the project'
+    description: 'Specific docker image that should be used for testing the project. If packageMode is true, this image must have jq installed.'
   projectPath:
     required: false
-    description: 'Path to the Unity project to be tested.'
+    description: 'Path to the Unity project or package to be tested.'
   customParameters:
     required: false
     description: 'Extra parameters to configure the Unity editor run.'
@@ -23,7 +23,7 @@ inputs:
   coverageOptions:
     required: false
     default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear'
-    description: 'Optional coverage parameters for the -coverageOptions argument.'
+    description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass assemblies from the package you want covered to the assemblyFilters option.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -48,6 +48,10 @@ inputs:
     required: false
     default: 'Test Results'
     description: 'Name for the check run that is created when a github token is provided.'
+  packageMode:
+    required: false
+    default: false
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, the action can only be run on Linux runners, and any custom docker image passed to this action must have `jq` installed. NOTE: may not work properly for packages with dependencies outside of the Unity Registry.'
   chownFilesTo:
     required: false
     default: ''

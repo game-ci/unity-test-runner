@@ -19,6 +19,8 @@ export async function run() {
       gitPrivateToken,
       githubToken,
       checkName,
+      packageMode,
+      packageName,
       chownFilesTo,
       unityLicensingServer,
     } = Input.getFromUser();
@@ -37,6 +39,8 @@ export async function run() {
         artifactsPath,
         useHostNetwork,
         sshAgent,
+        packageMode,
+        packageName,
         gitPrivateToken,
         githubToken,
         chownFilesTo,

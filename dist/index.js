@@ -98,7 +98,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerContext = model_1.Action.runnerContext();
             try {
@@ -112,6 +112,8 @@ function run() {
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
+                    packageMode,
+                    packageName,
                     gitPrivateToken,
                     githubToken,
                     chownFilesTo,
@@ -260,7 +262,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -286,6 +288,8 @@ const Docker = {
                 --env COVERAGE_OPTIONS="${coverageOptions}" \
                 --env COVERAGE_RESULTS_PATH="CodeCoverage" \
                 --env ARTIFACTS_PATH="${artifactsPath}" \
+                --env PACKAGE_MODE="${packageMode}" \
+                --env PACKAGE_NAME="${packageName}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \
@@ -319,7 +323,7 @@ const Docker = {
                 /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -345,6 +349,8 @@ const Docker = {
                 --env COVERAGE_OPTIONS="${coverageOptions}" \
                 --env COVERAGE_RESULTS_PATH="CodeCoverage" \
                 --env ARTIFACTS_PATH="${artifactsPath}" \
+                --env PACKAGE_MODE="${packageMode}" \
+                --env PACKAGE_NAME="${packageName}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \
@@ -556,6 +562,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const unity_version_parser_1 = __importDefault(__nccwpck_require__(7049));
+const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core_1 = __nccwpck_require__(2186);
 const Input = {
     get testModes() {
@@ -564,6 +571,41 @@ const Input = {
     isValidFolderName(folderName) {
         const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
         return validFolderName.test(folderName);
+    },
+    /**
+     * When in package mode, we need to scrape the package's name from its package.json file
+     */
+    getPackageNameFromPackageJson(packagePath) {
+        const packageJsonPath = `${packagePath}/package.json`;
+        if (!fs_1.default.existsSync(packageJsonPath)) {
+            throw new Error(`Invalid projectPath - Cannot find package.json at ${packageJsonPath}`);
+        }
+        let packageJson;
+        try {
+            packageJson = JSON.parse(fs_1.default.readFileSync(packageJsonPath).toString());
+        }
+        catch (error) {
+            if (error instanceof SyntaxError) {
+                throw new SyntaxError(`Unable to parse package.json contents as JSON - ${error.message}`);
+            }
+            throw new Error(`Unable to parse package.json contents as JSON - unknown error ocurred`);
+        }
+        const rawPackageName = packageJson.name;
+        if (typeof rawPackageName !== 'string') {
+            throw new TypeError(`Unable to parse package name from package.json - package name should be string, but was ${typeof rawPackageName}`);
+        }
+        if (rawPackageName.length === 0) {
+            throw new Error(`Package name from package.json is a string, but is empty`);
+        }
+        return rawPackageName;
+    },
+    /**
+     * When in package mode, we need to ensure that the Tests folder is present
+     */
+    verifyTestsFolderIsPresent(packagePath) {
+        if (!fs_1.default.existsSync(`${packagePath}/Tests`)) {
+            throw new Error(`Invalid projectPath - Cannot find package tests folder at ${packagePath}/Tests`);
+        }
     },
     getFromUser() {
         // Input variables specified in workflow using "with" prop.
@@ -580,6 +622,8 @@ const Input = {
         const gitPrivateToken = (0, core_1.getInput)('gitPrivateToken') || '';
         const githubToken = (0, core_1.getInput)('githubToken') || '';
         const checkName = (0, core_1.getInput)('checkName') || 'Test Results';
+        const rawPackageMode = (0, core_1.getInput)('packageMode') || 'false';
+        let packageName = '';
         const chownFilesTo = (0, core_1.getInput)('chownFilesTo') || '';
         // Validate input
         if (!this.testModes.includes(testMode)) {
@@ -594,8 +638,22 @@ const Input = {
         if (rawUseHostNetwork !== 'true' && rawUseHostNetwork !== 'false') {
             throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
         }
-        // Sanitise input
+        if (rawPackageMode !== 'true' && rawPackageMode !== 'false') {
+            throw new Error(`Invalid packageMode "${rawPackageMode}"`);
+        }
+        // sanitize packageMode input and projectPath input since they are needed
+        // for input validation
+        const packageMode = rawPackageMode === 'true';
         const projectPath = rawProjectPath.replace(/\/$/, '');
+        // if in package mode, attempt to get the package's name, and ensure tests are present
+        if (packageMode) {
+            if (unityVersion === 'auto') {
+                throw new Error('Package Mode is enabled, but unityVersion is set to "auto". unityVersion must manually be set in Package Mode.');
+            }
+            packageName = this.getPackageNameFromPackageJson(projectPath);
+            this.verifyTestsFolderIsPresent(projectPath);
+        }
+        // Sanitise other input
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
         const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
@@ -613,6 +671,8 @@ const Input = {
             gitPrivateToken,
             githubToken,
             checkName,
+            packageMode,
+            packageName,
             chownFilesTo,
             unityLicensingServer,
         };

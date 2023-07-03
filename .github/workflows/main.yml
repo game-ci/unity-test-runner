@@ -399,3 +399,226 @@ jobs:
           name: Test results (combined)
           path: artifacts/
           retention-days: 14
+
+  testAllPackageModesLikeInTheReadme:
+    name: Test package mode 📦 in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2019.2.11f1
+        testMode:
+          - playmode
+          - editmode
+
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - uses: ./
+        id: packageTests
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-packageArtifacts
+          customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
+          packageMode: true
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Package test results for ${{ matrix.testMode }}
+          path: ${{ steps.packageTests.outputs.artifactsPath }}
+          retention-days: 14
+
+  testPackageRunnerInAllModes:
+    name: Test package mode in all modes 📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2019.2.11f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          packageMode: true
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package test results (all)
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (all)
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerInEditMode:
+    name: Test package mode in edit mode 📦📝
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2019.2.11f1
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageEditMode
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          artifactsPath: artifacts/packageeditmode
+          packageMode: true
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package test results (edit mode)
+          path: ${{ steps.packageEditMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (edit mode)
+          path: ${{ steps.packageEditMode.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerInPlayMode:
+    name: Test package mode in play mode 📦📺
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2019.2.11f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packagePlayMode
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: playmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          artifactsPath: artifacts/packageplaymode
+          packageMode: true
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package test results (play mode)
+          path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (play mode)
+          path: ${{ steps.packagePlayMode.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageModeEachModeSequentially:
+    name: Test package mode in each mode sequentially 📦 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2019.2.11f1
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Configure first test runner
+      - name: Test package mode in editmode 📦📝
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          artifactsPath: packageArtifacts/editmode
+          packageMode: true
+
+      # Configure second test runner
+      - name: Test package mode in playmode 📦📺
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: playmode
+          artifactsPath: packageArtifacts/playmode
+          packageMode: true
+
+      # Upload combined artifacts
+      - name: Upload combined test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package test results (combined)
+          path: packageArtifacts/
+          retention-days: 14
