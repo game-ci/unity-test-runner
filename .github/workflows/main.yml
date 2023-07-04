@@ -433,7 +433,7 @@ jobs:
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
           packageMode: true
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: Package test results for ${{ matrix.testMode }}
           path: ${{ steps.packageTests.outputs.artifactsPath }}
@@ -471,7 +471,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Package test results (all)
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -517,7 +517,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Package test results (edit mode)
           path: ${{ steps.packageEditMode.outputs.artifactsPath }}
@@ -563,7 +563,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Package test results (play mode)
           path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
@@ -617,7 +617,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: Package test results (combined)
           path: packageArtifacts/
