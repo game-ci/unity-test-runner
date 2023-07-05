@@ -5,7 +5,7 @@ import { exec } from '@actions/exec';
 import path from 'path';
 
 /**
- * Build a path for a docker --cidfile parameter. Docker will store the the created container.
+ * Build a path for a docker --cidfile parameter. Docker will store the created container.
  * This path is stable for the whole execution of the action, so it can be executed with the same parameters
  * multiple times and get the same result.
  */
@@ -165,7 +165,7 @@ const Docker = {
     ).join(';');
 
     return `docker run \
-                --workdir /github/workspace \
+                --workdir c:${dockerWorkspacePath} \
                 --cidfile "${cidfile}" \
                 --rm \
                 --env UNITY_LICENSE \
@@ -191,7 +191,7 @@ const Docker = {
                 --env GITHUB_HEAD_REF \
                 --env GITHUB_BASE_REF \
                 --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
+                --env GITHUB_WORKSPACE=c:${dockerWorkspacePath} \
                 --env GITHUB_ACTION \
                 --env GITHUB_EVENT_PATH \
                 --env RUNNER_OS \
