@@ -165,7 +165,7 @@ const Docker = {
     ).join(';');
 
     return `docker run \
-                --workdir c:${dockerWorkspacePath} \
+                --workdir "c:/github/workspace" \
                 --cidfile "${cidfile}" \
                 --rm \
                 --env UNITY_LICENSE \
@@ -191,7 +191,7 @@ const Docker = {
                 --env GITHUB_HEAD_REF \
                 --env GITHUB_BASE_REF \
                 --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE=c:${dockerWorkspacePath} \
+                --env GITHUB_WORKSPACE="c:/github/workspace" \
                 --env GITHUB_ACTION \
                 --env GITHUB_EVENT_PATH \
                 --env RUNNER_OS \
