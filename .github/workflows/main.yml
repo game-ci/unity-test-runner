@@ -32,7 +32,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
         testMode:
           - playmode
           - editmode
@@ -78,7 +78,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
     steps:
       ###########################
       #         Checkout        #
@@ -132,7 +132,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
@@ -189,7 +189,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
     steps:
       ###########################
       #         Checkout        #
@@ -244,7 +244,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
     steps:
       ###########################
       #         Checkout        #
@@ -291,7 +291,7 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.4.40f1 # Only 2019.4+ docker images contain the IL2CPP backend installed.
+          - 2022.3.7f1 # Only 2019.4+ docker images contain the IL2CPP backend installed.
     steps:
       ###########################
       #         Checkout        #
@@ -343,7 +343,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.4.40f1
+          - 2022.3.7f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
@@ -409,7 +409,7 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.7f1
         testMode:
           - playmode
           - editmode
@@ -448,7 +448,7 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.7f1
     steps:
       ###########################
       #         Checkout        #
@@ -492,7 +492,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.7f1
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
     steps:
@@ -540,7 +540,7 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.7f1
     steps:
       ###########################
       #         Checkout        #
@@ -584,7 +584,7 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.7f1
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
     steps:

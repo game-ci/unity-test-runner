@@ -12,7 +12,7 @@ class ImageTag {
 
   constructor(imageProperties) {
     const {
-      editorVersion = '2019.2.11f1',
+      editorVersion = '2022.3.7f1',
       targetPlatform = ImageTag.getImagePlatformType(process.platform),
       customImage,
     } = imageProperties;

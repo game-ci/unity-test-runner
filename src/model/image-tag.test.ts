@@ -63,15 +63,15 @@ describe('ImageTag', () => {
     });
 
     it('returns the specific build platform', () => {
-      const image = new ImageTag({ editorVersion: '2019.2.11f1', targetPlatform: 'WebGL' });
+      const image = new ImageTag({ editorVersion: '2022.3.7f1', targetPlatform: 'WebGL' });
 
-      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2019.2.11f1-webgl-1`);
+      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2022.3.7f1-webgl-1`);
     });
 
     it('returns no specific build platform for generic targetPlatforms', () => {
       const image = new ImageTag({ targetPlatform: 'NoTarget' });
 
-      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2019.2.11f1-1`);
+      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2022.3.7f1-1`);
     });
   });
 });

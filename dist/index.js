@@ -402,7 +402,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { editorVersion = '2019.2.11f1', targetPlatform = ImageTag.getImagePlatformType(process.platform), customImage, } = imageProperties;
+        const { editorVersion = '2022.3.7f1', targetPlatform = ImageTag.getImagePlatformType(process.platform), customImage, } = imageProperties;
         if (!ImageTag.versionPattern.test(editorVersion)) {
             throw new Error(`Invalid version "${editorVersion}".`);
         }
