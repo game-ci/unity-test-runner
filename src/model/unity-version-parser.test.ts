@@ -7,9 +7,9 @@ describe('UnityVersionParser', () => {
     });
 
     it('parses from ProjectVersion.txt', () => {
-      const projectVersionContents = `m_EditorVersion: 2019.2.11f1
-      m_EditorVersionWithRevision: 2019.2.11f1 (5f859a4cfee5)`;
-      expect(UnityVersionParser.parse(projectVersionContents)).toBe('2019.2.11f1');
+      const projectVersionContents = `m_EditorVersion: 2022.3.7f1
+      m_EditorVersionWithRevision: 2022.3.7f1 (b16b3b16c7a0)`;
+      expect(UnityVersionParser.parse(projectVersionContents)).toBe('2022.3.7f1');
     });
   });
 
@@ -19,7 +19,7 @@ describe('UnityVersionParser', () => {
     });
 
     it('reads from unity-project-with-correct-tests', () => {
-      expect(UnityVersionParser.read('./unity-project-with-correct-tests')).toBe('2019.2.11f1');
+      expect(UnityVersionParser.read('./unity-project-with-correct-tests')).toBe('2022.3.7f1');
     });
   });
 });
