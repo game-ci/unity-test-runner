@@ -415,7 +415,7 @@ class ImageTag {
         this.targetPlatform = targetPlatform;
         this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
         this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-        this.imageRollingVersion = 1;
+        this.imageRollingVersion = 2;
     }
     static get versionPattern() {
         return /^20\d{2}\.\d\.\w{3,4}|3$/;
