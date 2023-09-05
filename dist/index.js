@@ -98,7 +98,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerContext = model_1.Action.runnerContext();
             try {
@@ -112,6 +112,7 @@ function run() {
                     artifactsPath,
                     useHostNetwork,
                     sshAgent,
+                    sshPublicKeysDirectoryPath,
                     packageMode,
                     packageName,
                     gitPrivateToken,
@@ -262,7 +263,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -307,6 +308,7 @@ const Docker = {
                 --env RUNNER_WORKSPACE \
                 --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
                 --env CHOWN_FILES_TO="${chownFilesTo}" \
+                --env GIT_CONFIG_EXTENSIONS \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
                 --volume "${githubHome}:/root:z" \
                 --volume "${githubWorkflow}:/github/workflow:z" \
@@ -316,7 +318,12 @@ const Docker = {
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
-                ${sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''} \
+                ${sshAgent && !sshPublicKeysDirectoryPath
+            ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
+            : ''} \
+                ${sshPublicKeysDirectoryPath
+            ? `--volume ${sshPublicKeysDirectoryPath}:/root/.ssh:ro`
+            : ''} \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
@@ -572,6 +579,10 @@ const Input = {
         const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
         return validFolderName.test(folderName);
     },
+    isValidGlobalFolderName(folderName) {
+        const validFolderName = new RegExp(/^(\.|\.\/|\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
+        return validFolderName.test(folderName);
+    },
     /**
      * When in package mode, we need to scrape the package's name from its package.json file
      */
@@ -619,6 +630,7 @@ const Input = {
         const rawArtifactsPath = (0, core_1.getInput)('artifactsPath') || 'artifacts';
         const rawUseHostNetwork = (0, core_1.getInput)('useHostNetwork') || 'false';
         const sshAgent = (0, core_1.getInput)('sshAgent') || '';
+        const rawSshPublicKeysDirectoryPath = (0, core_1.getInput)('sshPublicKeysDirectoryPath') || '';
         const gitPrivateToken = (0, core_1.getInput)('gitPrivateToken') || '';
         const githubToken = (0, core_1.getInput)('githubToken') || '';
         const checkName = (0, core_1.getInput)('checkName') || 'Test Results';
@@ -635,11 +647,17 @@ const Input = {
         if (!this.isValidFolderName(rawArtifactsPath)) {
             throw new Error(`Invalid artifactsPath "${rawArtifactsPath}"`);
         }
+        if (!this.isValidGlobalFolderName(rawSshPublicKeysDirectoryPath)) {
+            throw new Error(`Invalid sshPublicKeysDirectoryPath "${rawSshPublicKeysDirectoryPath}"`);
+        }
         if (rawUseHostNetwork !== 'true' && rawUseHostNetwork !== 'false') {
             throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
         }
         if (rawPackageMode !== 'true' && rawPackageMode !== 'false') {
             throw new Error(`Invalid packageMode "${rawPackageMode}"`);
+        }
+        if (rawSshPublicKeysDirectoryPath !== '' && sshAgent === '') {
+            throw new Error('sshPublicKeysDirectoryPath is set, but sshAgent is not set. sshPublicKeysDirectoryPath is useful only when using sshAgent.');
         }
         // sanitize packageMode input and projectPath input since they are needed
         // for input validation
@@ -655,6 +673,7 @@ const Input = {
         }
         // Sanitise other input
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
+        const sshPublicKeysDirectoryPath = rawSshPublicKeysDirectoryPath.replace(/\/$/, '');
         const useHostNetwork = rawUseHostNetwork === 'true';
         const editorVersion = unityVersion === 'auto' ? unity_version_parser_1.default.read(projectPath) : unityVersion;
         // Return sanitised input
@@ -668,6 +687,7 @@ const Input = {
             artifactsPath,
             useHostNetwork,
             sshAgent,
+            sshPublicKeysDirectoryPath,
             gitPrivateToken,
             githubToken,
             checkName,
