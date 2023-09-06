@@ -13,6 +13,12 @@ const Input = {
     return validFolderName.test(folderName);
   },
 
+  isValidGlobalFolderName(folderName) {
+    const validFolderName = new RegExp(/^(\.|\.\/|\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
+
+    return validFolderName.test(folderName);
+  },
+
   /**
    * When in package mode, we need to scrape the package's name from its package.json file
    */
@@ -72,6 +78,7 @@ const Input = {
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
     const sshAgent = getInput('sshAgent') || '';
+    const rawSshPublicKeysDirectoryPath = getInput('sshPublicKeysDirectoryPath') || '';
     const gitPrivateToken = getInput('gitPrivateToken') || '';
     const githubToken = getInput('githubToken') || '';
     const checkName = getInput('checkName') || 'Test Results';
@@ -92,12 +99,22 @@ const Input = {
       throw new Error(`Invalid artifactsPath "${rawArtifactsPath}"`);
     }
 
+    if (!this.isValidGlobalFolderName(rawSshPublicKeysDirectoryPath)) {
+      throw new Error(`Invalid sshPublicKeysDirectoryPath "${rawSshPublicKeysDirectoryPath}"`);
+    }
+
     if (rawUseHostNetwork !== 'true' && rawUseHostNetwork !== 'false') {
       throw new Error(`Invalid useHostNetwork "${rawUseHostNetwork}"`);
     }
 
     if (rawPackageMode !== 'true' && rawPackageMode !== 'false') {
       throw new Error(`Invalid packageMode "${rawPackageMode}"`);
+    }
+
+    if (rawSshPublicKeysDirectoryPath !== '' && sshAgent === '') {
+      throw new Error(
+        'sshPublicKeysDirectoryPath is set, but sshAgent is not set. sshPublicKeysDirectoryPath is useful only when using sshAgent.',
+      );
     }
 
     // sanitize packageMode input and projectPath input since they are needed
@@ -119,6 +136,7 @@ const Input = {
 
     // Sanitise other input
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
+    const sshPublicKeysDirectoryPath = rawSshPublicKeysDirectoryPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
     const editorVersion =
       unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
@@ -134,6 +152,7 @@ const Input = {
       artifactsPath,
       useHostNetwork,
       sshAgent,
+      sshPublicKeysDirectoryPath,
       gitPrivateToken,
       githubToken,
       checkName,

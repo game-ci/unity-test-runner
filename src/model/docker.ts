@@ -62,6 +62,7 @@ const Docker = {
       artifactsPath,
       useHostNetwork,
       sshAgent,
+      sshPublicKeysDirectoryPath,
       packageMode,
       packageName,
       gitPrivateToken,
@@ -116,6 +117,7 @@ const Docker = {
                 --env RUNNER_WORKSPACE \
                 --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
                 --env CHOWN_FILES_TO="${chownFilesTo}" \
+                --env GIT_CONFIG_EXTENSIONS \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
                 --volume "${githubHome}:/root:z" \
                 --volume "${githubWorkflow}:/github/workflow:z" \
@@ -126,7 +128,14 @@ const Docker = {
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${
-                  sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''
+                  sshAgent && !sshPublicKeysDirectoryPath
+                    ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
+                    : ''
+                } \
+                ${
+                  sshPublicKeysDirectoryPath
+                    ? `--volume ${sshPublicKeysDirectoryPath}:/root/.ssh:ro`
+                    : ''
                 } \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
