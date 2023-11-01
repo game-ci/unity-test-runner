@@ -123,7 +123,7 @@ echo "###########################"
 echo "#    Project directory    #"
 echo "###########################"
 echo ""
-ls -alh $UNITY_PROJECT_PATH
+ls -alh "$UNITY_PROJECT_PATH"
 
 #
 # Testing for each platform

@@ -51,7 +51,7 @@ Write-Output "###########################"
 Write-Output "#    Project directory    #"
 Write-Output "###########################"
 Write-Output ""
-Get-ChildItem -Hidden -Path $UNITY_PROJECT_PATH
+Get-ChildItem -Hidden -Path "$UNITY_PROJECT_PATH"
 
 #
 # Testing for each platform
