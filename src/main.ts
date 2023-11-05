@@ -23,6 +23,9 @@ export async function run() {
       packageMode,
       packageName,
       chownFilesTo,
+      dockerCpuLimit,
+      dockerMemoryLimit,
+      dockerIsolationMode,
       unityLicensingServer,
     } = Input.getFromUser();
     const baseImage = new ImageTag({ editorVersion, customImage });
@@ -46,6 +49,9 @@ export async function run() {
         gitPrivateToken,
         githubToken,
         chownFilesTo,
+        dockerCpuLimit,
+        dockerMemoryLimit,
+        dockerIsolationMode,
         unityLicensingServer,
         ...runnerContext,
       });

@@ -8,4 +8,6 @@ module.exports = {
     '^.+\\.ts$': 'ts-jest',
   },
   verbose: true,
+  modulePathIgnorePatterns: ['<rootDir>/lib/', '<rootDir>/dist/'],
+  setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
 };

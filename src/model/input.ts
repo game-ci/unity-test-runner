@@ -1,6 +1,7 @@
 import UnityVersionParser from './unity-version-parser';
 import fs from 'fs';
 import { getInput } from '@actions/core';
+import os from 'os';
 
 const Input = {
   get testModes() {
@@ -85,6 +86,24 @@ const Input = {
     const rawPackageMode = getInput('packageMode') || 'false';
     let packageName = '';
     const chownFilesTo = getInput('chownFilesTo') || '';
+    const dockerCpuLimit = getInput('dockerCpuLimit') || os.cpus().length.toString();
+    const bytesInMegabyte = 1024 * 1024;
+    let memoryMultiplier;
+    switch (os.platform()) {
+      case 'linux':
+        memoryMultiplier = 0.95;
+        break;
+      case 'win32':
+        memoryMultiplier = 0.8;
+        break;
+      default:
+        memoryMultiplier = 0.75;
+        break;
+    }
+    const dockerMemoryLimit =
+      getInput('dockerMemoryLimit') ||
+      `${Math.floor((os.totalmem() / bytesInMegabyte) * memoryMultiplier)}m`;
+    const dockerIsolationMode = getInput('dockerIsolationMode') || 'default';
 
     // Validate input
     if (!this.testModes.includes(testMode)) {
@@ -159,6 +178,9 @@ const Input = {
       packageMode,
       packageName,
       chownFilesTo,
+      dockerCpuLimit,
+      dockerMemoryLimit,
+      dockerIsolationMode,
       unityLicensingServer,
     };
   },

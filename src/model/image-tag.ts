@@ -31,7 +31,7 @@ class ImageTag {
     this.targetPlatform = targetPlatform;
     this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
     this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-    this.imageRollingVersion = 2;
+    this.imageRollingVersion = 3;
   }
 
   static get versionPattern() {
