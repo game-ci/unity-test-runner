@@ -98,7 +98,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, unityLicensingServer, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({ editorVersion, customImage });
             const runnerContext = model_1.Action.runnerContext();
             try {
@@ -118,6 +118,9 @@ function run() {
                     gitPrivateToken,
                     githubToken,
                     chownFilesTo,
+                    dockerCpuLimit,
+                    dockerMemoryLimit,
+                    dockerIsolationMode,
                     unityLicensingServer }, runnerContext));
             }
             finally {
@@ -263,7 +266,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -317,6 +320,8 @@ const Docker = {
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+                --cpus=${dockerCpuLimit} \
+                --memory=${dockerMemoryLimit} \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${sshAgent && !sshPublicKeysDirectoryPath
             ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
@@ -330,7 +335,7 @@ const Docker = {
                 /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -386,6 +391,9 @@ const Docker = {
                 ${sshAgent
             ? `--volume c:/Users/Administrator/.ssh/known_hosts:c:/root/.ssh/known_hosts`
             : ''} \
+                --cpus=${dockerCpuLimit} \
+                --memory=${dockerMemoryLimit} \
+                --isolation=${dockerIsolationMode} \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
@@ -422,7 +430,7 @@ class ImageTag {
         this.targetPlatform = targetPlatform;
         this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
         this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-        this.imageRollingVersion = 2;
+        this.imageRollingVersion = 3;
     }
     static get versionPattern() {
         return /^20\d{2}\.\d\.\w{3,4}|3$/;
@@ -571,6 +579,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const unity_version_parser_1 = __importDefault(__nccwpck_require__(7049));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core_1 = __nccwpck_require__(2186);
+const os_1 = __importDefault(__nccwpck_require__(2037));
 const Input = {
     get testModes() {
         return ['all', 'playmode', 'editmode', 'standalone'];
@@ -637,6 +646,23 @@ const Input = {
         const rawPackageMode = (0, core_1.getInput)('packageMode') || 'false';
         let packageName = '';
         const chownFilesTo = (0, core_1.getInput)('chownFilesTo') || '';
+        const dockerCpuLimit = (0, core_1.getInput)('dockerCpuLimit') || os_1.default.cpus().length.toString();
+        const bytesInMegabyte = 1024 * 1024;
+        let memoryMultiplier;
+        switch (os_1.default.platform()) {
+            case 'linux':
+                memoryMultiplier = 0.95;
+                break;
+            case 'win32':
+                memoryMultiplier = 0.8;
+                break;
+            default:
+                memoryMultiplier = 0.75;
+                break;
+        }
+        const dockerMemoryLimit = (0, core_1.getInput)('dockerMemoryLimit') ||
+            `${Math.floor((os_1.default.totalmem() / bytesInMegabyte) * memoryMultiplier)}m`;
+        const dockerIsolationMode = (0, core_1.getInput)('dockerIsolationMode') || 'default';
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
@@ -694,6 +720,9 @@ const Input = {
             packageMode,
             packageName,
             chownFilesTo,
+            dockerCpuLimit,
+            dockerMemoryLimit,
+            dockerIsolationMode,
             unityLicensingServer,
         };
     },

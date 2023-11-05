@@ -69,6 +69,8 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      dockerCpuLimit,
+      dockerMemoryLimit,
       unityLicensingServer,
     } = parameters;
 
@@ -126,6 +128,8 @@ const Docker = {
                 --volume "${actionFolder}/steps:/steps:z" \
                 --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+                --cpus=${dockerCpuLimit} \
+                --memory=${dockerMemoryLimit} \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
                 ${
                   sshAgent && !sshPublicKeysDirectoryPath
@@ -161,6 +165,9 @@ const Docker = {
       githubToken,
       runnerTemporaryPath,
       chownFilesTo,
+      dockerCpuLimit,
+      dockerMemoryLimit,
+      dockerIsolationMode,
       unityLicensingServer,
     } = parameters;
 
@@ -222,6 +229,9 @@ const Docker = {
                     ? `--volume c:/Users/Administrator/.ssh/known_hosts:c:/root/.ssh/known_hosts`
                     : ''
                 } \
+                --cpus=${dockerCpuLimit} \
+                --memory=${dockerMemoryLimit} \
+                --isolation=${dockerIsolationMode} \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
