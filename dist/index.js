@@ -659,14 +659,14 @@ class Input {
         }
     }
     static getFromUser() {
-        var _a;
+        var _a, _b;
         // Input variables specified in workflow using "with" prop.
         const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
-        const unityLicense = (0, core_1.getInput)('unityLicense') || '';
-        let unitySerial = (_a = process.env['UNITY_SERIAL']) !== null && _a !== void 0 ? _a : '';
+        const unityLicense = (0, core_1.getInput)('unityLicense') || ((_a = process.env['UNITY_LICENSE']) !== null && _a !== void 0 ? _a : '');
+        let unitySerial = (_b = process.env['UNITY_SERIAL']) !== null && _b !== void 0 ? _b : '';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
         const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';

@@ -87,7 +87,7 @@ class Input {
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
     const unityLicensingServer = getInput('unityLicensingServer') || '';
-    const unityLicense = getInput('unityLicense') || '';
+    const unityLicense = getInput('unityLicense') || (process.env['UNITY_LICENSE'] ?? '');
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
