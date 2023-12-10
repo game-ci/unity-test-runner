@@ -266,7 +266,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, unitySerial, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -279,11 +279,9 @@ const Docker = {
                 --workdir /github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
+                --env UNITY_SERIAL="${unitySerial} \
                 --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
@@ -317,9 +315,10 @@ const Docker = {
                 --volume "${githubWorkflow}:/github/workflow:z" \
                 --volume "${workspace}:/github/workspace:z" \
                 --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
-                --volume "${actionFolder}/steps:/steps:z" \
-                --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
+                --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
+                --volume "${actionFolder}/platforms/ubuntu/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+                --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
                 --cpus=${dockerCpuLimit} \
                 --memory=${dockerMemoryLimit} \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
@@ -335,7 +334,7 @@ const Docker = {
                 /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, unitySerial, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -345,14 +344,12 @@ const Docker = {
             (0, fs_1.mkdirSync)(githubWorkflow);
         const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
         return `docker run \
-                --workdir /github/workspace \
+                --workdir c:/github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
+                --env UNITY_SERIAL="${unitySerial}" \
                 --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
@@ -371,7 +368,7 @@ const Docker = {
                 --env GITHUB_HEAD_REF \
                 --env GITHUB_BASE_REF \
                 --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
+                --env GITHUB_WORKSPACE="c:/github/workspace" \
                 --env GITHUB_ACTION \
                 --env GITHUB_EVENT_PATH \
                 --env RUNNER_OS \
@@ -385,8 +382,8 @@ const Docker = {
                 --volume "${githubHome}":"c:/root" \
                 --volume "${githubWorkflow}":"c:/github/workflow" \
                 --volume "${workspace}":"c:/github/workspace" \
-                --volume "${actionFolder}/steps":"c:/steps" \
-                --volume "${actionFolder}":"c:/dist" \
+                --volume "${actionFolder}/platforms/windows":"c:/steps" \
+                --volume "${actionFolder}/BlankProject":"c:/BlankProject" \
                 ${sshAgent ? `--volume ${sshAgent}:c:/ssh-agent` : ''} \
                 ${sshAgent
             ? `--volume c:/Users/Administrator/.ssh/known_hosts:c:/root/.ssh/known_hosts`
@@ -397,7 +394,7 @@ const Docker = {
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
-                powershell c:/dist/entrypoint.ps1`;
+                powershell c:/steps/entrypoint.ps1`;
     },
 };
 exports["default"] = Docker;
@@ -417,20 +414,19 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const platform_1 = __importDefault(__nccwpck_require__(9707));
 class ImageTag {
     constructor(imageProperties) {
-        const { editorVersion = '2022.3.7f1', targetPlatform = ImageTag.getImagePlatformType(process.platform), customImage, } = imageProperties;
+        const { editorVersion = '2022.3.7f1', targetPlatform = ImageTag.getImagePlatformType(process.platform), customImage, containerRegistryRepository, containerRegistryImageVersion, } = imageProperties;
         if (!ImageTag.versionPattern.test(editorVersion)) {
             throw new Error(`Invalid version "${editorVersion}".`);
         }
         // Either
         this.customImage = customImage;
         // Or
-        this.repository = 'unityci';
-        this.name = 'editor';
+        this.repository = containerRegistryRepository;
         this.editorVersion = editorVersion;
         this.targetPlatform = targetPlatform;
         this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
         this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-        this.imageRollingVersion = 3;
+        this.imageRollingVersion = Number(containerRegistryImageVersion);
     }
     static get versionPattern() {
         return /^20\d{2}\.\d\.\w{3,4}|3$/;
@@ -527,7 +523,7 @@ class ImageTag {
         return `${this.imagePlatformPrefix}-${versionAndTarget}-${this.imageRollingVersion}`;
     }
     get image() {
-        return `${this.repository}/${this.name}`.replace(/^\/+/, '');
+        return `${this.repository}`.replace(/^\/+/, '');
     }
     toString() {
         const { image, tag, customImage } = this;
@@ -572,6 +568,29 @@ Object.defineProperty(exports, "ResultsCheck", ({ enumerable: true, get: functio
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -580,22 +599,23 @@ const unity_version_parser_1 = __importDefault(__nccwpck_require__(7049));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const core_1 = __nccwpck_require__(2186);
 const os_1 = __importDefault(__nccwpck_require__(2037));
-const Input = {
-    get testModes() {
+const core = __importStar(__nccwpck_require__(2186));
+class Input {
+    static get testModes() {
         return ['all', 'playmode', 'editmode', 'standalone'];
-    },
-    isValidFolderName(folderName) {
+    }
+    static isValidFolderName(folderName) {
         const validFolderName = new RegExp(/^(\.|\.\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
         return validFolderName.test(folderName);
-    },
-    isValidGlobalFolderName(folderName) {
+    }
+    static isValidGlobalFolderName(folderName) {
         const validFolderName = new RegExp(/^(\.|\.\/|\/)?(\.?[\w~]+([ _-]?[\w~]+)*\/?)*$/);
         return validFolderName.test(folderName);
-    },
+    }
     /**
      * When in package mode, we need to scrape the package's name from its package.json file
      */
-    getPackageNameFromPackageJson(packagePath) {
+    static getPackageNameFromPackageJson(packagePath) {
         const packageJsonPath = `${packagePath}/package.json`;
         if (!fs_1.default.existsSync(packageJsonPath)) {
             throw new Error(`Invalid projectPath - Cannot find package.json at ${packageJsonPath}`);
@@ -618,21 +638,35 @@ const Input = {
             throw new Error(`Package name from package.json is a string, but is empty`);
         }
         return rawPackageName;
-    },
+    }
+    static getSerialFromLicenseFile(license) {
+        const startKey = `<DeveloperData Value="`;
+        const endKey = `"/>`;
+        const startIndex = license.indexOf(startKey) + startKey.length;
+        if (startIndex < 0) {
+            throw new Error(`License File was corrupted, unable to locate serial`);
+        }
+        const endIndex = license.indexOf(endKey, startIndex);
+        // Slice off the first 4 characters as they are garbage values
+        return Buffer.from(license.slice(startIndex, endIndex), 'base64').toString('binary').slice(4);
+    }
     /**
      * When in package mode, we need to ensure that the Tests folder is present
      */
-    verifyTestsFolderIsPresent(packagePath) {
+    static verifyTestsFolderIsPresent(packagePath) {
         if (!fs_1.default.existsSync(`${packagePath}/Tests`)) {
             throw new Error(`Invalid projectPath - Cannot find package tests folder at ${packagePath}/Tests`);
         }
-    },
-    getFromUser() {
+    }
+    static getFromUser() {
+        var _a;
         // Input variables specified in workflow using "with" prop.
         const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
+        const unityLicense = (0, core_1.getInput)('unityLicense') || '';
+        let unitySerial = (_a = process.env['UNITY_SERIAL']) !== null && _a !== void 0 ? _a : '';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
         const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';
@@ -663,6 +697,9 @@ const Input = {
         const dockerMemoryLimit = (0, core_1.getInput)('dockerMemoryLimit') ||
             `${Math.floor((os_1.default.totalmem() / bytesInMegabyte) * memoryMultiplier)}m`;
         const dockerIsolationMode = (0, core_1.getInput)('dockerIsolationMode') || 'default';
+        const runAsHostUser = (0, core_1.getInput)('runAsHostUser') || 'false';
+        const containerRegistryRepository = (0, core_1.getInput)('containerRegistryRepository') || 'unityci/editor';
+        const containerRegistryImageVersion = (0, core_1.getInput)('containerRegistryImageVersion') || '3';
         // Validate input
         if (!this.testModes.includes(testMode)) {
             throw new Error(`Invalid testMode ${testMode}`);
@@ -697,6 +734,23 @@ const Input = {
             packageName = this.getPackageNameFromPackageJson(projectPath);
             this.verifyTestsFolderIsPresent(projectPath);
         }
+        if (runAsHostUser !== 'true' && runAsHostUser !== 'false') {
+            throw new Error(`Invalid runAsHostUser "${runAsHostUser}"`);
+        }
+        if (unityLicensingServer === '' && !unitySerial) {
+            // No serial was present, so it is a personal license that we need to convert
+            if (!unityLicense) {
+                throw new Error(`Missing Unity License File and no Serial was found. If this
+                            is a personal license, make sure to follow the activation
+                            steps and set the UNITY_LICENSE GitHub secret or enter a Unity
+                            serial number inside the UNITY_SERIAL GitHub secret.`);
+            }
+            unitySerial = this.getSerialFromLicenseFile(unityLicense);
+        }
+        if (unitySerial !== undefined && unitySerial.length === 27) {
+            core.setSecret(unitySerial);
+            core.setSecret(`${unitySerial.slice(0, -4)}XXXX`);
+        }
         // Sanitise other input
         const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
         const sshPublicKeysDirectoryPath = rawSshPublicKeysDirectoryPath.replace(/\/$/, '');
@@ -724,9 +778,13 @@ const Input = {
             dockerMemoryLimit,
             dockerIsolationMode,
             unityLicensingServer,
+            runAsHostUser,
+            containerRegistryRepository,
+            containerRegistryImageVersion,
+            unitySerial,
         };
-    },
-};
+    }
+}
 exports["default"] = Input;
 
 

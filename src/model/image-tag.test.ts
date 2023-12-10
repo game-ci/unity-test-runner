@@ -1,17 +1,15 @@
 import ImageTag from './image-tag';
 
-jest.spyOn(ImageTag, 'getImagePlatformPrefix').mockReturnValue('ubuntu');
-
 describe('ImageTag', () => {
   const some = {
     editorVersion: '2099.9.f9f9',
     targetPlatform: 'Test',
     builderPlatform: '',
+    containerRegistryRepository: 'unityci/editor',
+    containerRegistryImageVersion: '3',
   };
 
   const defaults = {
-    repository: 'unityci',
-    name: 'editor',
     image: 'unityci/editor',
   };
 
@@ -24,8 +22,7 @@ describe('ImageTag', () => {
     it('accepts parameters and sets the right properties', () => {
       const image = new ImageTag(some);
 
-      expect(image.repository).toStrictEqual('unityci');
-      expect(image.name).toStrictEqual('editor');
+      expect(image.repository).toStrictEqual('unityci/editor');
       expect(image.editorVersion).toStrictEqual(some.editorVersion);
       expect(image.targetPlatform).toStrictEqual(some.targetPlatform);
       expect(image.targetPlatformSuffix).toStrictEqual(some.builderPlatform);
@@ -48,30 +45,65 @@ describe('ImageTag', () => {
       const image = new ImageTag({
         editorVersion: '2099.1.1111',
         targetPlatform: some.targetPlatform,
+        containerRegistryRepository: 'unityci/editor',
+        containerRegistryImageVersion: '3',
       });
 
-      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2099.1.1111-3`);
+      switch (process.platform) {
+        case 'win32':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:windows-2099.1.1111-3`);
+          break;
+        case 'linux':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2099.1.1111-3`);
+          break;
+      }
     });
     it('returns customImage if given', () => {
       const image = new ImageTag({
         editorVersion: '2099.1.1111',
         targetPlatform: some.targetPlatform,
         customImage: `${defaults.image}:2099.1.1111@347598437689743986`,
+        containerRegistryRepository: 'unityci/editor',
+        containerRegistryImageVersion: '3',
       });
 
       expect(image.toString()).toStrictEqual(image.customImage);
     });
 
     it('returns the specific build platform', () => {
-      const image = new ImageTag({ editorVersion: '2022.3.7f1', targetPlatform: 'WebGL' });
+      const image = new ImageTag({
+        editorVersion: '2022.3.7f1',
+        targetPlatform: 'WebGL',
+        containerRegistryRepository: 'unityci/editor',
+        containerRegistryImageVersion: '3',
+      });
 
-      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2022.3.7f1-webgl-3`);
+      switch (process.platform) {
+        case 'win32':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:windows-2022.3.7f1-webgl-3`);
+          break;
+        case 'linux':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2022.3.7f1-webgl-3`);
+          break;
+      }
     });
 
     it('returns no specific build platform for generic targetPlatforms', () => {
-      const image = new ImageTag({ targetPlatform: 'NoTarget' });
+      const image = new ImageTag({
+        editorVersion: '2019.2.11f1',
+        targetPlatform: 'NoTarget',
+        containerRegistryRepository: 'unityci/editor',
+        containerRegistryImageVersion: '3',
+      });
 
-      expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2022.3.7f1-3`);
+      switch (process.platform) {
+        case 'win32':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:windows-2019.2.11f1-3`);
+          break;
+        case 'linux':
+          expect(image.toString()).toStrictEqual(`${defaults.image}:ubuntu-2019.2.11f1-3`);
+          break;
+      }
     });
   });
 });

@@ -72,6 +72,7 @@ const Docker = {
       dockerCpuLimit,
       dockerMemoryLimit,
       unityLicensingServer,
+      unitySerial,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -87,11 +88,9 @@ const Docker = {
                 --workdir /github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
+                --env UNITY_SERIAL="${unitySerial} \
                 --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
@@ -125,9 +124,10 @@ const Docker = {
                 --volume "${githubWorkflow}:/github/workflow:z" \
                 --volume "${workspace}:/github/workspace:z" \
                 --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
-                --volume "${actionFolder}/steps:/steps:z" \
-                --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
+                --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
+                --volume "${actionFolder}/platforms/ubuntu/entrypoint.sh:/entrypoint.sh:z" \
                 --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+                --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
                 --cpus=${dockerCpuLimit} \
                 --memory=${dockerMemoryLimit} \
                 ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
@@ -169,6 +169,7 @@ const Docker = {
       dockerMemoryLimit,
       dockerIsolationMode,
       unityLicensingServer,
+      unitySerial,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -181,14 +182,12 @@ const Docker = {
     ).join(';');
 
     return `docker run \
-                --workdir /github/workspace \
+                --workdir c:/github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
                 --env UNITY_EMAIL \
                 --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
+                --env UNITY_SERIAL="${unitySerial}" \
                 --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
                 --env UNITY_VERSION="${editorVersion}" \
                 --env PROJECT_PATH="${projectPath}" \
@@ -207,7 +206,7 @@ const Docker = {
                 --env GITHUB_HEAD_REF \
                 --env GITHUB_BASE_REF \
                 --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
+                --env GITHUB_WORKSPACE="c:/github/workspace" \
                 --env GITHUB_ACTION \
                 --env GITHUB_EVENT_PATH \
                 --env RUNNER_OS \
@@ -221,8 +220,8 @@ const Docker = {
                 --volume "${githubHome}":"c:/root" \
                 --volume "${githubWorkflow}":"c:/github/workflow" \
                 --volume "${workspace}":"c:/github/workspace" \
-                --volume "${actionFolder}/steps":"c:/steps" \
-                --volume "${actionFolder}":"c:/dist" \
+                --volume "${actionFolder}/platforms/windows":"c:/steps" \
+                --volume "${actionFolder}/BlankProject":"c:/BlankProject" \
                 ${sshAgent ? `--volume ${sshAgent}:c:/ssh-agent` : ''} \
                 ${
                   sshAgent
@@ -235,7 +234,7 @@ const Docker = {
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
-                powershell c:/dist/entrypoint.ps1`;
+                powershell c:/steps/entrypoint.ps1`;
   },
 };
 

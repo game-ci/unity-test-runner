@@ -7,6 +7,19 @@ const mockedFsExistsSync = jest.spyOn(fs, 'existsSync');
 const mockedFsReadFileSync = jest.spyOn(fs, 'readFileSync');
 
 describe('Input', () => {
+  let originalEnvironment;
+
+  beforeEach(() => {
+    // Store original process.env
+    originalEnvironment = process.env;
+    process.env['UNITY_SERIAL'] = 'F4-1234-1234-1234';
+  });
+
+  afterEach(() => {
+    // Restore original process.env
+    process.env = originalEnvironment;
+  });
+
   describe('getFromUser', () => {
     it('does not throw', () => {
       expect(() => Input.getFromUser()).not.toThrow();
