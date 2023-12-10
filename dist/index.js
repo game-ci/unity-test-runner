@@ -224,6 +224,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const image_environment_factory_1 = __importDefault(__nccwpck_require__(5145));
 const fs_1 = __nccwpck_require__(7147);
 const licensing_server_setup_1 = __importDefault(__nccwpck_require__(6089));
 const exec_1 = __nccwpck_require__(1514);
@@ -272,7 +273,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, unitySerial, runAsHostUser, } = parameters;
+        const { actionFolder, workspace, testMode, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, githubToken, runnerTemporaryPath, dockerCpuLimit, dockerMemoryLimit, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -282,66 +283,37 @@ const Docker = {
         const cidfile = containerIdFilePath(parameters);
         const testPlatforms = (testMode === 'all' ? ['playmode', 'editmode', 'COMBINE_RESULTS'] : [testMode]).join(';');
         return `docker run \
-                --workdir /github/workspace \
-                --cidfile "${cidfile}" \
-                --rm \
-                --env UNITY_EMAIL \
-                --env UNITY_PASSWORD \
-                --env UNITY_SERIAL="${unitySerial} \
-                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
-                --env UNITY_VERSION="${editorVersion}" \
-                --env PROJECT_PATH="${projectPath}" \
-                --env CUSTOM_PARAMETERS="${customParameters}" \
-                --env TEST_PLATFORMS="${testPlatforms}" \
-                --env COVERAGE_OPTIONS="${coverageOptions}" \
-                --env COVERAGE_RESULTS_PATH="CodeCoverage" \
-                --env ARTIFACTS_PATH="${artifactsPath}" \
-                --env PACKAGE_MODE="${packageMode}" \
-                --env PACKAGE_NAME="${packageName}" \
-                --env RUN_AS_HOST_USER="${runAsHostUser}" \
-                --env GITHUB_REF \
-                --env GITHUB_SHA \
-                --env GITHUB_REPOSITORY \
-                --env GITHUB_ACTOR \
-                --env GITHUB_WORKFLOW \
-                --env GITHUB_HEAD_REF \
-                --env GITHUB_BASE_REF \
-                --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
-                --env GITHUB_ACTION \
-                --env GITHUB_EVENT_PATH \
-                --env RUNNER_OS \
-                --env RUNNER_TOOL_CACHE \
-                --env RUNNER_TEMP \
-                --env RUNNER_WORKSPACE \
-                --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
-                --env CHOWN_FILES_TO="${chownFilesTo}" \
-                --env GIT_CONFIG_EXTENSIONS \
-                ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-                --volume "${githubHome}:/root:z" \
-                --volume "${githubWorkflow}:/github/workflow:z" \
-                --volume "${workspace}:/github/workspace:z" \
-                --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
-                --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
-                --volume "${actionFolder}/platforms/ubuntu/entrypoint.sh:/entrypoint.sh:z" \
-                --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
-                --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
-                --cpus=${dockerCpuLimit} \
-                --memory=${dockerMemoryLimit} \
-                ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
-                ${sshAgent && !sshPublicKeysDirectoryPath
+            --workdir /github/workspace \
+            --cidfile "${cidfile}" \
+            --rm \
+            ${image_environment_factory_1.default.getEnvVarString(parameters)} \
+            --env GIT_CONFIG_EXTENSIONS \
+            --env TEST_PLATFORMS="${testPlatforms}" \
+            ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
+            --volume "${githubHome}:/root:z" \
+            --volume "${githubWorkflow}:/github/workflow:z" \
+            --volume "${workspace}:/github/workspace:z" \
+            --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
+            --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
+            --volume "${actionFolder}/platforms/ubuntu/entrypoint.sh:/entrypoint.sh:z" \
+            --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+            --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
+            --cpus=${dockerCpuLimit} \
+            --memory=${dockerMemoryLimit} \
+            ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
+            ${sshAgent && !sshPublicKeysDirectoryPath
             ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
             : ''} \
-                ${sshPublicKeysDirectoryPath
+            ${sshPublicKeysDirectoryPath
             ? `--volume ${sshPublicKeysDirectoryPath}:/root/.ssh:ro`
             : ''} \
-                ${useHostNetwork ? '--net=host' : ''} \
-                ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-                ${image} \
-                /bin/bash -c /entrypoint.sh`;
+            ${useHostNetwork ? '--net=host' : ''} \
+            ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
+            ${image} \
+            /bin/bash -c /entrypoint.sh`;
     },
     getWindowsCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, unitySerial, } = parameters;
+        const { actionFolder, workspace, testMode, useHostNetwork, sshAgent, githubToken, runnerTemporaryPath, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -354,36 +326,9 @@ const Docker = {
                 --workdir c:/github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_EMAIL \
-                --env UNITY_PASSWORD \
-                --env UNITY_SERIAL="${unitySerial}" \
-                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
-                --env UNITY_VERSION="${editorVersion}" \
-                --env PROJECT_PATH="${projectPath}" \
-                --env CUSTOM_PARAMETERS="${customParameters}" \
+                ${image_environment_factory_1.default.getEnvVarString(parameters)} \
                 --env TEST_PLATFORMS="${testPlatforms}" \
-                --env COVERAGE_OPTIONS="${coverageOptions}" \
-                --env COVERAGE_RESULTS_PATH="CodeCoverage" \
-                --env ARTIFACTS_PATH="${artifactsPath}" \
-                --env PACKAGE_MODE="${packageMode}" \
-                --env PACKAGE_NAME="${packageName}" \
-                --env GITHUB_REF \
-                --env GITHUB_SHA \
-                --env GITHUB_REPOSITORY \
-                --env GITHUB_ACTOR \
-                --env GITHUB_WORKFLOW \
-                --env GITHUB_HEAD_REF \
-                --env GITHUB_BASE_REF \
-                --env GITHUB_EVENT_NAME \
                 --env GITHUB_WORKSPACE="c:/github/workspace" \
-                --env GITHUB_ACTION \
-                --env GITHUB_EVENT_PATH \
-                --env RUNNER_OS \
-                --env RUNNER_TOOL_CACHE \
-                --env RUNNER_TEMP \
-                --env RUNNER_WORKSPACE \
-                --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
-                --env CHOWN_FILES_TO="${chownFilesTo}" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
                 --volume "${actionFolder}/test-standalone-scripts":"c:/UnityStandaloneScripts" \
                 --volume "${githubHome}":"c:/root" \
@@ -405,6 +350,85 @@ const Docker = {
     },
 };
 exports["default"] = Docker;
+
+
+/***/ }),
+
+/***/ 5145:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+class ImageEnvironmentFactory {
+    static getEnvVarString(parameters) {
+        const environmentVariables = ImageEnvironmentFactory.getEnvironmentVariables(parameters);
+        let string = '';
+        for (const p of environmentVariables) {
+            if (p.value === '' || p.value === undefined) {
+                continue;
+            }
+            if (p.name !== 'ANDROID_KEYSTORE_BASE64' && p.value.toString().includes(`\n`)) {
+                string += `--env ${p.name} `;
+                process.env[p.name] = p.value.toString();
+                continue;
+            }
+            string += `--env ${p.name}="${p.value}" `;
+        }
+        return string;
+    }
+    static getEnvironmentVariables(parameters) {
+        let environmentVariables = [
+            { name: 'UNITY_EMAIL', value: process.env.UNITY_EMAIL },
+            { name: 'UNITY_PASSWORD', value: process.env.UNITY_PASSWORD },
+            { name: 'UNITY_SERIAL', value: parameters.unitySerial },
+            {
+                name: 'UNITY_LICENSING_SERVER',
+                value: parameters.unityLicensingServer,
+            },
+            { name: 'UNITY_VERSION', value: parameters.editorVersion },
+            {
+                name: 'USYM_UPLOAD_AUTH_TOKEN',
+                value: process.env.USYM_UPLOAD_AUTH_TOKEN,
+            },
+            { name: 'PROJECT_PATH', value: parameters.projectPath },
+            { name: 'COVERAGE_OPTIONS', value: parameters.coverageOptions },
+            { name: 'COVERAGE_RESULTS_PATH', value: 'CodeCoverage' },
+            { name: 'ARTIFACTS_PATH', value: parameters.artifactsPath },
+            { name: 'PACKAGE_MODE', value: parameters.packageMode },
+            { name: 'PACKAGE_NAME', value: parameters.packageName },
+            { name: 'GIT_PRIVATE_TOKEN', value: parameters.gitPrivateToken },
+            { name: 'VERSION', value: parameters.buildVersion },
+            { name: 'CUSTOM_PARAMETERS', value: parameters.customParameters },
+            { name: 'RUN_AS_HOST_USER', value: parameters.runAsHostUser },
+            { name: 'CHOWN_FILES_TO', value: parameters.chownFilesTo },
+            { name: 'GITHUB_REF', value: process.env.GITHUB_REF },
+            { name: 'GITHUB_SHA', value: process.env.GITHUB_SHA },
+            { name: 'GITHUB_REPOSITORY', value: process.env.GITHUB_REPOSITORY },
+            { name: 'GITHUB_ACTOR', value: process.env.GITHUB_ACTOR },
+            { name: 'GITHUB_WORKFLOW', value: process.env.GITHUB_WORKFLOW },
+            { name: 'GITHUB_HEAD_REF', value: process.env.GITHUB_HEAD_REF },
+            { name: 'GITHUB_BASE_REF', value: process.env.GITHUB_BASE_REF },
+            { name: 'GITHUB_EVENT_NAME', value: process.env.GITHUB_EVENT_NAME },
+            { name: 'GITHUB_ACTION', value: process.env.GITHUB_ACTION },
+            { name: 'GITHUB_EVENT_PATH', value: process.env.GITHUB_EVENT_PATH },
+            { name: 'RUNNER_OS', value: process.env.RUNNER_OS },
+            { name: 'RUNNER_TOOL_CACHE', value: process.env.RUNNER_TOOL_CACHE },
+            { name: 'RUNNER_TEMP', value: process.env.RUNNER_TEMP },
+            { name: 'RUNNER_WORKSPACE', value: process.env.RUNNER_WORKSPACE },
+        ];
+        for (const variable of environmentVariables) {
+            if (environmentVariables.some(x => variable !== undefined && variable.name !== undefined && x.name === variable.name) === undefined) {
+                environmentVariables = environmentVariables.filter(x => x !== variable);
+            }
+        }
+        if (parameters.sshAgent) {
+            environmentVariables.push({ name: 'SSH_AUTH_SOCK', value: '/ssh-agent' });
+        }
+        return environmentVariables;
+    }
+}
+exports["default"] = ImageEnvironmentFactory;
 
 
 /***/ }),
