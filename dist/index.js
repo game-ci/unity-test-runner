@@ -98,8 +98,13 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, } = model_1.Input.getFromUser();
-            const baseImage = new model_1.ImageTag({ editorVersion, customImage });
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, runAsHostUser, containerRegistryRepository, containerRegistryImageVersion, } = model_1.Input.getFromUser();
+            const baseImage = new model_1.ImageTag({
+                editorVersion,
+                customImage,
+                containerRegistryRepository,
+                containerRegistryImageVersion,
+            });
             const runnerContext = model_1.Action.runnerContext();
             try {
                 yield model_1.Docker.run(baseImage, Object.assign({ actionFolder,
@@ -121,7 +126,8 @@ function run() {
                     dockerCpuLimit,
                     dockerMemoryLimit,
                     dockerIsolationMode,
-                    unityLicensingServer }, runnerContext));
+                    unityLicensingServer,
+                    runAsHostUser }, runnerContext));
             }
             finally {
                 yield model_1.Output.setArtifactsPath(artifactsPath);
@@ -266,7 +272,7 @@ const Docker = {
         });
     },
     getLinuxCommand(image, parameters) {
-        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, unitySerial, } = parameters;
+        const { actionFolder, editorVersion, workspace, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, packageMode, packageName, gitPrivateToken, githubToken, runnerTemporaryPath, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, unityLicensingServer, unitySerial, runAsHostUser, } = parameters;
         const githubHome = path_1.default.join(runnerTemporaryPath, '_github_home');
         if (!(0, fs_1.existsSync)(githubHome))
             (0, fs_1.mkdirSync)(githubHome);
@@ -292,6 +298,7 @@ const Docker = {
                 --env ARTIFACTS_PATH="${artifactsPath}" \
                 --env PACKAGE_MODE="${packageMode}" \
                 --env PACKAGE_NAME="${packageName}" \
+                --env RUN_AS_HOST_USER="${runAsHostUser}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \

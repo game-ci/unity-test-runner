@@ -73,6 +73,7 @@ const Docker = {
       dockerMemoryLimit,
       unityLicensingServer,
       unitySerial,
+      runAsHostUser,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -101,6 +102,7 @@ const Docker = {
                 --env ARTIFACTS_PATH="${artifactsPath}" \
                 --env PACKAGE_MODE="${packageMode}" \
                 --env PACKAGE_NAME="${packageName}" \
+                --env RUN_AS_HOST_USER="${runAsHostUser}" \
                 --env GITHUB_REF \
                 --env GITHUB_SHA \
                 --env GITHUB_REPOSITORY \
