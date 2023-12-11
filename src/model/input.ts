@@ -89,6 +89,13 @@ class Input {
     const unityLicensingServer = getInput('unityLicensingServer') || '';
     const unityLicense = getInput('unityLicense') || (process.env['UNITY_LICENSE'] ?? '');
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
+    if (unitySerial === '') {
+      core.info('Unity Serial Unset');
+    }
+
+    if (unityLicense === '') {
+      core.info('Unity License Unset');
+    }
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
     const coverageOptions = getInput('coverageOptions') || '';
@@ -187,6 +194,7 @@ class Input {
                             serial number inside the UNITY_SERIAL GitHub secret.`,
         );
       }
+      core.info('Decoding license');
       unitySerial = this.getSerialFromLicenseFile(unityLicense);
     }
 
