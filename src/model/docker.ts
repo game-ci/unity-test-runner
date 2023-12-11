@@ -87,7 +87,6 @@ const Docker = {
             --volume "${workspace}:/github/workspace:z" \
             --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
             --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
-            --volume "${actionFolder}/platforms/ubuntu/entrypoint.sh:/entrypoint.sh:z" \
             --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
             --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
             --cpus=${dockerCpuLimit} \
@@ -106,7 +105,7 @@ const Docker = {
             ${useHostNetwork ? '--net=host' : ''} \
             ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
             ${image} \
-            /bin/bash -c /entrypoint.sh`;
+            /bin/bash -c /steps/entrypoint.sh`;
   },
 
   getWindowsCommand(image, parameters): string {
