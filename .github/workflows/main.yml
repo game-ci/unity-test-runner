@@ -2,6 +2,10 @@ name: Actions 😎
 on:
   push:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
@@ -31,7 +35,10 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         testMode:
           - playmode
           - editmode
@@ -77,7 +84,10 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -131,7 +141,10 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
@@ -188,7 +201,10 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -243,7 +259,10 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -290,7 +309,10 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2022.3.7f1 # Only 2019.4+ docker images contain the IL2CPP backend installed.
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -342,7 +364,10 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         projectPath:
           - unity-project-with-correct-tests
     steps:
@@ -408,7 +433,10 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         testMode:
           - playmode
           - editmode
@@ -447,7 +475,10 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -491,7 +522,10 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
     steps:
@@ -539,7 +573,10 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
@@ -583,7 +620,10 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2022.3.7f1
+          - 2021.3.32f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
     steps:
