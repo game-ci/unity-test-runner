@@ -30,6 +30,7 @@ export async function run() {
       runAsHostUser,
       containerRegistryRepository,
       containerRegistryImageVersion,
+      unitySerial,
     } = Input.getFromUser();
     const baseImage = new ImageTag({
       editorVersion,
@@ -62,6 +63,7 @@ export async function run() {
         dockerIsolationMode,
         unityLicensingServer,
         runAsHostUser,
+        unitySerial,
         ...runnerContext,
       });
     } finally {
