@@ -86,7 +86,6 @@ class Input {
     const unityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
-    core.info(`rawProjectPath: ${rawProjectPath}`);
     const unityLicensingServer = getInput('unityLicensingServer') || '';
     const unityLicense = getInput('unityLicense') || (process.env['UNITY_LICENSE'] ?? '');
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
@@ -161,7 +160,7 @@ class Input {
     // for input validation
     const packageMode = rawPackageMode === 'true';
     const projectPath = rawProjectPath.replace(/\/$/, '');
-    core.info(`projectPath: ${projectPath}`);
+
     // if in package mode, attempt to get the package's name, and ensure tests are present
     if (packageMode) {
       if (unityVersion === 'auto') {

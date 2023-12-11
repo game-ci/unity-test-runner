@@ -290,6 +290,7 @@ const Docker = {
             ${image_environment_factory_1.default.getEnvVarString(parameters)} \
             --env GIT_CONFIG_EXTENSIONS \
             --env TEST_PLATFORMS="${testPlatforms}" \
+            --env GITHUB_WORKSPACE="/github/workspace" \
             ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
             --volume "${githubHome}:/root:z" \
             --volume "${githubWorkflow}:/github/workflow:z" \
@@ -695,7 +696,6 @@ class Input {
         const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
-        core.info(`rawProjectPath: ${rawProjectPath}`);
         const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
         const unityLicense = (0, core_1.getInput)('unityLicense') || ((_a = process.env['UNITY_LICENSE']) !== null && _a !== void 0 ? _a : '');
         let unitySerial = (_b = process.env['UNITY_SERIAL']) !== null && _b !== void 0 ? _b : '';
@@ -758,7 +758,6 @@ class Input {
         // for input validation
         const packageMode = rawPackageMode === 'true';
         const projectPath = rawProjectPath.replace(/\/$/, '');
-        core.info(`projectPath: ${projectPath}`);
         // if in package mode, attempt to get the package's name, and ensure tests are present
         if (packageMode) {
             if (unityVersion === 'auto') {

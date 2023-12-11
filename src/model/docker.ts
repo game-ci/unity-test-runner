@@ -81,6 +81,7 @@ const Docker = {
             ${ImageEnvironmentFactory.getEnvVarString(parameters)} \
             --env GIT_CONFIG_EXTENSIONS \
             --env TEST_PLATFORMS="${testPlatforms}" \
+            --env GITHUB_WORKSPACE="/github/workspace" \
             ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
             --volume "${githubHome}:/root:z" \
             --volume "${githubWorkflow}:/github/workflow:z" \
