@@ -695,15 +695,10 @@ class Input {
         const unityVersion = (0, core_1.getInput)('unityVersion') || 'auto';
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
+        core.info(`rawProjectPath: ${rawProjectPath}`);
         const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
         const unityLicense = (0, core_1.getInput)('unityLicense') || ((_a = process.env['UNITY_LICENSE']) !== null && _a !== void 0 ? _a : '');
         let unitySerial = (_b = process.env['UNITY_SERIAL']) !== null && _b !== void 0 ? _b : '';
-        if (unitySerial === '') {
-            core.info('Unity Serial Unset');
-        }
-        if (unityLicense === '') {
-            core.info('Unity License Unset');
-        }
         const customParameters = (0, core_1.getInput)('customParameters') || '';
         const testMode = ((0, core_1.getInput)('testMode') || 'all').toLowerCase();
         const coverageOptions = (0, core_1.getInput)('coverageOptions') || '';
@@ -763,6 +758,7 @@ class Input {
         // for input validation
         const packageMode = rawPackageMode === 'true';
         const projectPath = rawProjectPath.replace(/\/$/, '');
+        core.info(`projectPath: ${projectPath}`);
         // if in package mode, attempt to get the package's name, and ensure tests are present
         if (packageMode) {
             if (unityVersion === 'auto') {
@@ -782,7 +778,6 @@ class Input {
                             steps and set the UNITY_LICENSE GitHub secret or enter a Unity
                             serial number inside the UNITY_SERIAL GitHub secret.`);
             }
-            core.info('Decoding license');
             unitySerial = this.getSerialFromLicenseFile(unityLicense);
         }
         if (unitySerial !== undefined && unitySerial.length === 27) {

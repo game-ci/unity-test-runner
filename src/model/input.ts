@@ -86,16 +86,10 @@ class Input {
     const unityVersion = getInput('unityVersion') || 'auto';
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
+    core.info(`rawProjectPath: ${rawProjectPath}`);
     const unityLicensingServer = getInput('unityLicensingServer') || '';
     const unityLicense = getInput('unityLicense') || (process.env['UNITY_LICENSE'] ?? '');
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
-    if (unitySerial === '') {
-      core.info('Unity Serial Unset');
-    }
-
-    if (unityLicense === '') {
-      core.info('Unity License Unset');
-    }
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
     const coverageOptions = getInput('coverageOptions') || '';
@@ -167,7 +161,7 @@ class Input {
     // for input validation
     const packageMode = rawPackageMode === 'true';
     const projectPath = rawProjectPath.replace(/\/$/, '');
-
+    core.info(`projectPath: ${projectPath}`);
     // if in package mode, attempt to get the package's name, and ensure tests are present
     if (packageMode) {
       if (unityVersion === 'auto') {
@@ -194,7 +188,6 @@ class Input {
                             serial number inside the UNITY_SERIAL GitHub secret.`,
         );
       }
-      core.info('Decoding license');
       unitySerial = this.getSerialFromLicenseFile(unityLicense);
     }
 
