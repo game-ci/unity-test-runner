@@ -86,7 +86,7 @@ const Docker = {
             --volume "${githubWorkflow}:/github/workflow:z" \
             --volume "${workspace}:/github/workspace:z" \
             --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
-            --volume "${actionFolder}/platforms/ubuntu/steps:/steps:z" \
+            --volume "${actionFolder}/platforms/ubuntu:/steps:z" \
             --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
             --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
             --cpus=${dockerCpuLimit} \
