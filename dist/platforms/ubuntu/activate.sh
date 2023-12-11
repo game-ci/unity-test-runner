@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-elif [[ -n "$UNITY_SERIAL" && -n "$UNITY_EMAIL" && -n "$UNITY_PASSWORD" ]]; then
+if [[ -n "$UNITY_SERIAL" && -n "$UNITY_EMAIL" && -n "$UNITY_PASSWORD" ]]; then
   #
   # SERIAL LICENSE MODE
   #
@@ -98,6 +98,3 @@ else
   echo "::error ::There was an error while trying to activate the Unity license."
   exit $UNITY_EXIT_CODE
 fi
-
-# Return to previous working directory
-popd

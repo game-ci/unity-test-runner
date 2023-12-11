@@ -20,6 +20,3 @@ elif [[ -n "$UNITY_SERIAL" ]]; then
     -password "$UNITY_PASSWORD" \
     -projectPath "/BlankProject"
 fi
-
-# Return to previous working directory
-popd
