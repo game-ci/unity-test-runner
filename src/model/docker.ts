@@ -105,7 +105,7 @@ const Docker = {
             ${useHostNetwork ? '--net=host' : ''} \
             ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
             ${image} \
-            /bin/bash -c /steps/entrypoint.sh`;
+            /bin/bash -c "ls -lashi /steps`;
   },
 
   getWindowsCommand(image, parameters): string {
