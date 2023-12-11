@@ -32,12 +32,12 @@ if [[ "$RUN_AS_HOST_USER" == "true" ]]; then
   set +e
 
   # Switch to the host user so we can create files with the correct ownership
-  su $USERNAME -c "$SHELL -c 'source /steps/runsteps.sh'"
+  su $USERNAME -c "$SHELL -c 'source /steps/run_steps.sh'"
 else
   echo "Running as root"
 
   # Run as root
-  source /steps/runsteps.sh
+  source /steps/run_steps.sh
 fi
 
 exit $?
