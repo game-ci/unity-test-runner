@@ -35,7 +35,6 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -84,7 +83,6 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -141,7 +139,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -201,7 +198,6 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -259,7 +255,6 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -309,7 +304,6 @@ jobs:
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -364,7 +358,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -433,7 +426,6 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -475,7 +467,6 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -522,7 +513,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -573,7 +563,6 @@ jobs:
         projectPath:
           - unity-package-with-correct-tests/com.example.testpackage
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
@@ -620,7 +609,6 @@ jobs:
       fail-fast: false
       matrix:
         unityVersion:
-          - 2021.3.32f1
           - 2022.3.13f1
           - 2023.1.19f1
           - 2023.2.2f1
