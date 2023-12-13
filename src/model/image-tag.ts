@@ -3,7 +3,6 @@ import Platform from './platform';
 class ImageTag {
   public customImage?: string;
   public repository: string;
-  public name: string;
   public editorVersion: string;
   public targetPlatform: string;
   public targetPlatformSuffix: string;
@@ -15,6 +14,8 @@ class ImageTag {
       editorVersion = '2022.3.7f1',
       targetPlatform = ImageTag.getImagePlatformType(process.platform),
       customImage,
+      containerRegistryRepository,
+      containerRegistryImageVersion,
     } = imageProperties;
 
     if (!ImageTag.versionPattern.test(editorVersion)) {
@@ -25,13 +26,12 @@ class ImageTag {
     this.customImage = customImage;
 
     // Or
-    this.repository = 'unityci';
-    this.name = 'editor';
+    this.repository = containerRegistryRepository;
     this.editorVersion = editorVersion;
     this.targetPlatform = targetPlatform;
     this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
     this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-    this.imageRollingVersion = 3;
+    this.imageRollingVersion = Number(containerRegistryImageVersion);
   }
 
   static get versionPattern() {
@@ -146,7 +146,7 @@ class ImageTag {
   }
 
   get image() {
-    return `${this.repository}/${this.name}`.replace(/^\/+/, '');
+    return `${this.repository}`.replace(/^\/+/, '');
   }
 
   toString() {

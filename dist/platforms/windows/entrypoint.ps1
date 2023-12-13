@@ -1,24 +1,19 @@
 #
-# Create directory for license activation
-#
-
-$ACTIVATE_LICENSE_PATH = "${env:GITHUB_WORKSPACE}/_activate-license"
-New-Item -Path "$ACTIVATE_LICENSE_PATH" -ItemType Directory
-
-#
 # Run steps
 #
 
-& $PSScriptRoot\steps\activate.ps1
-& $PSScriptRoot\steps\set_gitcredential.ps1
-& $PSScriptRoot\steps\run_tests.ps1
-& $PSScriptRoot\steps\return_license.ps1
+. "c:\steps\set_gitcredential.ps1"
 
-#
-# Remove license activation directory
-#
+. "c:\steps\activate.ps1"
 
-Remove-Item "$ACTIVATE_LICENSE_PATH" -Recurse -Force
+# If we didn't activate successfully, exit with the exit code from the activation step.
+if ($ACTIVATION_EXIT_CODE -ne 0) {
+  exit $ACTIVATION_EXIT_CODE
+}
+
+. "c:\steps\run_tests.ps1"
+
+. "c:\steps\return_license.ps1"
 
 #
 # Instructions for debugging

@@ -82,6 +82,20 @@ inputs:
     required: false
     default: ''
     description: 'Url to a unity license server for acquiring floating licenses.'
+  containerRegistryRepository:
+    required: false
+    default: 'unityci/editor'
+    description: 'Container registry and repository to pull image from. Only applicable if customImage is not set.'
+  containerRegistryImageVersion:
+    required: false
+    default: '3'
+    description: 'Container registry image version. Only applicable if customImage is not set.'
+  runAsHostUser:
+    required: false
+    default: 'false'
+    description:
+      'Whether to run as a user that matches the host system or the default root container user. Only applicable to
+      Linux hosts and containers. This is useful for fixing permission errors on Self-Hosted runners.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'
@@ -91,6 +105,6 @@ branding:
   icon: 'box'
   color: 'gray-dark'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/main.js'
   post: 'dist/post.js'

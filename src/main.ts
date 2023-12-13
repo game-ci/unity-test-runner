@@ -27,8 +27,17 @@ export async function run() {
       dockerMemoryLimit,
       dockerIsolationMode,
       unityLicensingServer,
+      runAsHostUser,
+      containerRegistryRepository,
+      containerRegistryImageVersion,
+      unitySerial,
     } = Input.getFromUser();
-    const baseImage = new ImageTag({ editorVersion, customImage });
+    const baseImage = new ImageTag({
+      editorVersion,
+      customImage,
+      containerRegistryRepository,
+      containerRegistryImageVersion,
+    });
     const runnerContext = Action.runnerContext();
 
     try {
@@ -53,6 +62,8 @@ export async function run() {
         dockerMemoryLimit,
         dockerIsolationMode,
         unityLicensingServer,
+        runAsHostUser,
+        unitySerial,
         ...runnerContext,
       });
     } finally {
