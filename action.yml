@@ -105,6 +105,6 @@ branding:
   icon: 'box'
   color: 'gray-dark'
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/main.js'
   post: 'dist/post.js'
