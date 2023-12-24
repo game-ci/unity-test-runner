@@ -9,6 +9,8 @@ fi
 if [[ "$RUN_AS_HOST_USER" == "true" ]]; then
   echo "Running as host user"
 
+  fullProjectPath="$GITHUB_WORKSPACE/$PROJECT_PATH"
+
   # Stop on error if we can't set up the user
   set -e
 
