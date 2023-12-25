@@ -144,6 +144,9 @@ jobs:
           - 2023.2.2f1
         projectPath:
           - unity-project-with-correct-tests
+        runAsHostUser:
+          - true
+          - false
     steps:
       ###########################
       #         Checkout        #
@@ -170,6 +173,7 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
+          runAsHostUser: ${{ matrix.runAsHostUser }}
           testMode: editmode
           artifactsPath: artifacts/editmode
 
