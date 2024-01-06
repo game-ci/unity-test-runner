@@ -111,6 +111,7 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
                                 -Wait `
                                 -PassThru `
                                 -ArgumentList  "-batchmode `
+                                                -nographics `
                                                 -logFile $FULL_ARTIFACTS_PATH\$platform.log `
                                                 -projectPath $UNITY_PROJECT_PATH `
                                                 -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH `
@@ -119,7 +120,7 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
                                                 -debugCodeOptimization `
                                                 -coverageOptions ${env:COVERAGE_OPTIONS} `
                                                 ${env:CUSTOM_PARAMETERS}"
-                                                
+
     # Catch exit code
     $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
 
