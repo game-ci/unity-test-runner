@@ -106,8 +106,20 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
         }
     }
 
-    $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "C:\Program Files\Unity\Hub\Editor\${env:UNITY_VERSION}\editor\Unity.exe" -ArgumentList "-batchmode -logFile $FULL_ARTIFACTS_PATH\$platform.log -projectPath $UNITY_PROJECT_PATH -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH $runTests -enableCodeCoverage -debugCodeOptimization -coverageOptions ${env:COVERAGE_OPTIONS} ${env:CUSTOM_PARAMETERS}"
-
+    $TEST_OUTPUT = Start-Process -FilePath "$Env:UNITY_PATH/Editor/Unity.exe" `
+                                -NoNewWindow `
+                                -Wait `
+                                -PassThru `
+                                -ArgumentList  "-batchmode `
+                                                -logFile $FULL_ARTIFACTS_PATH\$platform.log `
+                                                -projectPath $UNITY_PROJECT_PATH `
+                                                -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH `
+                                                $runTests `
+                                                -enableCodeCoverage `
+                                                -debugCodeOptimization `
+                                                -coverageOptions ${env:COVERAGE_OPTIONS} `
+                                                ${env:CUSTOM_PARAMETERS}"
+                                                
     # Catch exit code
     $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
 
