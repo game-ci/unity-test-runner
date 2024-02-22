@@ -38,6 +38,8 @@ class ImageEnvironmentFactory {
       { name: 'ARTIFACTS_PATH', value: parameters.artifactsPath },
       { name: 'PACKAGE_MODE', value: parameters.packageMode },
       { name: 'PACKAGE_NAME', value: parameters.packageName },
+      { name: 'SCOPED_REGISTRY_URL', value: parameters.scopedRegistryUrl },
+      { name: 'REGISTRY_SCOPES', value: parameters.registryScopes },
       { name: 'GIT_PRIVATE_TOKEN', value: parameters.gitPrivateToken },
       { name: 'VERSION', value: parameters.buildVersion },
       { name: 'CUSTOM_PARAMETERS', value: parameters.customParameters },

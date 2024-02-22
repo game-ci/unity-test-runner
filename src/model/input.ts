@@ -101,6 +101,9 @@ class Input {
     const checkName = getInput('checkName') || 'Test Results';
     const rawPackageMode = getInput('packageMode') || 'false';
     let packageName = '';
+    const scopedRegistryUrl = getInput('scopedRegistryUrl') || '';
+    const rawScopes = getInput('registryScopes') || '';
+    let registryScopes: string[] = [];
     const chownFilesTo = getInput('chownFilesTo') || '';
     const dockerCpuLimit = getInput('dockerCpuLimit') || os.cpus().length.toString();
     const bytesInMegabyte = 1024 * 1024;
@@ -171,6 +174,16 @@ class Input {
 
       packageName = this.getPackageNameFromPackageJson(projectPath);
       this.verifyTestsFolderIsPresent(projectPath);
+
+      if (scopedRegistryUrl !== '') {
+        if (rawScopes === '') {
+          throw new Error(
+            'Scoped registry is set, but registryScopes is not set. registryScopes is required when using scopedRegistryUrl.',
+          );
+        }
+
+        registryScopes = rawScopes.split(',').map(scope => scope.trim());
+      }
     }
 
     if (runAsHostUser !== 'true' && runAsHostUser !== 'false') {
@@ -219,6 +232,8 @@ class Input {
       checkName,
       packageMode,
       packageName,
+      scopedRegistryUrl,
+      registryScopes,
       chownFilesTo,
       dockerCpuLimit,
       dockerMemoryLimit,
