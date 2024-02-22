@@ -1,0 +1,21 @@
+{
+  "name": "com.dependencyexample.testpackage",
+  "version": "0.0.1",
+  "displayName": "Test Package",
+  "description": "Test Package",
+  "unity": "2022.3",
+  "unityRelease": "7f1",
+  "dependencies": {
+    "com.cysharp.unitask": "2.5.3"
+  },
+  "keywords": [
+    "nothing"
+  ],
+  "author": {
+    "name": "Example Author",
+    "email": "author@example.com",
+    "url": "example.com"
+  },
+  "type": "tool",
+  "hideInEditor": false
+}
