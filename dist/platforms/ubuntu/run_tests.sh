@@ -96,11 +96,16 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
-    jq \
-    --arg packageName "$PACKAGE_NAME" \
-    --arg projectPath "$UNITY_PROJECT_PATH" \
-    '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} | .dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
-    > "$PACKAGE_MANIFEST_PATH"
+      jq \
+      --arg packageName "$PACKAGE_NAME" \
+      --arg projectPath "$UNITY_PROJECT_PATH" \
+      --arg scopedRegistryUrl "$SCOPED_REGISTRY_URL" \
+      --arg registryScopes "$REGISTRY_SCOPES" \
+      '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} |
+       .dependencies += {"\($packageName)": "file:\($projectPath)"} |
+        . += {testables: ["\($packageName)"]} |
+        . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: ["\($registryScopes)"]}] }' \
+      > "$PACKAGE_MANIFEST_PATH"
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
 fi
