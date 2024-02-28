@@ -108,6 +108,22 @@ if [ "$PACKAGE_MODE" = "true" ]; then
       > "$PACKAGE_MANIFEST_PATH"
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
+
+  if [ -n "$PRIVATE_REGISTRY_TOKEN" ]; then
+    echo "Private registry token detected, creating .upmconfig.toml"
+
+    UPM_CONFIG_TOML_PATH="$HOME/.upmconfig.toml"
+    echo "Creating toml at path: $UPM_CONFIG_TOML_PATH"
+
+    touch $UPM_CONFIG_TOML_PATH
+
+    cat > "$UPM_CONFIG_TOML_PATH" <<EOF
+    [npmAuth."$SCOPED_REGISTRY_URL"]
+    token = "$PRIVATE_REGISTRY_TOKEN"
+    alwaysAuth = true
+EOF
+  fi
+
 fi
 
 
