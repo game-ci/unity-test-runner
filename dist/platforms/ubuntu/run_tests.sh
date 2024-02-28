@@ -247,5 +247,5 @@ chmod -R a+r "$FULL_ARTIFACTS_PATH"
 if [ -d "$FULL_COVERAGE_RESULTS_PATH" ]; then
   chmod -R a+r "$FULL_COVERAGE_RESULTS_PATH"
 else
-  echo "Coverage results directory does not exist. If you are expecting coverage results, please make sure the Code Coverage package is installed in your project."
+  echo "Coverage results directory does not exist. If you are expecting coverage results, please make sure the Code Coverage package is installed in your project and that it is set up correctly."
 fi
