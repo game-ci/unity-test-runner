@@ -100,11 +100,11 @@ if [ "$PACKAGE_MODE" = "true" ]; then
       --arg packageName "$PACKAGE_NAME" \
       --arg projectPath "$UNITY_PROJECT_PATH" \
       --arg scopedRegistryUrl "$SCOPED_REGISTRY_URL" \
-      --arg registryScopes "$REGISTRY_SCOPES" \
+      --argjson registryScopes "$(echo "[\"$REGISTRY_SCOPES\"]" | sed 's/,/","/g')" \
       '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} |
        .dependencies += {"\($packageName)": "file:\($projectPath)"} |
         . += {testables: ["\($packageName)"]} |
-        . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: ["\($registryScopes)"]}] }' \
+        . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: $registryScopes}] }' \
       > "$PACKAGE_MANIFEST_PATH"
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
