@@ -95,17 +95,28 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   fi
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
-  echo "$PACKAGE_MANIFEST_JSON" | \
+  if [ -z "$SCOPED_REGISTRY_URL" || -z "$REGISTRY_SCOPES" ]; then
+    echo "$PACKAGE_MANIFEST_JSON" | \
+      jq \
+      --arg packageName "$PACKAGE_NAME" \
+      --arg projectPath "$UNITY_PROJECT_PATH" \
+      '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} | .dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
+      > "$PACKAGE_MANIFEST_PATH"
+
+  else
+
+    echo "$PACKAGE_MANIFEST_JSON" | \
       jq \
       --arg packageName "$PACKAGE_NAME" \
       --arg projectPath "$UNITY_PROJECT_PATH" \
       --arg scopedRegistryUrl "$SCOPED_REGISTRY_URL" \
       --argjson registryScopes "$(echo "[\"$REGISTRY_SCOPES\"]" | sed 's/,/","/g')" \
       '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} |
-       .dependencies += {"\($packageName)": "file:\($projectPath)"} |
-        . += {testables: ["\($packageName)"]} |
-        . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: $registryScopes}] }' \
+      .dependencies += {"\($packageName)": "file:\($projectPath)"} |
+      . += {testables: ["\($packageName)"]} |
+      . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: $registryScopes}] }' \
       > "$PACKAGE_MANIFEST_PATH"
+  fi
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
 
