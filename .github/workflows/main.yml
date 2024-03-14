@@ -653,3 +653,103 @@ jobs:
           name: Package test results (combined)
           path: packageArtifacts/
           retention-days: 14
+
+  testPackageRunnerWithScopeRegistry:
+    name: Test package mode in all modes with Scoped Registry 📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.dependencyexample.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+dependencyexample.testpackage.*,-*Tests*'
+          packageMode: true
+          scopedRegistryUrl: https://package.openupm.com
+          registryScopes: 'com.cysharp.unitask'
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package test results (all)
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (all)
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerWithScopeRegistryAndMultipleScopes:
+    name: Test package mode in all modes with Scoped Registry and Multiple Scopes 🔎📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.dependencyexample.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+dependencyexample.testpackage.*,-*Tests*'
+          packageMode: true
+          scopedRegistryUrl: https://package.openupm.com
+          registryScopes: 'com.cysharp, com.cysharp.unitask'
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package test results (all)
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Package Coverage results (all)
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
+          retention-days: 14

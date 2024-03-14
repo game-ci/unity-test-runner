@@ -96,13 +96,34 @@ if [ "$PACKAGE_MODE" = "true" ]; then
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
   echo "$PACKAGE_MANIFEST_JSON" | \
-    jq \
-    --arg packageName "$PACKAGE_NAME" \
-    --arg projectPath "$UNITY_PROJECT_PATH" \
-    '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} | .dependencies += {"\($packageName)": "file:\($projectPath)"} | . += {testables: ["\($packageName)"]}' \
-    > "$PACKAGE_MANIFEST_PATH"
+      jq \
+      --arg packageName "$PACKAGE_NAME" \
+      --arg projectPath "$UNITY_PROJECT_PATH" \
+      --arg scopedRegistryUrl "$SCOPED_REGISTRY_URL" \
+      --argjson registryScopes "$(echo "[\"$REGISTRY_SCOPES\"]" | sed 's/,/","/g')" \
+      '.dependencies += {"com.unity.testtools.codecoverage": "1.1.1"} |
+       .dependencies += {"\($packageName)": "file:\($projectPath)"} |
+        . += {testables: ["\($packageName)"]} |
+        . += {scopedRegistries: [{"name":"dependency", "url":"\($scopedRegistryUrl)", scopes: $registryScopes}] }' \
+      > "$PACKAGE_MANIFEST_PATH"
 
   UNITY_PROJECT_PATH="$TEMP_PROJECT_PATH"
+
+  if [ -n "$PRIVATE_REGISTRY_TOKEN" ]; then
+    echo "Private registry token detected, creating .upmconfig.toml"
+
+    UPM_CONFIG_TOML_PATH="$HOME/.upmconfig.toml"
+    echo "Creating toml at path: $UPM_CONFIG_TOML_PATH"
+
+    touch $UPM_CONFIG_TOML_PATH
+
+    cat > "$UPM_CONFIG_TOML_PATH" <<EOF
+    [npmAuth."$SCOPED_REGISTRY_URL"]
+    token = "$PRIVATE_REGISTRY_TOKEN"
+    alwaysAuth = true
+EOF
+  fi
+
 fi
 
 

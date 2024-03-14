@@ -56,6 +56,14 @@ inputs:
     required: false
     default: false
     description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, the action can only be run on Linux runners, and any custom docker image passed to this action must have `jq` installed. NOTE: may not work properly for packages with dependencies outside of the Unity Registry.'
+  scopedRegistryUrl:
+    required: false
+    default: ''
+    description: 'Scoped registry to use for resolving package dependencies. Only applicable if packageMode is true.'
+  registryScopes:
+    required: false
+    default: ''
+    description: 'Registry scopes to use for resolving package dependencies. Only applicable if packageMode is true. Required if scopedRegistry is set.'
   chownFilesTo:
     required: false
     default: ''

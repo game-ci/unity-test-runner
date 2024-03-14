@@ -98,7 +98,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, runAsHostUser, containerRegistryRepository, containerRegistryImageVersion, unitySerial, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, scopedRegistryUrl, registryScopes, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, runAsHostUser, containerRegistryRepository, containerRegistryImageVersion, unitySerial, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({
                 editorVersion,
                 customImage,
@@ -120,6 +120,8 @@ function run() {
                     sshPublicKeysDirectoryPath,
                     packageMode,
                     packageName,
+                    scopedRegistryUrl,
+                    registryScopes,
                     gitPrivateToken,
                     githubToken,
                     chownFilesTo,
@@ -398,6 +400,9 @@ class ImageEnvironmentFactory {
             { name: 'ARTIFACTS_PATH', value: parameters.artifactsPath },
             { name: 'PACKAGE_MODE', value: parameters.packageMode },
             { name: 'PACKAGE_NAME', value: parameters.packageName },
+            { name: 'SCOPED_REGISTRY_URL', value: parameters.scopedRegistryUrl },
+            { name: 'REGISTRY_SCOPES', value: parameters.registryScopes },
+            { name: 'PRIVATE_REGISTRY_TOKEN', value: process.env.UPM_REGISTRY_TOKEN },
             { name: 'GIT_PRIVATE_TOKEN', value: parameters.gitPrivateToken },
             { name: 'VERSION', value: parameters.buildVersion },
             { name: 'CUSTOM_PARAMETERS', value: parameters.customParameters },
@@ -711,6 +716,9 @@ class Input {
         const checkName = (0, core_1.getInput)('checkName') || 'Test Results';
         const rawPackageMode = (0, core_1.getInput)('packageMode') || 'false';
         let packageName = '';
+        const scopedRegistryUrl = (0, core_1.getInput)('scopedRegistryUrl') || '';
+        const rawScopes = (0, core_1.getInput)('registryScopes') || '';
+        let registryScopes = [];
         const chownFilesTo = (0, core_1.getInput)('chownFilesTo') || '';
         const dockerCpuLimit = (0, core_1.getInput)('dockerCpuLimit') || os_1.default.cpus().length.toString();
         const bytesInMegabyte = 1024 * 1024;
@@ -765,6 +773,12 @@ class Input {
             }
             packageName = this.getPackageNameFromPackageJson(projectPath);
             this.verifyTestsFolderIsPresent(projectPath);
+            if (scopedRegistryUrl !== '') {
+                if (rawScopes === '') {
+                    throw new Error('Scoped registry is set, but registryScopes is not set. registryScopes is required when using scopedRegistryUrl.');
+                }
+                registryScopes = rawScopes.split(',').map(scope => scope.trim());
+            }
         }
         if (runAsHostUser !== 'true' && runAsHostUser !== 'false') {
             throw new Error(`Invalid runAsHostUser "${runAsHostUser}"`);
@@ -805,6 +819,8 @@ class Input {
             checkName,
             packageMode,
             packageName,
+            scopedRegistryUrl,
+            registryScopes,
             chownFilesTo,
             dockerCpuLimit,
             dockerMemoryLimit,
