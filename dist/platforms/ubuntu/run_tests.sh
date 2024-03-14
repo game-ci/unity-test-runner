@@ -95,7 +95,7 @@ if [ "$PACKAGE_MODE" = "true" ]; then
   fi
 
   PACKAGE_MANIFEST_JSON=$(cat "$PACKAGE_MANIFEST_PATH")
-  if [ -z "$SCOPED_REGISTRY_URL" || -z "$REGISTRY_SCOPES" ]; then
+  if [ -z "$SCOPED_REGISTRY_URL" ] || [ -z "$REGISTRY_SCOPES" ]; then
     echo "$PACKAGE_MANIFEST_JSON" | \
       jq \
       --arg packageName "$PACKAGE_NAME" \
