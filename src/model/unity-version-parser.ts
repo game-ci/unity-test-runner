@@ -2,16 +2,15 @@ import fs from 'fs';
 import path from 'path';
 
 const UnityVersionParser = {
-  get versionPattern() {
-    return /20\d{2}\.\d\.\w{3,4}|3/;
-  },
-
   parse(projectVersionTxt) {
-    const matches = projectVersionTxt.match(UnityVersionParser.versionPattern);
-    if (!matches || matches.length === 0) {
-      throw new Error(`Failed to parse version from "${projectVersionTxt}".`);
+    const versionRegex = /m_EditorVersion: (\d+\.\d+\.\d+[A-Za-z]?\d+)/;
+    const matches = projectVersionTxt.match(versionRegex);
+
+    if (!matches || matches.length < 2) {
+      throw new Error(`Failed to extract version from "${projectVersionTxt}".`);
     }
-    return matches[0];
+
+    return matches[1];
   },
 
   read(projectPath) {
