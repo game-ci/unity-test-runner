@@ -58,7 +58,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -104,7 +104,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -167,7 +167,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -227,7 +227,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -286,7 +286,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
@@ -338,7 +338,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -397,7 +397,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
