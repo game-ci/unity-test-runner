@@ -1,57 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 4822:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const main_1 = __nccwpck_require__(3109);
-const path_1 = __importDefault(__nccwpck_require__(1017));
-const post_1 = __nccwpck_require__(95);
-/*
- * GitHub Action can provide multiple executable entrypoints (pre, main, post),
- * but it is complicated process to generate multiple `.js` files with `ncc`.
- * So we rather generate just one entrypoint, that is symlinked to multiple locations (main.js and post.js).
- * Then when GitHub Action Runner executes it as `node path/to/main.js` and `node path/to/post.js`,
- * it can read arguments it was executed with and decide which file to execute.
- * The argv[0] is going to be a full path to `node` executable and
- * the argv[1] is going to be the full path to the script.
- * In case index.js would be marked executable and executed directly without the argv[1] it defaults to "main.js".
- */
-function run([, name = 'main.js']) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const script = path_1.default.basename(name);
-        switch (script) {
-            case 'main.js':
-                yield (0, main_1.run)();
-                break;
-            case 'post.js':
-                yield (0, post_1.run)();
-                break;
-            default:
-                throw new Error(`Unknown script argument: '${script}'`);
-        }
-    });
-}
-run(process.argv);
-
-
-/***/ }),
-
 /***/ 3109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -23413,13 +23362,22 @@ module.exports = JSON.parse('[[[0,44],"disallowed_STD3_valid"],[[45,46],"valid"]
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(4822);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.post = exports.main = void 0;
+var main_1 = __nccwpck_require__(3109);
+Object.defineProperty(exports, "main", ({ enumerable: true, get: function () { return main_1.run; } }));
+var post_1 = __nccwpck_require__(95);
+Object.defineProperty(exports, "post", ({ enumerable: true, get: function () { return post_1.run; } }));
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map

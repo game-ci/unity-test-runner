@@ -67,24 +67,24 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
         Write-Output ""
   
         # Create directories if they do not exist
-        if(-Not (Test-Path -Path $Env:UNITY_PROJECT_PATH\Assets\Editor))
+        if(-Not (Test-Path -Path $UNITY_PROJECT_PATH\Assets\Editor))
         {
             # We use -Force to suppress output, doesn't overwrite anything
-            New-Item -ItemType Directory -Force -Path $Env:UNITY_PROJECT_PATH\Assets\Editor
+            New-Item -ItemType Directory -Force -Path $UNITY_PROJECT_PATH\Assets\Editor
         }
-        if(-Not (Test-Path -Path $Env:UNITY_PROJECT_PATH\Assets\Player))
+        if(-Not (Test-Path -Path $UNITY_PROJECT_PATH\Assets\Player))
         {
             # We use -Force to suppress output, doesn't overwrite anything
             New-Item -ItemType Directory -Force -Path $Env:UNITY_PROJECT_PATH\Assets\Player
         }
 
         # Copy the scripts
-        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Editor" -Destination $Env:UNITY_PROJECT_PATH\Assets\Editor -Recurse
-        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Player" -Destination $Env:UNITY_PROJECT_PATH\Assets\Player -Recurse
+        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Editor" -Destination $UNITY_PROJECT_PATH\Assets\Editor -Recurse
+        Copy-Item -Path "c:\UnityStandaloneScripts\Assets\Player" -Destination $UNITY_PROJECT_PATH\Assets\Player -Recurse
 
         # Verify recursive paths
-        Get-ChildItem -Path $Env:UNITY_PROJECT_PATH\Assets\Editor -Recurse
-        Get-ChildItem -Path $Env:UNITY_PROJECT_PATH\Assets\Player -Recurse
+        Get-ChildItem -Path $UNITY_PROJECT_PATH\Assets\Editor -Recurse
+        Get-ChildItem -Path $UNITY_PROJECT_PATH\Assets\Player -Recurse
     
         $runTests="-runTests -testPlatform StandaloneWindows64 -builtTestRunnerPath $UNITY_PROJECT_PATH\Build\UnityTestRunner-Standalone.exe"
     }
@@ -106,7 +106,20 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
         }
     }
 
-    $TEST_OUTPUT = Start-Process -NoNewWindow -Wait -PassThru "C:\Program Files\Unity\Hub\Editor\${env:UNITY_VERSION}\editor\Unity.exe" -ArgumentList "-batchmode -logFile $FULL_ARTIFACTS_PATH\$platform.log -projectPath $UNITY_PROJECT_PATH -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH $runTests -enableCodeCoverage -debugCodeOptimization -coverageOptions ${env:COVERAGE_OPTIONS} ${env:CUSTOM_PARAMETERS}"
+    $TEST_OUTPUT = Start-Process -FilePath "$Env:UNITY_PATH/Editor/Unity.exe" `
+                                -NoNewWindow `
+                                -Wait `
+                                -PassThru `
+                                -ArgumentList  "-batchmode `
+                                                -nographics `
+                                                -logFile $FULL_ARTIFACTS_PATH\$platform.log `
+                                                -projectPath $UNITY_PROJECT_PATH `
+                                                -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH `
+                                                $runTests `
+                                                -enableCodeCoverage `
+                                                -debugCodeOptimization `
+                                                -coverageOptions ${env:COVERAGE_OPTIONS} `
+                                                ${env:CUSTOM_PARAMETERS}"
 
     # Catch exit code
     $TEST_EXIT_CODE = $TEST_OUTPUT.ExitCode
