@@ -58,7 +58,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -72,9 +72,9 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: Test results for ${{ matrix.testMode }}
+          name: Test results for ${{ matrix.testMode }} (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.tests.outputs.artifactsPath }}
           retention-days: 14
 
@@ -104,7 +104,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -124,17 +124,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (all)
+          name: Test results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (all)
+          name: Coverage results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.coveragePath }}
           retention-days: 14
 
@@ -167,7 +167,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -187,17 +187,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (edit mode)
+          name: Test results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (edit mode)
+          name: Coverage results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.coveragePath }}
           retention-days: 14
 
@@ -227,7 +227,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -246,17 +246,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (play mode)
+          name: Test results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (play mode)
+          name: Coverage results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
@@ -286,12 +286,11 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}-
             Library-${{ matrix.baseRunner }}-
 
       # Configure test runner
@@ -306,9 +305,9 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (play mode)
+          name: Test results (play mode standalone) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
           retention-days: 14
 
@@ -338,7 +337,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -365,9 +364,9 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (play mode)
+          name: Test results (play mode standalone il2cpp) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
           retention-days: 14
 
@@ -397,7 +396,7 @@ jobs:
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -433,9 +432,9 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (combined)
+          name: Test results (combined sequential) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: artifacts/
           retention-days: 14
 
@@ -474,9 +473,9 @@ jobs:
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
           packageMode: true
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: Package test results for ${{ matrix.testMode }}
+          name: Package test results for ${{ matrix.testMode }} (${{ matrix.unityVersion }})
           path: ${{ steps.packageTests.outputs.artifactsPath }}
           retention-days: 14
 
@@ -514,15 +513,15 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (all)
+          name: Package test results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Package Coverage results (all)
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
@@ -562,17 +561,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (edit mode)
+          name: Package test results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package Coverage results (edit mode)
+          name: Package Coverage results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.coveragePath }}
           retention-days: 14
 
@@ -610,17 +609,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (play mode)
+          name: Package test results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package Coverage results (play mode)
+          name: Package Coverage results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.coveragePath }}
           retention-days: 14
 
@@ -666,9 +665,9 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (combined)
+          name: Package test results (combined sequential) (${{ matrix.unityVersion }})
           path: packageArtifacts/
           retention-days: 14
 
@@ -708,17 +707,17 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (all)
+          name: Package test results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package Coverage results (all)
+          name: Package Coverage results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
           retention-days: 14
 
@@ -758,16 +757,16 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package test results (all)
+          name: Package test results (Multi Scope Regristy) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Package Coverage results (all)
+          name: Package Coverage results (Multi Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
           retention-days: 14
