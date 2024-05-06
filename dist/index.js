@@ -1411,15 +1411,13 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const UnityVersionParser = {
-    get versionPattern() {
-        return /20\d{2}\.\d\.\w{3,4}|3/;
-    },
     parse(projectVersionTxt) {
-        const matches = projectVersionTxt.match(UnityVersionParser.versionPattern);
-        if (!matches || matches.length === 0) {
-            throw new Error(`Failed to parse version from "${projectVersionTxt}".`);
+        const versionRegex = /m_EditorVersion: (\d+\.\d+\.\d+[A-Za-z]?\d+)/;
+        const matches = projectVersionTxt.match(versionRegex);
+        if (!matches || matches.length < 2) {
+            throw new Error(`Failed to extract version from "${projectVersionTxt}".`);
         }
-        return matches[0];
+        return matches[1];
     },
     read(projectPath) {
         const filePath = path_1.default.join(projectPath, 'ProjectSettings', 'ProjectVersion.txt');
