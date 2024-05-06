@@ -31,11 +31,10 @@ jobs:
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
-      max-parallel: 2
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
@@ -86,7 +85,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
@@ -146,7 +145,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         unityVersion:
           - 2022.3.13f1
           - 2023.1.19f1
@@ -209,7 +208,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
@@ -268,7 +267,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
@@ -319,7 +318,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
@@ -523,7 +522,7 @@ jobs:
       - name: Upload coverage results
         uses: actions/upload-artifact@v4
         with:
-          name: Package Coverage results (all)
+          name: Package Coverage results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
           retention-days: 14
 
