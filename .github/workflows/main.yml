@@ -377,7 +377,7 @@ jobs:
       matrix:
         baseRunner:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
         unityVersion:
           - 2022.3.13f1
           - 2023.1.19f1
