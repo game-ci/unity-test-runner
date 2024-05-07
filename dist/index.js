@@ -415,7 +415,7 @@ class ImageTag {
         this.imageRollingVersion = Number(containerRegistryImageVersion);
     }
     static get versionPattern() {
-        return /^20\d{2}\.\d\.\w{3,4}|3$/;
+        return /^\d+\.\d+\.\d+[a-z]\d+$/;
     }
     static get targetPlatformSuffixes() {
         return {
