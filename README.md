@@ -45,7 +45,7 @@ GameCI is free for everyone forever.
 
 You can support us at [OpenCollective](https://opencollective.com/game-ci).
 
-## Licence
+## License
 
 This repository is [MIT](./LICENSE) licensed.
 
