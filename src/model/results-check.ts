@@ -76,10 +76,12 @@ const ResultsCheck = {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
+    // Check max length for https://github.com/game-ci/unity-test-runner/issues/214
     const maxLength = 65_534;
-    if (output.length > maxLength) {
-      core.warning(`Output too long (${output.length}) truncating to ${maxLength}`);
-      output = output.slice(0, maxLength);
+    if (output.text.length > maxLength) {
+      core.warning(`Test details of ${output.text.length} surpass limit of ${maxLength}`);
+      output.text =
+        'Test details omitted from GitHub UI due to length. See console logs for details.';
     }
 
     core.info(`Posting results for ${headSha}`);
