@@ -46,7 +46,7 @@ inputs:
     description: 'GitHub Private Access Token (PAT) to pull from GitHub.'
   githubToken:
     required: false
-    default: ''
+    default: '${{ github.token }}'
     description: 'Token to authorize access to the GitHub REST API. If provided, a check run will be created with the test results.'
   checkName:
     required: false
