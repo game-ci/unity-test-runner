@@ -248,5 +248,13 @@ at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/A
       expect(result.path).toBe('/github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs');
       expect(result.line).toBe(10);
     });
+
+    test('Debug.LogError annotation point', () => {
+      const result = ResultsParser.findAnnotationPoint(
+        `FMODUnity.RuntimeUtils:DebugLogError (string) (at Assets/Plugins/FMOD/src/RuntimeUtils.cs:580)`,
+      );
+      expect(result.path).toBe('Assets/Plugins/FMOD/src/RuntimeUtils.cs');
+      expect(result.line).toBe(580);
+    });
   });
 });

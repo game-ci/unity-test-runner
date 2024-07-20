@@ -1370,12 +1370,13 @@ const ResultsParser = {
         return testMeta;
     },
     findAnnotationPoint(trace) {
+        const regex = /at(?: .* in)? ((?<path>[^:]+):(?<line>\d+))/;
         // Find first entry with non-zero line number in stack trace
-        const items = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/g);
+        const items = trace.match(new RegExp(regex, 'g'));
         if (Array.isArray(items)) {
             const result = [];
             for (const item of items) {
-                const match = item.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
+                const match = item.match(regex);
                 const point = {
                     path: match ? match.groups.path : '',
                     line: match ? Number(match.groups.line) : 0,
@@ -1389,7 +1390,7 @@ const ResultsParser = {
             }
         }
         // If all entries have zero line number match fallback pattern
-        const match = trace.match(/at .* in ((?<path>[^:]+):(?<line>\d+))/);
+        const match = trace.match(regex);
         return {
             path: match ? match.groups.path : '',
             line: match ? Number(match.groups.line) : 0,
