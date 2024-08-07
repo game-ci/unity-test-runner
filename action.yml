@@ -90,6 +90,13 @@ inputs:
     required: false
     default: ''
     description: 'Url to a unity license server for acquiring floating licenses.'
+  unityLicensingProductIds:
+    required: false
+    default: ''
+    description:
+      'Comma separated list of license product identifiers to request licenses for from the license server. Not setting
+      this will request the default license product configured on the licensing server. Only applicable if
+      unityLicensingServer is set.'
   containerRegistryRepository:
     required: false
     default: 'unityci/editor'

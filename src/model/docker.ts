@@ -34,7 +34,11 @@ const Docker = {
     let runCommand = '';
 
     if (parameters.unityLicensingServer !== '') {
-      LicensingServerSetup.Setup(parameters.unityLicensingServer, parameters.actionFolder);
+      LicensingServerSetup.Setup(
+        parameters.unityLicensingServer,
+        parameters.actionFolder,
+        parameters.unityLicensingProductIds,
+      );
     }
 
     switch (process.platform) {
