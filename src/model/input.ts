@@ -87,6 +87,7 @@ class Input {
     const customImage = getInput('customImage') || '';
     const rawProjectPath = getInput('projectPath') || '.';
     const unityLicensingServer = getInput('unityLicensingServer') || '';
+    const unityLicensingProductIds = getInput('unityLicensingProductIds') || '';
     const unityLicense = getInput('unityLicense') || (process.env['UNITY_LICENSE'] ?? '');
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
     const customParameters = getInput('customParameters') || '';
@@ -239,6 +240,7 @@ class Input {
       dockerMemoryLimit,
       dockerIsolationMode,
       unityLicensingServer,
+      unityLicensingProductIds,
       runAsHostUser,
       containerRegistryRepository,
       containerRegistryImageVersion,

@@ -47,7 +47,7 @@ function run() {
         try {
             model_1.Action.checkCompatibility();
             const { workspace, actionFolder } = model_1.Action;
-            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, scopedRegistryUrl, registryScopes, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, runAsHostUser, containerRegistryRepository, containerRegistryImageVersion, unitySerial, } = model_1.Input.getFromUser();
+            const { editorVersion, customImage, projectPath, customParameters, testMode, coverageOptions, artifactsPath, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, gitPrivateToken, githubToken, checkName, packageMode, packageName, scopedRegistryUrl, registryScopes, chownFilesTo, dockerCpuLimit, dockerMemoryLimit, dockerIsolationMode, unityLicensingServer, unityLicensingProductIds, runAsHostUser, containerRegistryRepository, containerRegistryImageVersion, unitySerial, } = model_1.Input.getFromUser();
             const baseImage = new model_1.ImageTag({
                 editorVersion,
                 customImage,
@@ -78,6 +78,7 @@ function run() {
                     dockerMemoryLimit,
                     dockerIsolationMode,
                     unityLicensingServer,
+                    unityLicensingProductIds,
                     runAsHostUser,
                     unitySerial }, runnerContext));
             }
@@ -209,7 +210,7 @@ const Docker = {
         return __awaiter(this, void 0, void 0, function* () {
             let runCommand = '';
             if (parameters.unityLicensingServer !== '') {
-                licensing_server_setup_1.default.Setup(parameters.unityLicensingServer, parameters.actionFolder);
+                licensing_server_setup_1.default.Setup(parameters.unityLicensingServer, parameters.actionFolder, parameters.unityLicensingProductIds);
             }
             switch (process.platform) {
                 case 'linux':
@@ -338,6 +339,7 @@ class ImageEnvironmentFactory {
                 name: 'UNITY_LICENSING_SERVER',
                 value: parameters.unityLicensingServer,
             },
+            { name: 'UNITY_LICENSING_PRODUCT_IDS', value: parameters.unityLicensingProductIds },
             { name: 'UNITY_VERSION', value: parameters.editorVersion },
             {
                 name: 'USYM_UPLOAD_AUTH_TOKEN',
@@ -651,6 +653,7 @@ class Input {
         const customImage = (0, core_1.getInput)('customImage') || '';
         const rawProjectPath = (0, core_1.getInput)('projectPath') || '.';
         const unityLicensingServer = (0, core_1.getInput)('unityLicensingServer') || '';
+        const unityLicensingProductIds = (0, core_1.getInput)('unityLicensingProductIds') || '';
         const unityLicense = (0, core_1.getInput)('unityLicense') || ((_a = process.env['UNITY_LICENSE']) !== null && _a !== void 0 ? _a : '');
         let unitySerial = (_b = process.env['UNITY_SERIAL']) !== null && _b !== void 0 ? _b : '';
         const customParameters = (0, core_1.getInput)('customParameters') || '';
@@ -775,6 +778,7 @@ class Input {
             dockerMemoryLimit,
             dockerIsolationMode,
             unityLicensingServer,
+            unityLicensingProductIds,
             runAsHostUser,
             containerRegistryRepository,
             containerRegistryImageVersion,
@@ -822,7 +826,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const fs_1 = __importDefault(__nccwpck_require__(7147));
 class LicensingServerSetup {
-    static Setup(unityLicensingServer, actionFolder) {
+    static Setup(unityLicensingServer, actionFolder, unityLicensingProductIds) {
         const servicesConfigPath = `${actionFolder}/unity-config/services-config.json`;
         const servicesConfigPathTemplate = `${servicesConfigPath}.template`;
         if (!fs_1.default.existsSync(servicesConfigPathTemplate)) {
@@ -831,6 +835,7 @@ class LicensingServerSetup {
         }
         let servicesConfig = fs_1.default.readFileSync(servicesConfigPathTemplate).toString();
         servicesConfig = servicesConfig.replace('%URL%', unityLicensingServer);
+        servicesConfig = servicesConfig.replace('%LICENSE_PRODUCT_IDS%', unityLicensingProductIds);
         fs_1.default.writeFileSync(servicesConfigPath, servicesConfig);
     }
 }
