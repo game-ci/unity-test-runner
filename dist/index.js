@@ -1014,9 +1014,19 @@ const ResultsCheck = {
                 if (!filepath.endsWith('.xml'))
                     return;
                 core.info(`Processing file ${filepath}...`);
-                const fileData = yield results_parser_1.default.parseResults(path_1.default.join(artifactsPath, filepath));
-                core.info(fileData.summary);
-                runs.push(fileData);
+                try {
+                    const content = fs.readFileSync(path_1.default.join(artifactsPath, filepath), 'utf8');
+                    if (!content.includes('<test-results') && !content.includes('<test-run')) {
+                        // noinspection ExceptionCaughtLocallyJS
+                        throw new Error('File does not appear to be a NUnit XML file');
+                    }
+                    const fileData = yield results_parser_1.default.parseResults(path_1.default.join(artifactsPath, filepath));
+                    core.info(fileData.summary);
+                    runs.push(fileData);
+                }
+                catch (error) {
+                    core.warning(`Failed to parse ${filepath}: ${error.message}`);
+                }
             })));
             // Combine all results into a single run summary
             const runSummary = new results_meta_1.RunMeta(checkName);

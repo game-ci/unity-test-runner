@@ -22,9 +22,18 @@ const ResultsCheck = {
       files.map(async filepath => {
         if (!filepath.endsWith('.xml')) return;
         core.info(`Processing file ${filepath}...`);
-        const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
-        core.info(fileData.summary);
-        runs.push(fileData);
+        try {
+          const content = fs.readFileSync(path.join(artifactsPath, filepath), 'utf8');
+          if (!content.includes('<test-run')) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('File does not appear to be a NUnit XML file');
+          }
+          const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
+          core.info(fileData.summary);
+          runs.push(fileData);
+        } catch (error: any) {
+          core.warning(`Failed to parse ${filepath}: ${error.message}`);
+        }
       }),
     );
 
