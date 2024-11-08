@@ -22,9 +22,13 @@ const ResultsCheck = {
       files.map(async filepath => {
         if (!filepath.endsWith('.xml')) return;
         core.info(`Processing file ${filepath}...`);
-        const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
-        core.info(fileData.summary);
-        runs.push(fileData);
+        try {
+          const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
+          core.info(fileData.summary);
+          runs.push(fileData);
+        } catch (error: any) {
+          core.warning(`Failed to parse ${filepath}: ${error.message}`);
+        }
       }),
     );
 
