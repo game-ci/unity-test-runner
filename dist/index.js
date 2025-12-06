@@ -279,6 +279,7 @@ const Docker = {
                 --cidfile "${cidfile}" \
                 --rm \
                 ${image_environment_factory_1.default.getEnvVarString(parameters)} \
+                --env BEE_CACHE_DIRECTORY=c:/github/workspace/Library/bee_cache \
                 --env TEST_PLATFORMS="${testPlatforms}" \
                 --env GITHUB_WORKSPACE="c:/github/workspace" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
@@ -1016,7 +1017,7 @@ const ResultsCheck = {
                 core.info(`Processing file ${filepath}...`);
                 try {
                     const content = fs.readFileSync(path_1.default.join(artifactsPath, filepath), 'utf8');
-                    if (!content.includes('<test-results') && !content.includes('<test-run')) {
+                    if (!content.includes('<test-run')) {
                         // noinspection ExceptionCaughtLocallyJS
                         throw new Error('File does not appear to be a NUnit XML file');
                     }
