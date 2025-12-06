@@ -25,6 +25,9 @@ namespace UnityTestRunnerAction
             string[] commandLineArgs = Environment.GetCommandLineArgs();
             playerOptions.locationPathName = commandLineArgs[Array.IndexOf(commandLineArgs, "-builtTestRunnerPath") + 1]; ;
 
+            // Enable parallel linking for IL2CPP builds
+            SetParallelLinking();
+
             // Instruct the cleanup to exit the Editor if the run came from the command line. 
             // The variable is static because the cleanup is being invoked in a new instance of the class.
             s_RunningPlayerTests = true;
@@ -44,6 +47,47 @@ namespace UnityTestRunnerAction
         {
             var commandLineArgs = Environment.GetCommandLineArgs();
             return commandLineArgs.Any(value => value == "-runTests");
+        }
+
+        private static void SetParallelLinking()
+        {
+            string additionalArgs = PlayerSettings.additionalIl2CppArgs;
+
+            // Determine number of parallel jobs (use CPU count, or default to 2)
+            int numJobs = Environment.ProcessorCount;
+            if (numJobs <= 0) numJobs = 2;
+
+            // Use host platform (where Unity is running) instead of target platform to support cross-compilation
+            // Platform-specific parallel linking flags based on the host platform
+            RuntimePlatform hostPlatform = Application.platform;
+            switch (hostPlatform)
+            {
+                case RuntimePlatform.WindowsEditor:
+                case RuntimePlatform.WindowsPlayer:
+                    string cgthreadsFlag = $"--linker-flags=/CGTHREADS:{numJobs}";
+                    if (!additionalArgs.Contains("/CGTHREADS:"))
+                    {
+                        additionalArgs = string.IsNullOrEmpty(additionalArgs)
+                            ? cgthreadsFlag
+                            : $"{additionalArgs} {cgthreadsFlag}";
+                    }
+                    break;
+
+                case RuntimePlatform.OSXEditor:
+                case RuntimePlatform.OSXPlayer:
+                case RuntimePlatform.LinuxEditor:
+                case RuntimePlatform.LinuxPlayer:
+                    if (!additionalArgs.Contains("--threads"))
+                    {
+                        additionalArgs = string.IsNullOrEmpty(additionalArgs)
+                            ? $"-Wl,--threads={numJobs}"
+                            : $"{additionalArgs} -Wl,--threads={numJobs}";
+                    }
+                    break;
+            }
+
+            PlayerSettings.additionalIl2CppArgs = additionalArgs;
+            Debug.Log($"IL2CPP parallel linking enabled with {numJobs} jobs on host platform {hostPlatform}. Additional args: {additionalArgs}");
         }
     }
 }
