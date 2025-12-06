@@ -137,6 +137,7 @@ const Docker = {
                 --cidfile "${cidfile}" \
                 --rm \
                 ${ImageEnvironmentFactory.getEnvVarString(parameters)} \
+                --env BEE_CACHE_DIRECTORY=c:/github/workspace/Library/bee_cache \
                 --env TEST_PLATFORMS="${testPlatforms}" \
                 --env GITHUB_WORKSPACE="c:/github/workspace" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
