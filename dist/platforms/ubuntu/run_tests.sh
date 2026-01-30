@@ -56,6 +56,7 @@ EOF
   # Some npm repositories (Azure Devops) require a user to be configred
   # even if it isn't a valid one.
   if [ -n "$PRIVATE_REGISTRY_USER" ]; then
+    echo "Adding user = $PRIVATE_REGISTRY_USER"
     cat >> "$UPM_CONFIG_TOML_PATH" <<EOF
   user = "$PRIVATE_REGISTRY_USER"
 EOF
