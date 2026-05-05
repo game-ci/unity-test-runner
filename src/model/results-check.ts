@@ -98,8 +98,8 @@ const ResultsCheck = {
       ...github.context.repo,
       name: checkName,
       head_sha: headSha,
-      status: 'completed',
-      conclusion: 'neutral',
+      status: 'completed' as const,
+      conclusion: 'neutral' as const,
       output,
     };
 

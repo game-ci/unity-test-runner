@@ -21,17 +21,18 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
-      "oxlint --fix --quiet",
+    "!(dist)/**/*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
+      "oxlint --fix --quiet --no-error-on-unmatched-pattern",
       "oxfmt --write"
     ],
-    "*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
+    "!(dist)/**/*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
+    "package.json": "oxfmt --write",
     ".github/workflows/*.@(yml|yaml)": "actionlint"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
-    "@actions/github": "^5.0.0",
+    "@actions/github": "^6",
     "@octokit/openapi-types": "^11.2.0",
     "handlebars": "^4.7.7",
     "xml-js": "^1.6.11"
@@ -53,5 +54,8 @@
     "vite": "^7",
     "vitest": "^4"
   },
-  "packageManager": "yarn@4.14.1"
+  "packageManager": "yarn@4.14.1",
+  "resolutions": {
+    "undici": "^6.24.0"
+  }
 }
