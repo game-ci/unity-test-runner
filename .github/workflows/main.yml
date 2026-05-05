@@ -18,14 +18,56 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Read Node version from mise.toml
+        id: node
+        run: echo "version=$(grep -E '^node\s*=' mise.toml | sed -E 's/.*"([^"]+)".*/\1/')" >> "$GITHUB_OUTPUT"
+
+      - name: Install package manager (from package.json)
+        run: |
+          corepack enable
+          corepack install
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 18.x
-      - run: yarn
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build || { echo "build command should always succeed" ; exit 61; }
-  #      - run: yarn build --quiet && git diff --quiet action || { echo "ERROR - index.js is different from repository version. Forgot to run `yarn build`?" ; exit 62; }
+          node-version: ${{ steps.node.outputs.version }}
+
+      - name: Resolve yarn cache folder
+        id: yarn-config
+        run: echo "cacheFolder=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore yarn install cache (node_modules + cacheFolder + install-state)
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ${{ steps.yarn-config.outputs.cacheFolder }}
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-
+
+      - name: Install deps
+        env:
+          YARN_ENABLE_HARDENED_MODE: 'false'
+        run: |
+          case "$(yarn --version)" in 1.*) echo 'expected up-to-date yarn version'; exit 1 ;; esac
+          yarn install --immutable
+
+      - name: Format
+        run: yarn format:check
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build || { echo 'build command should always succeed'; exit 61; }
 
   testAllModesLikeInTheReadme:
     name: Test in ${{ matrix.testMode }} of version ${{ matrix.unityVersion }} on ${{ matrix.baseRunner }}
