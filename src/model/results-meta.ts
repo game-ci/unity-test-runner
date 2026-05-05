@@ -61,7 +61,7 @@ export class RunMeta extends Meta {
       return;
     }
 
-    let target = this.suites.find(s => s.title === test.suite);
+    let target = this.suites.find((s) => s.title === test.suite);
     if (target === undefined) {
       target = new RunMeta(test.suite);
       this.suites.push(target);

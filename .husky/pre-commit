@@ -1,13 +1,7 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-if [ -t 1 ]; then
-  exec < /dev/tty
-fi
-
+#!/usr/bin/env sh
 yarn lint-staged
-yarn lint
-yarn test
+yarn typecheck
 
-yarn build
-git add dist
+if command -v gitleaks >/dev/null 2>&1; then
+  gitleaks protect --staged --no-banner --redact
+fi

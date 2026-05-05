@@ -66,10 +66,10 @@ class ImageEnvironmentFactory {
     for (const variable of environmentVariables) {
       if (
         environmentVariables.some(
-          x => variable !== undefined && variable.name !== undefined && x.name === variable.name,
+          (x) => variable !== undefined && variable.name !== undefined && x.name === variable.name,
         ) === undefined
       ) {
-        environmentVariables = environmentVariables.filter(x => x !== variable);
+        environmentVariables = environmentVariables.filter((x) => x !== variable);
       }
     }
 

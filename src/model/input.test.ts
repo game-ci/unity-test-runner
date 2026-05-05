@@ -1,10 +1,11 @@
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test } from 'vitest';
 import Input from './input';
 import fs from 'fs';
 
-jest.mock('./unity-version-parser');
+vi.mock('./unity-version-parser');
 
-const mockedFsExistsSync = jest.spyOn(fs, 'existsSync');
-const mockedFsReadFileSync = jest.spyOn(fs, 'readFileSync');
+const mockedFsExistsSync = vi.spyOn(fs, 'existsSync');
+const mockedFsReadFileSync = vi.spyOn(fs, 'readFileSync');
 
 describe('Input', () => {
   let originalEnvironment;
@@ -42,11 +43,11 @@ describe('Input', () => {
       './.hidden-sub',
       'hyphen-folder',
       'under_score',
-    ])('returns true for %s', folderName => {
+    ])('returns true for %s', (folderName) => {
       expect(Input.isValidFolderName(folderName)).toStrictEqual(true);
     });
 
-    test.each(['..', '../'])('returns false for %s', folderName => {
+    test.each(['..', '../'])('returns false for %s', (folderName) => {
       expect(Input.isValidFolderName(folderName)).toStrictEqual(false);
     });
   });

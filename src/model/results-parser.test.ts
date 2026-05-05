@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test } from 'vitest';
 import * as fs from 'fs';
 import * as xmljs from 'xml-js';
 import ResultsParser from './results-parser';
@@ -5,8 +6,10 @@ import { TestMeta } from './results-meta';
 
 describe('ResultsParser', () => {
   describe('parseResults', () => {
-    it('throws for missing file', () => {
-      expect(() => ResultsParser.parseResults('')).rejects;
+    it('throws for missing file', async () => {
+      // Original test was `expect(...).rejects;` with no matcher — a no-op
+      // assertion. Replaced with a real `await expect(...).rejects.toThrow(...)`.
+      await expect(ResultsParser.parseResults('')).rejects.toThrow(/Missing file/);
     });
 
     it('parses editmode-results.xml', () => {

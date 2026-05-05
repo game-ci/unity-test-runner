@@ -39,7 +39,9 @@ class Input {
         throw new SyntaxError(`Unable to parse package.json contents as JSON - ${error.message}`);
       }
 
-      throw new Error(`Unable to parse package.json contents as JSON - unknown error ocurred`);
+      throw new Error(`Unable to parse package.json contents as JSON - unknown error ocurred`, {
+        cause: error,
+      });
     }
 
     const rawPackageName = packageJson.name;
@@ -182,7 +184,7 @@ class Input {
           );
         }
 
-        registryScopes = rawScopes.split(',').map(scope => scope.trim());
+        registryScopes = rawScopes.split(',').map((scope) => scope.trim());
       }
     }
 

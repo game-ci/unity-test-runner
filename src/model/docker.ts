@@ -10,7 +10,7 @@ import path from 'path';
  * This path is stable for the whole execution of the action, so it can be executed with the same parameters
  * multiple times and get the same result.
  */
-const containerIdFilePath = parameters => {
+const containerIdFilePath = (parameters) => {
   const { runnerTemporaryPath, githubAction } = parameters;
 
   return path.join(runnerTemporaryPath, `container_${githubAction}`);

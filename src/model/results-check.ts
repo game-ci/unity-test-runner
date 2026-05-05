@@ -19,7 +19,7 @@ const ResultsCheck = {
     const runs: RunMeta[] = [];
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
-      files.map(async filepath => {
+      files.map(async (filepath) => {
         if (!filepath.endsWith('.xml')) return;
         core.info(`Processing file ${filepath}...`);
         try {
@@ -63,7 +63,7 @@ const ResultsCheck = {
     core.debug(`Details view: ${details}`);
     const rawAnnotations = runSummary.extractAnnotations();
     core.debug(`Raw annotations: ${rawAnnotations}`);
-    const annotations = rawAnnotations.map(rawAnnotation => {
+    const annotations = rawAnnotations.map((rawAnnotation) => {
       const annotation = rawAnnotation;
       annotation.path = rawAnnotation.path.replace('/github/workspace/', '');
       return annotation;
@@ -116,10 +116,10 @@ const ResultsCheck = {
   },
 
   async render(viewPath, runMetas) {
-    Handlebars.registerHelper('indent', toIndent =>
+    Handlebars.registerHelper('indent', (toIndent) =>
       toIndent
         .split('\n')
-        .map(s => `        ${s.replace('/github/workspace/', '')}`)
+        .map((s) => `        ${s.replace('/github/workspace/', '')}`)
         .join('\n'),
     );
     const source = await fs.promises.readFile(viewPath, 'utf8');
