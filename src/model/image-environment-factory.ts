@@ -33,6 +33,7 @@ class ImageEnvironmentFactory {
         value: process.env.USYM_UPLOAD_AUTH_TOKEN,
       },
       { name: 'PROJECT_PATH', value: parameters.projectPath },
+      { name: 'COVERAGE_ENABLED', value: parameters.coverageEnabled },
       { name: 'COVERAGE_OPTIONS', value: parameters.coverageOptions },
       { name: 'COVERAGE_RESULTS_PATH', value: 'CodeCoverage' },
       { name: 'ARTIFACTS_PATH', value: parameters.artifactsPath },

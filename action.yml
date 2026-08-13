@@ -20,10 +20,14 @@ inputs:
     required: false
     default: 'all'
     description: 'The type of tests to be run by the test runner.'
+  coverageEnabled:
+    required: false
+    default: true
+    description: 'Whether to pass -enableCodeCoverage to the Unity editor. Disable this if code coverage instrumentation is crashing or failing to compile on your Unity version (see #301, #302, #306).'
   coverageOptions:
     required: false
     default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear'
-    description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass assemblies from the package you want covered to the assemblyFilters option.'
+    description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass assemblies from the package you want covered to the assemblyFilters option. Ignored when coverageEnabled is false.'
   artifactsPath:
     required: false
     default: 'artifacts'

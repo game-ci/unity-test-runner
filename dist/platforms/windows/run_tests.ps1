@@ -106,6 +106,16 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
         }
     }
 
+    # COVERAGE_ENABLED=false skips code coverage instrumentation entirely.
+    # -enableCodeCoverage is unconditional otherwise, which has been the root
+    # cause of coverage-instrumentation crashes/compile errors on some Unity
+    # versions (see game-ci/unity-test-runner#301, #302, #306) with no way to
+    # opt out.
+    $CoverageArgs = ""
+    if ($env:COVERAGE_ENABLED -ne "false") {
+        $CoverageArgs = "-coverageResultsPath $FULL_COVERAGE_RESULTS_PATH -enableCodeCoverage -debugCodeOptimization -coverageOptions ${env:COVERAGE_OPTIONS}"
+    }
+
     $TEST_OUTPUT = Start-Process -FilePath "$Env:UNITY_PATH/Editor/Unity.exe" `
                                 -NoNewWindow `
                                 -Wait `
@@ -114,11 +124,8 @@ foreach ( $platform in ${env:TEST_PLATFORMS}.Split(";") )
                                                 -nographics `
                                                 -logFile $FULL_ARTIFACTS_PATH\$platform.log `
                                                 -projectPath $UNITY_PROJECT_PATH `
-                                                -coverageResultsPath $FULL_COVERAGE_RESULTS_PATH `
                                                 $runTests `
-                                                -enableCodeCoverage `
-                                                -debugCodeOptimization `
-                                                -coverageOptions ${env:COVERAGE_OPTIONS} `
+                                                $CoverageArgs `
                                                 ${env:CUSTOM_PARAMETERS}"
 
     # Catch exit code

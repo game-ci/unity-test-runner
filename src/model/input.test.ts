@@ -29,6 +29,22 @@ describe('Input', () => {
     it('returns an object', () => {
       expect(typeof Input.getFromUser()).toStrictEqual('object');
     });
+
+    it('defaults coverageEnabled to true', () => {
+      expect(Input.getFromUser().coverageEnabled).toStrictEqual(true);
+    });
+
+    it('parses coverageEnabled=false', () => {
+      process.env['INPUT_COVERAGEENABLED'] = 'false';
+
+      expect(Input.getFromUser().coverageEnabled).toStrictEqual(false);
+    });
+
+    it('throws on an invalid coverageEnabled value', () => {
+      process.env['INPUT_COVERAGEENABLED'] = 'not-a-boolean';
+
+      expect(() => Input.getFromUser()).toThrow('Invalid coverageEnabled "not-a-boolean"');
+    });
   });
 
   describe('isValidFolderName', () => {

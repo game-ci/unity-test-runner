@@ -206,15 +206,22 @@ for platform in ${TEST_PLATFORMS//;/ }; do
     fi
   fi
 
+  # COVERAGE_ENABLED=false skips code coverage instrumentation entirely.
+  # -enableCodeCoverage is unconditional otherwise, which has been the root
+  # cause of coverage-instrumentation crashes/compile errors on some Unity
+  # versions (see game-ci/unity-test-runner#301, #302, #306) with no way to
+  # opt out.
+  COVERAGE_ARGS=""
+  if [[ "$COVERAGE_ENABLED" != "false" ]]; then
+    COVERAGE_ARGS="-coverageResultsPath $FULL_COVERAGE_RESULTS_PATH -enableCodeCoverage -debugCodeOptimization -coverageOptions $COVERAGE_OPTIONS"
+  fi
+
   unity-editor \
     -batchmode \
     -logFile "$FULL_ARTIFACTS_PATH/$platform.log" \
     -projectPath "$UNITY_PROJECT_PATH" \
-    -coverageResultsPath "$FULL_COVERAGE_RESULTS_PATH" \
     $runTests \
-    -enableCodeCoverage \
-    -debugCodeOptimization \
-    -coverageOptions "$COVERAGE_OPTIONS" \
+    $COVERAGE_ARGS \
     $CUSTOM_PARAMETERS
 
   # Catch exit code
@@ -281,7 +288,9 @@ done
 if [[ -n "$CHOWN_FILES_TO" ]]; then
   chown -R "$CHOWN_FILES_TO" "$UNITY_PROJECT_PATH"
   chown -R "$CHOWN_FILES_TO" "$FULL_ARTIFACTS_PATH"
-  chown -R "$CHOWN_FILES_TO" "$FULL_COVERAGE_RESULTS_PATH"
+  if [ -d "$FULL_COVERAGE_RESULTS_PATH" ]; then
+    chown -R "$CHOWN_FILES_TO" "$FULL_COVERAGE_RESULTS_PATH"
+  fi
 fi
 
 # Add read permissions for everyone to all artifacts

@@ -93,6 +93,7 @@ class Input {
     let unitySerial = process.env['UNITY_SERIAL'] ?? '';
     const customParameters = getInput('customParameters') || '';
     const testMode = (getInput('testMode') || 'all').toLowerCase();
+    const rawCoverageEnabled = getInput('coverageEnabled') || 'true';
     const coverageOptions = getInput('coverageOptions') || '';
     const rawArtifactsPath = getInput('artifactsPath') || 'artifacts';
     const rawUseHostNetwork = getInput('useHostNetwork') || 'false';
@@ -155,6 +156,10 @@ class Input {
       throw new Error(`Invalid packageMode "${rawPackageMode}"`);
     }
 
+    if (rawCoverageEnabled !== 'true' && rawCoverageEnabled !== 'false') {
+      throw new Error(`Invalid coverageEnabled "${rawCoverageEnabled}"`);
+    }
+
     if (rawSshPublicKeysDirectoryPath !== '' && sshAgent === '') {
       throw new Error(
         'sshPublicKeysDirectoryPath is set, but sshAgent is not set. sshPublicKeysDirectoryPath is useful only when using sshAgent.',
@@ -214,6 +219,7 @@ class Input {
     const artifactsPath = rawArtifactsPath.replace(/\/$/, '');
     const sshPublicKeysDirectoryPath = rawSshPublicKeysDirectoryPath.replace(/\/$/, '');
     const useHostNetwork = rawUseHostNetwork === 'true';
+    const coverageEnabled = rawCoverageEnabled === 'true';
     const editorVersion =
       unityVersion === 'auto' ? UnityVersionParser.read(projectPath) : unityVersion;
 
@@ -224,6 +230,7 @@ class Input {
       projectPath,
       customParameters,
       testMode,
+      coverageEnabled,
       coverageOptions,
       artifactsPath,
       useHostNetwork,
