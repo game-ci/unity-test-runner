@@ -15,7 +15,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/exec@npm:^1.1.0, @actions/exec@npm:^1.1.1":
+"@actions/exec@npm:^1.1.1":
   version: 1.1.1
   resolution: "@actions/exec@npm:1.1.1"
   dependencies:
@@ -505,6 +505,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@game-ci/unity-engine-core@game-ci/unity-engine-core#main":
+  version: 0.1.0
+  resolution: "@game-ci/unity-engine-core@https://github.com/game-ci/unity-engine-core.git#commit=6ef9f42ac04a58093b9ede39b646af8c4f6d2552"
+  dependencies:
+    "@actions/core": "npm:^1.10.0"
+    "@actions/exec": "npm:^1.1.1"
+    "@actions/github": "npm:^6"
+    handlebars: "npm:^4.7.7"
+    xml-js: "npm:^1.6.11"
+  checksum: 10/87258de5a74510a73107a8f7e62745e503067e75493d1161f958604c494e2df2cb7955e1cf35ff0c94833ec08b334a3e4fa6009c3c1af009ce73ddb1f0fd5d81
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.2":
   version: 0.19.2
   resolution: "@humanfs/core@npm:0.19.2"
@@ -658,13 +671,6 @@ __metadata:
     "@octokit/types": "npm:^13.0.0"
     universal-user-agent: "npm:^6.0.0"
   checksum: 10/9a7a65fa84df795b0acb5315dae5a4a5a042a01dde0c88974df180a1c02b9b8e61cae013be32461b11ee1d507a8f778f3b7f37dfa3b371771332cb8efcd01f29
-  languageName: node
-  linkType: hard
-
-"@octokit/openapi-types@npm:^11.2.0":
-  version: 11.2.0
-  resolution: "@octokit/openapi-types@npm:11.2.0"
-  checksum: 10/ea4e7e1cf08f2c6382f841e4e2a470e684d890c52589987d0959ceff5ed4c89edc052e6c6c5308e5d2cbdd4662cf3b179845d6eca318847538be4bea2c927d50
   languageName: node
   linkType: hard
 
@@ -3288,9 +3294,9 @@ __metadata:
   linkType: hard
 
 "sax@npm:^1.2.4":
-  version: 1.6.0
-  resolution: "sax@npm:1.6.0"
-  checksum: 10/0909cedcd9f011ceeac80c0240a92d64ef712cf6c04e0f6ee236a8d812f86a59f61bee6bb5da28d75306db050b99e0593051ea77351795822253b984af6cf044
+  version: 1.6.1
+  resolution: "sax@npm:1.6.1"
+  checksum: 10/bf7e7f8293903548bd663d71e9300b20ee04df178399b8f54029b6559225de422235c8fb0a63ba088fcb90c1dbaf9b475f57c7f32c901bfb78d0196dceb3cc7f
   languageName: node
   linkType: hard
 
@@ -3571,10 +3577,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "unity-test-runner@workspace:."
   dependencies:
-    "@actions/core": "npm:^1.10.0"
-    "@actions/exec": "npm:^1.1.0"
-    "@actions/github": "npm:^6"
-    "@octokit/openapi-types": "npm:^11.2.0"
+    "@game-ci/unity-engine-core": "game-ci/unity-engine-core#main"
     "@types/node": "npm:^20.8.10"
     "@types/semver": "npm:^7.3.5"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
@@ -3582,7 +3585,6 @@ __metadata:
     "@vitest/coverage-istanbul": "npm:^4.1.5"
     eslint: "npm:^10.3.0"
     eslint-plugin-unicorn: "npm:^64.0.0"
-    handlebars: "npm:^4.7.7"
     husky: "npm:9"
     js-yaml: "npm:^3.14.0"
     lint-staged: "npm:^16"
@@ -3591,7 +3593,6 @@ __metadata:
     typescript: "npm:^5"
     vite: "npm:^7"
     vitest: "npm:^4"
-    xml-js: "npm:^1.6.11"
   languageName: unknown
   linkType: soft
 
