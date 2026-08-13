@@ -22,7 +22,7 @@ inputs:
     description: 'The type of tests to be run by the test runner.'
   coverageEnabled:
     required: false
-    default: true
+    default: 'true'
     description: 'Whether to pass -enableCodeCoverage to the Unity editor. Disable this if code coverage instrumentation is crashing or failing to compile on your Unity version (see #301, #302, #306).'
   coverageOptions:
     required: false
