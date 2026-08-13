@@ -3,6 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import ResultsCheck from './results-check';
+import ResultsParser from './results-parser';
 
 describe('ResultsCheck', () => {
   describe('createCheck', () => {
@@ -30,14 +31,56 @@ describe('ResultsCheck', () => {
       vi.spyOn(ResultsCheck, 'renderSummary').mockResolvedValue('summary');
       vi.spyOn(ResultsCheck, 'renderDetails').mockResolvedValue('details');
 
+      const parseResultsSpy = vi.spyOn(ResultsParser, 'parseResults');
+
       try {
-        fs.writeFileSync(path.join(artifactsPath, 'not-nunit.xml'), '<not-a-test-run/>');
+        // Larger than the 4KB bounded read, with the non-NUnit content
+        // confined to the start of the file - proves the check doesn't need
+        // to read (or match against) the whole file to reach this verdict.
+        const filler = 'x'.repeat(8192);
+        fs.writeFileSync(path.join(artifactsPath, 'not-nunit.xml'), `<not-a-test-run/>${filler}`);
 
         await ResultsCheck.createCheck(artifactsPath, 'fake-token', 'Test Results');
 
         expect(warnSpy).toHaveBeenCalledWith(
           expect.stringContaining('File does not appear to be a NUnit XML file: not-nunit.xml'),
         );
+        expect(parseResultsSpy).not.toHaveBeenCalled();
+      } finally {
+        fs.rmSync(artifactsPath, { recursive: true, force: true });
+        vi.restoreAllMocks();
+        process.env['GITHUB_REPOSITORY'] = originalRepository;
+      }
+    });
+
+    it('matches only a complete <test-run> element, not lookalikes like <test-runner>', async () => {
+      const originalRepository = process.env['GITHUB_REPOSITORY'];
+      process.env['GITHUB_REPOSITORY'] = 'game-ci/unity-test-runner';
+      const artifactsPath = fs.mkdtempSync(path.join(os.tmpdir(), 'results-check-'));
+      const warnSpy = vi.fn();
+      const coreModule = await import('@actions/core');
+      vi.spyOn(coreModule, 'warning').mockImplementation(warnSpy);
+      vi.spyOn(coreModule, 'info').mockImplementation(() => {});
+      const githubModule = await import('@actions/github');
+      vi.spyOn(githubModule, 'getOctokit').mockReturnValue({
+        rest: { checks: { create: vi.fn().mockResolvedValue({}) } },
+      } as any);
+      vi.spyOn(ResultsCheck, 'renderSummary').mockResolvedValue('summary');
+      vi.spyOn(ResultsCheck, 'renderDetails').mockResolvedValue('details');
+      const parseResultsSpy = vi.spyOn(ResultsParser, 'parseResults');
+
+      try {
+        fs.writeFileSync(
+          path.join(artifactsPath, 'lookalike.xml'),
+          '<test-runner>not actually NUnit</test-runner>',
+        );
+
+        await ResultsCheck.createCheck(artifactsPath, 'fake-token', 'Test Results');
+
+        expect(warnSpy).toHaveBeenCalledWith(
+          expect.stringContaining('File does not appear to be a NUnit XML file: lookalike.xml'),
+        );
+        expect(parseResultsSpy).not.toHaveBeenCalled();
       } finally {
         fs.rmSync(artifactsPath, { recursive: true, force: true });
         vi.restoreAllMocks();

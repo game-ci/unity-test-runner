@@ -1044,7 +1044,7 @@ const ResultsCheck = {
                     fs.closeSync(fd);
                 }
                 const contentStart = buffer.toString('utf8', 0, bytesRead);
-                if (!contentStart.includes('<test-run')) {
+                if (!/<test-run(?=[\s/>])/.test(contentStart)) {
                     core.warning(`File does not appear to be a NUnit XML file: ${filepath}`);
                     return;
                 }
