@@ -28,17 +28,7 @@ const ResultsCheck = {
           // of reading the whole file - avoids unnecessary I/O on large
           // result files and on non-NUnit XML files sitting in the
           // artifacts directory (game-ci/unity-test-runner#288).
-          const bufferSize = 4096;
-          const buffer = Buffer.alloc(bufferSize);
-          const fd = fs.openSync(filePath, 'r');
-          let bytesRead: number;
-          try {
-            bytesRead = fs.readSync(fd, buffer, 0, bufferSize, 0);
-          } finally {
-            fs.closeSync(fd);
-          }
-
-          const contentStart = buffer.toString('utf8', 0, bytesRead);
+          const contentStart = ResultsCheck.readFileHead(filePath, 4096);
           if (!/<test-run(?=[\s/>])/.test(contentStart)) {
             core.warning(`File does not appear to be a NUnit XML file: ${filepath}`);
             return;
@@ -95,6 +85,25 @@ const ResultsCheck = {
     // Call GitHub API
     await ResultsCheck.requestGitHubCheck(githubToken, checkName, output);
     return runSummary.failed;
+  },
+
+  /**
+   * Reads at most `maxBytes` from the start of a file via a bounded
+   * fs.readSync, instead of reading the whole file. Exposed as its own
+   * method (rather than inlined) so tests can spy on it directly - vitest
+   * can't spy on node:fs's own exports under ESM ("Module namespace is not
+   * configurable in ESM").
+   */
+  readFileHead(filePath: string, maxBytes: number): string {
+    const buffer = Buffer.alloc(maxBytes);
+    const fd = fs.openSync(filePath, 'r');
+    let bytesRead: number;
+    try {
+      bytesRead = fs.readSync(fd, buffer, 0, maxBytes, 0);
+    } finally {
+      fs.closeSync(fd);
+    }
+    return buffer.toString('utf8', 0, bytesRead);
   },
 
   async requestGitHubCheck(githubToken, checkName, output) {
