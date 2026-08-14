@@ -1035,13 +1035,18 @@ const ResultsCheck = {
             if (!filepath.endsWith('.xml'))
                 return;
             core.info(`Processing file ${filepath}...`);
+            const filePath = path_1.default.join(artifactsPath, filepath);
             try {
-                const content = fs.readFileSync(path_1.default.join(artifactsPath, filepath), 'utf8');
-                if (!content.includes('<test-run')) {
-                    // noinspection ExceptionCaughtLocallyJS
-                    throw new Error('File does not appear to be a NUnit XML file');
+                // Only read the first 4KB to check for the <test-run> tag instead
+                // of reading the whole file - avoids unnecessary I/O on large
+                // result files and on non-NUnit XML files sitting in the
+                // artifacts directory (game-ci/unity-test-runner#288).
+                const contentStart = ResultsCheck.readFileHead(filePath, 4096);
+                if (!/<test-run(?=[\s/>])/.test(contentStart)) {
+                    core.warning(`File does not appear to be a NUnit XML file: ${filepath}`);
+                    return;
                 }
-                const fileData = await results_parser_1.default.parseResults(path_1.default.join(artifactsPath, filepath));
+                const fileData = await results_parser_1.default.parseResults(filePath);
                 core.info(fileData.summary);
                 runs.push(fileData);
             }
@@ -1088,6 +1093,25 @@ const ResultsCheck = {
         // Call GitHub API
         await ResultsCheck.requestGitHubCheck(githubToken, checkName, output);
         return runSummary.failed;
+    },
+    /**
+     * Reads at most `maxBytes` from the start of a file via a bounded
+     * fs.readSync, instead of reading the whole file. Exposed as its own
+     * method (rather than inlined) so tests can spy on it directly - vitest
+     * can't spy on node:fs's own exports under ESM ("Module namespace is not
+     * configurable in ESM").
+     */
+    readFileHead(filePath, maxBytes) {
+        const buffer = Buffer.alloc(maxBytes);
+        const fd = fs.openSync(filePath, 'r');
+        let bytesRead;
+        try {
+            bytesRead = fs.readSync(fd, buffer, 0, maxBytes, 0);
+        }
+        finally {
+            fs.closeSync(fd);
+        }
+        return buffer.toString('utf8', 0, bytesRead);
     },
     async requestGitHubCheck(githubToken, checkName, output) {
         const pullRequest = github.context.payload.pull_request;
