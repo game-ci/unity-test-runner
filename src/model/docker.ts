@@ -75,6 +75,7 @@ const Docker = {
     ).join(';');
 
     return `docker run \
+            --shm-size=1025m \
             --workdir /github/workspace \
             --cidfile "${cidfile}" \
             --rm \
@@ -133,6 +134,7 @@ const Docker = {
     ).join(';');
 
     return `docker run \
+                --shm-size=1025m \
                 --workdir c:/github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
