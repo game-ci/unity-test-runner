@@ -1,59 +1,140 @@
 name: Actions 😎
 on:
-  push: { branches: [main] }
-  pull_request:
-    paths-ignore:
-      - '.github/**'
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 env:
-  UNITY_LICENSE: "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>\n    <License id=\"Terms\">\n        <MachineBindings>\n            <Binding Key=\"1\" Value=\"576562626572264761624c65526f7578\"/>\n            <Binding Key=\"2\" Value=\"576562626572264761624c65526f7578\"/>\n        </MachineBindings>\n        <MachineID Value=\"D7nTUnjNAmtsUMcnoyrqkgIbYdM=\"/>\n        <SerialHash Value=\"2033b8ac3e6faa3742ca9f0bfae44d18f2a96b80\"/>\n        <Features>\n            <Feature Value=\"33\"/>\n            <Feature Value=\"1\"/>\n            <Feature Value=\"12\"/>\n            <Feature Value=\"2\"/>\n            <Feature Value=\"24\"/>\n            <Feature Value=\"3\"/>\n            <Feature Value=\"36\"/>\n            <Feature Value=\"17\"/>\n            <Feature Value=\"19\"/>\n            <Feature Value=\"62\"/>\n        </Features>\n        <DeveloperData Value=\"AQAAAEY0LUJHUlgtWEQ0RS1aQ1dWLUM1SlctR0RIQg==\"/>\n        <SerialMasked Value=\"F4-BGRX-XD4E-ZCWV-C5JW-XXXX\"/>\n        <StartDate Value=\"2021-02-08T00:00:00\"/>\n        <UpdateDate Value=\"2021-02-09T00:34:57\"/>\n        <InitialActivationDate Value=\"2021-02-08T00:34:56\"/>\n        <LicenseVersion Value=\"6.x\"/>\n        <ClientProvidedVersion Value=\"2018.4.30f1\"/>\n        <AlwaysOnline Value=\"false\"/>\n        <Entitlements>\n            <Entitlement Ns=\"unity_editor\" Tag=\"UnityPersonal\" Type=\"EDITOR\" ValidTo=\"9999-12-31T00:00:00\"/>\n            <Entitlement Ns=\"unity_editor\" Tag=\"DarkSkin\" Type=\"EDITOR_FEATURE\" ValidTo=\"9999-12-31T00:00:00\"/>\n        </Entitlements>\n    </License>\n<Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments\"/><SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/><Reference URI=\"#Terms\"><Transforms><Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/></Transforms><DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>m0Db8UK+ktnOLJBtHybkfetpcKo=</DigestValue></Reference></SignedInfo><SignatureValue>o/pUbSQAukz7+ZYAWhnA0AJbIlyyCPL7bKVEM2lVqbrXt7cyey+umkCXamuOgsWPVUKBMkXtMH8L\n5etLmD0getWIhTGhzOnDCk+gtIPfL4jMo9tkEuOCROQAXCci23VFscKcrkB+3X6h4wEOtA2APhOY\nB+wvC794o8/82ffjP79aVAi57rp3Wmzx+9pe9yMwoJuljAy2sc2tIMgdQGWVmOGBpQm3JqsidyzI\nJWG2kjnc7pDXK9pwYzXoKiqUqqrut90d+kQqRyv7MSZXR50HFqD/LI69h68b7P8Bjo3bPXOhNXGR\n9YCoemH6EkfCJxp2gIjzjWW+l2Hj2EsFQi8YXw==</SignatureValue></Signature></root>"
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
 
 jobs:
   tests:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - name: Read Node version from mise.toml
+        id: node
+        run: echo "version=$(grep -E '^node\s*=' mise.toml | sed -E 's/.*"([^"]+)".*/\1/')" >> "$GITHUB_OUTPUT"
+
+      - name: Install package manager (from package.json)
+        run: |
+          corepack enable
+          corepack install
+
+      - uses: actions/setup-node@v4
         with:
-          node-version: 12.x
-      - run: yarn
-      - run: yarn lint
-      - run: yarn test
-      - run: yarn build || { echo "build command should always succeed" ; exit 61; }
-  #      - run: yarn build --quiet && git diff --quiet action || { echo "ERROR - index.js is different from repository version. Forgot to run `yarn build`?" ; exit 62; }
+          node-version: ${{ steps.node.outputs.version }}
+
+      - name: Resolve yarn cache folder
+        id: yarn-config
+        run: echo "cacheFolder=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore yarn install cache (node_modules + cacheFolder + install-state)
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ${{ steps.yarn-config.outputs.cacheFolder }}
+            .yarn/install-state.gz
+          key: yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-node${{ steps.node.outputs.version }}-
+
+      - name: Install deps
+        env:
+          YARN_ENABLE_HARDENED_MODE: 'false'
+        run: |
+          case "$(yarn --version)" in 1.*) echo 'expected up-to-date yarn version'; exit 1 ;; esac
+          yarn install --immutable
+
+      - name: Format
+        run: yarn format:check
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build || { echo 'build command should always succeed'; exit 61; }
 
   testAllModesLikeInTheReadme:
-    name: Test in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
-    runs-on: ubuntu-latest
+    name: Test in ${{ matrix.testMode }} of version ${{ matrix.unityVersion }} on ${{ matrix.baseRunner }}
+    runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
       matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         testMode:
           - playmode
           - editmode
+          - standalone
     steps:
       ###########################
       #         Checkout        #
       ###########################
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-
+            Library-${{ matrix.baseRunner }}
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
+
       - uses: ./
         id: tests
         with:
@@ -62,40 +143,73 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: Test results for ${{ matrix.testMode }}
+          name: Test results for ${{ matrix.testMode }} (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.tests.outputs.artifactsPath }}
           retention-days: 14
 
   testRunnerInAllModes:
     name: Test all modes ✨
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
       matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+            Library-${{ matrix.baseRunner }}
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
 
       # Configure test runner
       - name: Run tests
@@ -110,48 +224,84 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (all)
+          name: Test results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (all)
+          name: Coverage results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInEditMode:
     name: Test edit mode 📝
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
       matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
         projectPath:
           - unity-project-with-correct-tests
+        runAsHostUser:
+          - true
+          - false
     steps:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+            Library-${{ matrix.baseRunner }}
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
 
       # Configure test runner
       - name: Run tests
@@ -160,53 +310,87 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
+          runAsHostUser: ${{ matrix.runAsHostUser }}
           testMode: editmode
           artifactsPath: artifacts/editmode
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (edit mode)
+          name: Test results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (edit mode)
+          name: Coverage results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.coveragePath }}
           retention-days: 14
 
   testRunnerInPlayMode:
     name: Test play mode 📺
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
       matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
         unityVersion:
-          - 2019.2.11f1
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+            Library-${{ matrix.baseRunner }}
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
 
       # Configure test runner
       - name: Run tests
@@ -220,48 +404,249 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (play mode)
+          name: Test results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.artifactsPath }}
           retention-days: 14
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Coverage results (play mode)
+          name: Coverage results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.coveragePath }}
           retention-days: 14
 
-  testEachModeSequentially:
-    name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
-    runs-on: ubuntu-latest
+  testRunnerInStandalone:
+    name: Test standalone 📺
+    runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
       matrix:
-        unityVersion:
-          - 2019.2.11f1
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
         projectPath:
           - unity-project-with-correct-tests
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
     steps:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
           restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+            Library-${{ matrix.baseRunner }}-
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
+
+      # Configure test runner
+      - name: Run tests
+        id: standalone
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: standalone
+          artifactsPath: artifacts/standalone
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test results (play mode standalone) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
+          path: ${{ steps.standalone.outputs.artifactsPath }}
+          retention-days: 14
+
+  testRunnerInStandaloneWithIL2CPP:
+    name: Test standalone with IL2CPP 📺
+    runs-on: ${{ matrix.baseRunner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
+        projectPath:
+          - unity-project-with-correct-tests
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      ###########################
+      #          Cache          #
+      ###########################
+      - uses: actions/cache@v4
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-${{ matrix.baseRunner }}-
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
+
+      # Set scripting backend to IL2CPP
+      - name: Rewrite ProjectSettings
+        run: |
+          DefineOriginal="  scriptingBackend: {}"
+          DefineReplace="  scriptingBackend: \\n    Standalone: 1"
+          sed -i "{s/$DefineOriginal/$DefineReplace/g}" ${{ matrix.projectPath }}/ProjectSettings/ProjectSettings.asset
+        shell: bash
+
+      # Configure test runner
+      - name: Run tests
+        id: standalone
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: standalone
+          artifactsPath: artifacts/standalone
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test results (play mode standalone il2cpp) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
+          path: ${{ steps.standalone.outputs.artifactsPath }}
+          retention-days: 14
+
+  testEachModeSequentially:
+    name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
+    runs-on: ${{ matrix.baseRunner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        baseRunner:
+          - ubuntu-latest
+          - windows-2022
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+        projectPath:
+          - unity-project-with-correct-tests
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      ###########################
+      #          Cache          #
+      ###########################
+      - uses: actions/cache@v4
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
+          restore-keys: |
+            Library-${{ matrix.baseRunner }}-
+
+      ###########################
+      #    Docker Readiness     #
+      ###########################
+      - name: Ensure Docker daemon is ready (Windows runners only)
+        if: runner.os == 'Windows'
+        timeout-minutes: 2
+        shell: powershell
+        run: |
+          $maxRetries = 10
+          $retryDelay = 6
+          for ($i = 0; $i -lt $maxRetries; $i++) {
+            $svc = Get-Service docker -ErrorAction SilentlyContinue
+            if ($svc -and $svc.Status -eq 'Running') {
+              docker version 2>$null
+              if ($LASTEXITCODE -eq 0) {
+                Write-Host "Docker is ready."
+                exit 0
+              }
+            }
+            if ($svc -and $svc.Status -eq 'Stopped') {
+              Write-Host "Docker service stopped, attempting to start..."
+              Start-Service docker -ErrorAction SilentlyContinue
+            }
+            Write-Host "Waiting for Docker daemon (attempt $($i+1)/$maxRetries)..."
+            Start-Sleep -Seconds $retryDelay
+          }
+          Write-Error "Docker daemon did not start within $($maxRetries * $retryDelay) seconds"
+          exit 1
 
       # Configure first test runner
       - name: Tests in editmode 📝
@@ -281,10 +666,352 @@ jobs:
           testMode: playmode
           artifactsPath: artifacts/playmode
 
+      # Configure third test runner
+      - name: Tests in standalone 📺
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: standalone
+          artifactsPath: artifacts/playmode
+
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: Test results (combined)
+          name: Test results (combined sequential) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: artifacts/
+          retention-days: 14
+
+  testAllPackageModesLikeInTheReadme:
+    name: Test package mode 📦 in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+        testMode:
+          - playmode
+          - editmode
+
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: ./
+        id: packageTests
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: ${{ matrix.testMode }}
+          artifactsPath: ${{ matrix.testMode }}-packageArtifacts
+          customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
+          packageMode: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Package test results for ${{ matrix.testMode }} (${{ matrix.unityVersion }})
+          path: ${{ steps.packageTests.outputs.artifactsPath }}
+          retention-days: 14
+
+  testPackageRunnerInAllModes:
+    name: Test package mode in all modes 📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          packageMode: true
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (all) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package Coverage results (all) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerInEditMode:
+    name: Test package mode in edit mode 📦📝
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageEditMode
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          artifactsPath: artifacts/packageeditmode
+          packageMode: true
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (edit mode) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageEditMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package Coverage results (edit mode) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageEditMode.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerInPlayMode:
+    name: Test package mode in play mode 📦📺
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packagePlayMode
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: playmode
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+example.testpackage.*,-*Tests*'
+          artifactsPath: artifacts/packageplaymode
+          packageMode: true
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (play mode) (${{ matrix.unityVersion }})
+          path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package Coverage results (play mode) (${{ matrix.unityVersion }})
+          path: ${{ steps.packagePlayMode.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageModeEachModeSequentially:
+    name: Test package mode in each mode sequentially 📦 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+        projectPath:
+          - unity-package-with-correct-tests/com.example.testpackage
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure first test runner
+      - name: Test package mode in editmode 📦📝
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: editmode
+          artifactsPath: packageArtifacts/editmode
+          packageMode: true
+
+      # Configure second test runner
+      - name: Test package mode in playmode 📦📺
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: playmode
+          artifactsPath: packageArtifacts/playmode
+          packageMode: true
+
+      # Upload combined artifacts
+      - name: Upload combined test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (combined sequential) (${{ matrix.unityVersion }})
+          path: packageArtifacts/
+          retention-days: 14
+
+  testPackageRunnerWithScopeRegistry:
+    name: Test package mode in all modes with Scoped Registry 📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.dependencyexample.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+dependencyexample.testpackage.*,-*Tests*'
+          packageMode: true
+          scopedRegistryUrl: https://package.openupm.com
+          registryScopes: 'com.cysharp.unitask'
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (Scope Registry) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package Coverage results (Scope Registry) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
+          retention-days: 14
+
+  testPackageRunnerWithScopeRegistryAndMultipleScopes:
+    name: Test package mode in all modes with Scoped Registry and Multiple Scopes 🔎📦✨
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - unity-package-with-correct-tests/com.dependencyexample.testpackage
+        unityVersion:
+          - 2022.3.13f1
+          - 2023.1.19f1
+          - 2023.2.2f1
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Configure test runner
+      - name: Run tests
+        id: packageAllTests
+        uses: ./
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          testMode: all
+          coverageOptions: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;assemblyFilters:+dependencyexample.testpackage.*,-*Tests*'
+          packageMode: true
+          scopedRegistryUrl: https://package.openupm.com
+          registryScopes: 'com.cysharp, com.cysharp.unitask'
+          # Test implicit artifactsPath, by not setting it
+
+      # Upload artifacts
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package test results (Multi Scope Regristy) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.artifactsPath }}
+          retention-days: 14
+
+      # Upload coverage
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v4
+        with:
+          name: Package Coverage results (Multi Scope Registry) (${{ matrix.unityVersion }})
+          path: ${{ steps.packageAllTests.outputs.coveragePath }}
           retention-days: 14

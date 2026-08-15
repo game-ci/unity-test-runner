@@ -1,6 +1,6 @@
 {
   "name": "unity-test-runner",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Run tests for any Unity project.",
   "main": "dist/index.js",
   "repository": "git@github.com:game-ci/unity-test-runner.git",
@@ -9,48 +9,53 @@
   "scripts": {
     "prebuild": "yarn",
     "build": "tsc && ncc build lib/index.js --source-map --license licenses.txt",
-    "lint": "prettier --check \"src/**/*.{js,ts}\" && eslint src --ext .js,.ts --max-warnings=0",
-    "format": "prettier --write \"src/**/*.{js,ts}\"",
-    "test": "jest",
-    "prepare": "husky install"
+    "test": "node scripts/ensure-husky.mjs && vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "yarn oxlint --report-unused-disable-directives",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
+    "typecheck": "tsc --noEmit",
+    "typecheck:tsgo": "tsgo --noEmit",
+    "setup:hooks": "node scripts/ensure-husky.mjs",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "!(dist)/**/*.@(ts|tsx|mts|js|jsx|mjs|cjs)": [
+      "oxlint --fix --quiet --no-error-on-unmatched-pattern",
+      "oxfmt --write"
+    ],
+    "!(dist)/**/*.@(json|jsonc|json5|md|mdx|yaml|yml|css|scss|sass|html|toml)": "oxfmt --write",
+    "package.json": "oxfmt --write",
+    ".github/workflows/*.@(yml|yaml)": "actionlint"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
-    "@actions/github": "^5.0.0",
+    "@actions/github": "^6",
     "@octokit/openapi-types": "^11.2.0",
     "handlebars": "^4.7.7",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.15",
-    "@types/node": "^14.14.9",
+    "@types/node": "^20.8.10",
     "@types/semver": "^7.3.5",
-    "@typescript-eslint/parser": "^5.9.0",
+    "@typescript/native-preview": "^7.0.0-dev.20260505.1",
     "@vercel/ncc": "^0.33.1",
-    "eslint": "^8.6.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-github": "^4.3.5",
-    "eslint-plugin-jest": "^25.3.4",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-unicorn": "^40.0.0",
-    "husky": "^7.0.4",
-    "jest": "^26.6.3",
-    "jest-circus": "^26.6.3",
+    "@vitest/coverage-istanbul": "^4.1.5",
+    "eslint": "^10.3.0",
+    "eslint-plugin-unicorn": "^64.0.0",
+    "husky": "9",
     "js-yaml": "^3.14.0",
-    "lint-staged": "^12.1.2",
-    "prettier": "^2.2.1",
-    "ts-jest": "^26.4.4",
-    "typescript": "^4.1.5"
+    "lint-staged": "^16",
+    "oxfmt": "^0.48.0",
+    "oxlint": "^1.63.0",
+    "typescript": "^5",
+    "vite": "^7",
+    "vitest": "^4"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
-      "eslint",
-      "jest --findRelatedTests"
-    ],
-    "*.{json,md,yaml,yml}": [
-      "prettier --write"
-    ]
+  "packageManager": "yarn@4.14.1",
+  "resolutions": {
+    "undici": "^6.24.0"
   }
 }

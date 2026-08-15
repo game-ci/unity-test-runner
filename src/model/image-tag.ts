@@ -3,7 +3,6 @@ import Platform from './platform';
 class ImageTag {
   public customImage?: string;
   public repository: string;
-  public name: string;
   public editorVersion: string;
   public targetPlatform: string;
   public targetPlatformSuffix: string;
@@ -12,9 +11,11 @@ class ImageTag {
 
   constructor(imageProperties) {
     const {
-      editorVersion = '2019.2.11f1',
+      editorVersion = '2022.3.7f1',
       targetPlatform = ImageTag.getImagePlatformType(process.platform),
       customImage,
+      containerRegistryRepository,
+      containerRegistryImageVersion,
     } = imageProperties;
 
     if (!ImageTag.versionPattern.test(editorVersion)) {
@@ -25,17 +26,16 @@ class ImageTag {
     this.customImage = customImage;
 
     // Or
-    this.repository = 'unityci';
-    this.name = 'editor';
+    this.repository = containerRegistryRepository;
     this.editorVersion = editorVersion;
     this.targetPlatform = targetPlatform;
     this.targetPlatformSuffix = ImageTag.getTargetPlatformSuffix(targetPlatform, editorVersion);
     this.imagePlatformPrefix = ImageTag.getImagePlatformPrefix(process.platform);
-    this.imageRollingVersion = 1;
+    this.imageRollingVersion = Number(containerRegistryImageVersion);
   }
 
   static get versionPattern() {
-    return /^20\d{2}\.\d\.\w{3,4}|3$/;
+    return /^\d+\.\d+\.\d+[a-z]\d+$/;
   }
 
   static get targetPlatformSuffixes() {
@@ -82,7 +82,7 @@ class ImageTag {
     const { generic, webgl, mac, windows, linux, linuxIl2cpp, android, ios, facebook } =
       ImageTag.targetPlatformSuffixes;
 
-    const [major, minor] = editorVersion.split('.').map(digit => Number(digit));
+    const [major, minor] = editorVersion.split('.').map((digit) => Number(digit));
     // @see: https://docs.unity3d.com/ScriptReference/BuildTarget.html
     switch (targetPlatform) {
       case Platform.types.StandaloneOSX:
@@ -146,7 +146,7 @@ class ImageTag {
   }
 
   get image() {
-    return `${this.repository}/${this.name}`.replace(/^\/+/, '');
+    return `${this.repository}`.replace(/^\/+/, '');
   }
 
   toString() {

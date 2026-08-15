@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll, test } from 'vitest';
 import * as fs from 'fs';
 import * as xmljs from 'xml-js';
 import ResultsParser from './results-parser';
@@ -5,8 +6,10 @@ import { TestMeta } from './results-meta';
 
 describe('ResultsParser', () => {
   describe('parseResults', () => {
-    it('throws for missing file', () => {
-      expect(() => ResultsParser.parseResults('')).rejects;
+    it('throws for missing file', async () => {
+      // Original test was `expect(...).rejects;` with no matcher — a no-op
+      // assertion. Replaced with a real `await expect(...).rejects.toThrow(...)`.
+      await expect(ResultsParser.parseResults('')).rejects.toThrow(/Missing file/);
     });
 
     it('parses editmode-results.xml', () => {
@@ -247,6 +250,14 @@ at UnityEngine.TestTools.TestEnumerator+<Execute>d__6.MoveNext () [0x00038] in /
 at Tests.SetupFailedTest.SetUp () [0x00000] in /github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs:10`);
       expect(result.path).toBe('/github/workspace/unity-project/Assets/Tests/SetupFailedTest.cs');
       expect(result.line).toBe(10);
+    });
+
+    test('Debug.LogError annotation point', () => {
+      const result = ResultsParser.findAnnotationPoint(
+        `FMODUnity.RuntimeUtils:DebugLogError (string) (at Assets/Plugins/FMOD/src/RuntimeUtils.cs:580)`,
+      );
+      expect(result.path).toBe('Assets/Plugins/FMOD/src/RuntimeUtils.cs');
+      expect(result.line).toBe(580);
     });
   });
 });

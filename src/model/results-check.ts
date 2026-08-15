@@ -19,12 +19,21 @@ const ResultsCheck = {
     const runs: RunMeta[] = [];
     const files = fs.readdirSync(artifactsPath);
     await Promise.all(
-      files.map(async filepath => {
+      files.map(async (filepath) => {
         if (!filepath.endsWith('.xml')) return;
         core.info(`Processing file ${filepath}...`);
-        const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
-        core.info(fileData.summary);
-        runs.push(fileData);
+        try {
+          const content = fs.readFileSync(path.join(artifactsPath, filepath), 'utf8');
+          if (!content.includes('<test-run')) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error('File does not appear to be a NUnit XML file');
+          }
+          const fileData = await ResultsParser.parseResults(path.join(artifactsPath, filepath));
+          core.info(fileData.summary);
+          runs.push(fileData);
+        } catch (error: any) {
+          core.warning(`Failed to parse ${filepath}: ${error.message}`);
+        }
       }),
     );
 
@@ -54,7 +63,7 @@ const ResultsCheck = {
     core.debug(`Details view: ${details}`);
     const rawAnnotations = runSummary.extractAnnotations();
     core.debug(`Raw annotations: ${rawAnnotations}`);
-    const annotations = rawAnnotations.map(rawAnnotation => {
+    const annotations = rawAnnotations.map((rawAnnotation) => {
       const annotation = rawAnnotation;
       annotation.path = rawAnnotation.path.replace('/github/workspace/', '');
       return annotation;
@@ -76,21 +85,21 @@ const ResultsCheck = {
     const pullRequest = github.context.payload.pull_request;
     const headSha = (pullRequest && pullRequest.head.sha) || github.context.sha;
 
-    const maxLen = 65534;
-    if(output.length > maxLen)
-    {
-      core.warning(`Output too long (${output.length}) truncating to ${maxLen}`);
-      output = output.substring(0, maxLen);
+    // Check max length for https://github.com/game-ci/unity-test-runner/issues/214
+    const maxLength = 65_534;
+    if (output.text.length > maxLength) {
+      core.warning(`Test details of ${output.text.length} surpass limit of ${maxLength}`);
+      output.text =
+        'Test details omitted from GitHub UI due to length. See console logs for details.';
     }
-
 
     core.info(`Posting results for ${headSha}`);
     const createCheckRequest = {
       ...github.context.repo,
       name: checkName,
       head_sha: headSha,
-      status: 'completed',
-      conclusion: 'neutral',
+      status: 'completed' as const,
+      conclusion: 'neutral' as const,
       output,
     };
 
@@ -107,10 +116,10 @@ const ResultsCheck = {
   },
 
   async render(viewPath, runMetas) {
-    Handlebars.registerHelper('indent', toIndent =>
+    Handlebars.registerHelper('indent', (toIndent) =>
       toIndent
         .split('\n')
-        .map(s => `        ${s.replace('/github/workspace/', '')}`)
+        .map((s) => `        ${s.replace('/github/workspace/', '')}`)
         .join('\n'),
     );
     const source = await fs.promises.readFile(viewPath, 'utf8');

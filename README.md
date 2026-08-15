@@ -4,7 +4,7 @@
 
 GitHub Action to
 [run tests](https://github.com/marketplace/actions/unity-test-runner)
-for any Unity project.
+for any Unity project and _some_ Unity packages.
 
 Part of the <a href="https://game.ci">GameCI</a> open source project.
 <br />
@@ -45,7 +45,7 @@ GameCI is free for everyone forever.
 
 You can support us at [OpenCollective](https://opencollective.com/game-ci).
 
-## Licence
+## License
 
 This repository is [MIT](./LICENSE) licensed.
 

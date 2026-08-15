@@ -1,3 +1,4 @@
+import ImageEnvironmentFactory from './image-environment-factory';
 import { existsSync, mkdirSync, readFileSync, rmSync } from 'fs';
 import LicensingServerSetup from './licensing-server-setup';
 import type { RunnerContext } from './action';
@@ -9,7 +10,7 @@ import path from 'path';
  * This path is stable for the whole execution of the action, so it can be executed with the same parameters
  * multiple times and get the same result.
  */
-const containerIdFilePath = parameters => {
+const containerIdFilePath = (parameters) => {
   const { runnerTemporaryPath, githubAction } = parameters;
 
   return path.join(runnerTemporaryPath, `container_${githubAction}`);
@@ -53,20 +54,15 @@ const Docker = {
   getLinuxCommand(image, parameters): string {
     const {
       actionFolder,
-      editorVersion,
       workspace,
-      projectPath,
-      customParameters,
       testMode,
-      coverageOptions,
-      artifactsPath,
       useHostNetwork,
       sshAgent,
-      gitPrivateToken,
+      sshPublicKeysDirectoryPath,
       githubToken,
       runnerTemporaryPath,
-      chownFilesTo,
-      unityLicensingServer,
+      dockerCpuLimit,
+      dockerMemoryLimit,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -79,73 +75,53 @@ const Docker = {
     ).join(';');
 
     return `docker run \
-                --workdir /github/workspace \
-                --cidfile "${cidfile}" \
-                --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
-                --env UNITY_EMAIL \
-                --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
-                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
-                --env UNITY_VERSION="${editorVersion}" \
-                --env PROJECT_PATH="${projectPath}" \
-                --env CUSTOM_PARAMETERS="${customParameters}" \
-                --env TEST_PLATFORMS="${testPlatforms}" \
-                --env COVERAGE_OPTIONS="${coverageOptions}" \
-                --env COVERAGE_RESULTS_PATH="CodeCoverage" \
-                --env ARTIFACTS_PATH="${artifactsPath}" \
-                --env GITHUB_REF \
-                --env GITHUB_SHA \
-                --env GITHUB_REPOSITORY \
-                --env GITHUB_ACTOR \
-                --env GITHUB_WORKFLOW \
-                --env GITHUB_HEAD_REF \
-                --env GITHUB_BASE_REF \
-                --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
-                --env GITHUB_ACTION \
-                --env GITHUB_EVENT_PATH \
-                --env RUNNER_OS \
-                --env RUNNER_TOOL_CACHE \
-                --env RUNNER_TEMP \
-                --env RUNNER_WORKSPACE \
-                --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
-                --env CHOWN_FILES_TO="${chownFilesTo}" \
-                ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
-                --volume "${githubHome}:/root:z" \
-                --volume "${githubWorkflow}:/github/workflow:z" \
-                --volume "${workspace}:/github/workspace:z" \
-                --volume "${actionFolder}/steps:/steps:z" \
-                --volume "${actionFolder}/entrypoint.sh:/entrypoint.sh:z" \
-                --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
-                ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
-                ${
-                  sshAgent ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro` : ''
-                } \
-                ${useHostNetwork ? '--net=host' : ''} \
-                ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
-                ${image} \
-                /bin/bash -c /entrypoint.sh`;
+            --shm-size=1025m \
+            --workdir /github/workspace \
+            --cidfile "${cidfile}" \
+            --rm \
+            ${ImageEnvironmentFactory.getEnvVarString(parameters)} \
+            --env GIT_CONFIG_EXTENSIONS \
+            --env TEST_PLATFORMS="${testPlatforms}" \
+            --env GITHUB_WORKSPACE="/github/workspace" \
+            ${sshAgent ? '--env SSH_AUTH_SOCK=/ssh-agent' : ''} \
+            --volume "${githubHome}:/root:z" \
+            --volume "${githubWorkflow}:/github/workflow:z" \
+            --volume "${workspace}:/github/workspace:z" \
+            --volume "${actionFolder}/test-standalone-scripts:/UnityStandaloneScripts:z" \
+            --volume "${actionFolder}/platforms/ubuntu:/steps:z" \
+            --volume "${actionFolder}/unity-config:/usr/share/unity3d/config/:z" \
+            --volume "${actionFolder}/BlankProject":"/BlankProject:z" \
+            --cpus=${dockerCpuLimit} \
+            --memory=${dockerMemoryLimit} \
+            ${sshAgent ? `--volume ${sshAgent}:/ssh-agent` : ''} \
+            ${
+              sshAgent && !sshPublicKeysDirectoryPath
+                ? `--volume /home/runner/.ssh/known_hosts:/root/.ssh/known_hosts:ro`
+                : ''
+            } \
+            ${
+              sshPublicKeysDirectoryPath
+                ? `--volume ${sshPublicKeysDirectoryPath}:/root/.ssh:ro`
+                : ''
+            } \
+            ${useHostNetwork ? '--net=host' : ''} \
+            ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
+            ${image} \
+            /bin/bash -c "/steps/entrypoint.sh`;
   },
 
   getWindowsCommand(image, parameters): string {
     const {
       actionFolder,
-      editorVersion,
       workspace,
-      projectPath,
-      customParameters,
       testMode,
-      coverageOptions,
-      artifactsPath,
       useHostNetwork,
       sshAgent,
-      gitPrivateToken,
       githubToken,
       runnerTemporaryPath,
-      chownFilesTo,
-      unityLicensingServer,
+      dockerCpuLimit,
+      dockerMemoryLimit,
+      dockerIsolationMode,
     } = parameters;
 
     const githubHome = path.join(runnerTemporaryPath, '_github_home');
@@ -158,55 +134,33 @@ const Docker = {
     ).join(';');
 
     return `docker run \
-                --workdir /github/workspace \
+                --shm-size=1025m \
+                --workdir c:/github/workspace \
                 --cidfile "${cidfile}" \
                 --rm \
-                --env UNITY_LICENSE \
-                --env UNITY_LICENSE_FILE \
-                --env UNITY_EMAIL \
-                --env UNITY_PASSWORD \
-                --env UNITY_SERIAL \
-                --env UNITY_LICENSING_SERVER="${unityLicensingServer}" \
-                --env UNITY_VERSION="${editorVersion}" \
-                --env PROJECT_PATH="${projectPath}" \
-                --env CUSTOM_PARAMETERS="${customParameters}" \
+                ${ImageEnvironmentFactory.getEnvVarString(parameters)} \
                 --env TEST_PLATFORMS="${testPlatforms}" \
-                --env COVERAGE_OPTIONS="${coverageOptions}" \
-                --env COVERAGE_RESULTS_PATH="CodeCoverage" \
-                --env ARTIFACTS_PATH="${artifactsPath}" \
-                --env GITHUB_REF \
-                --env GITHUB_SHA \
-                --env GITHUB_REPOSITORY \
-                --env GITHUB_ACTOR \
-                --env GITHUB_WORKFLOW \
-                --env GITHUB_HEAD_REF \
-                --env GITHUB_BASE_REF \
-                --env GITHUB_EVENT_NAME \
-                --env GITHUB_WORKSPACE="/github/workspace" \
-                --env GITHUB_ACTION \
-                --env GITHUB_EVENT_PATH \
-                --env RUNNER_OS \
-                --env RUNNER_TOOL_CACHE \
-                --env RUNNER_TEMP \
-                --env RUNNER_WORKSPACE \
-                --env GIT_PRIVATE_TOKEN="${gitPrivateToken}" \
-                --env CHOWN_FILES_TO="${chownFilesTo}" \
+                --env GITHUB_WORKSPACE="c:/github/workspace" \
                 ${sshAgent ? '--env SSH_AUTH_SOCK=c:/ssh-agent' : ''} \
+                --volume "${actionFolder}/test-standalone-scripts":"c:/UnityStandaloneScripts" \
                 --volume "${githubHome}":"c:/root" \
                 --volume "${githubWorkflow}":"c:/github/workflow" \
                 --volume "${workspace}":"c:/github/workspace" \
-                --volume "${actionFolder}/steps":"c:/steps" \
-                --volume "${actionFolder}":"c:/dist" \
+                --volume "${actionFolder}/platforms/windows":"c:/steps" \
+                --volume "${actionFolder}/BlankProject":"c:/BlankProject" \
                 ${sshAgent ? `--volume ${sshAgent}:c:/ssh-agent` : ''} \
                 ${
                   sshAgent
                     ? `--volume c:/Users/Administrator/.ssh/known_hosts:c:/root/.ssh/known_hosts`
                     : ''
                 } \
+                --cpus=${dockerCpuLimit} \
+                --memory=${dockerMemoryLimit} \
+                --isolation=${dockerIsolationMode} \
                 ${useHostNetwork ? '--net=host' : ''} \
                 ${githubToken ? '--env USE_EXIT_CODE=false' : '--env USE_EXIT_CODE=true'} \
                 ${image} \
-                powershell c:/dist/entrypoint.ps1`;
+                powershell c:/steps/entrypoint.ps1`;
   },
 };
 

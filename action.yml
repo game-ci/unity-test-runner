@@ -5,14 +5,14 @@ inputs:
   unityVersion:
     required: false
     default: 'auto'
-    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt'
+    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt. ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto".'
   customImage:
     required: false
     default: ''
-    description: 'Specific docker image that should be used for testing the project'
+    description: 'Specific docker image that should be used for testing the project. If packageMode is true, this image must have jq installed.'
   projectPath:
     required: false
-    description: 'Path to the Unity project to be tested.'
+    description: 'Path to the Unity project or package to be tested.'
   customParameters:
     required: false
     description: 'Extra parameters to configure the Unity editor run.'
@@ -23,7 +23,7 @@ inputs:
   coverageOptions:
     required: false
     default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear'
-    description: 'Optional coverage parameters for the -coverageOptions argument.'
+    description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass assemblies from the package you want covered to the assemblyFilters option.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -36,6 +36,10 @@ inputs:
     required: false
     default: ''
     description: 'SSH Agent path to forward to the container.'
+  sshPublicKeysDirectoryPath:
+    required: false
+    default: ''
+    description: 'Path to a directory containing SSH public keys to forward to the container.'
   gitPrivateToken:
     required: false
     default: ''
@@ -48,14 +52,58 @@ inputs:
     required: false
     default: 'Test Results'
     description: 'Name for the check run that is created when a github token is provided.'
+  packageMode:
+    required: false
+    default: false
+    description: 'Whether the tests are being run for a Unity package instead of a Unity project. If true, the action can only be run on Linux runners, and any custom docker image passed to this action must have `jq` installed. NOTE: may not work properly for packages with dependencies outside of the Unity Registry.'
+  scopedRegistryUrl:
+    required: false
+    default: ''
+    description: 'Scoped registry to use for resolving package dependencies. Only applicable if packageMode is true.'
+  registryScopes:
+    required: false
+    default: ''
+    description: 'Registry scopes to use for resolving package dependencies. Only applicable if packageMode is true. Required if scopedRegistry is set.'
   chownFilesTo:
     required: false
     default: ''
     description: 'User and optionally group (user or user:group or uid:gid) to give ownership of the resulting build artifacts'
+  dockerCpuLimit:
+    required: false
+    default: ''
+    description: 'Number of CPU cores to assign the docker container. Defaults to all available cores on all platforms.'
+  dockerMemoryLimit:
+    required: false
+    default: ''
+    description:
+      'Amount of memory to assign the docker container. Defaults to 95% of total system memory rounded down to the
+      nearest megabyte on Linux and 80% on Windows. On unrecognized platforms, defaults to 75% of total system memory.
+      To manually specify a value, use the format <number><unit>, where unit is either m or g. ie: 512m = 512 megabytes'
+  dockerIsolationMode:
+    required: false
+    default: 'default'
+    description:
+      'Isolation mode to use for the docker container. Can be one of process, hyperv, or default. Default will pick the
+      default mode as described by Microsoft where server versions use process and desktop versions use hyperv. Only
+      applicable on Windows'
   unityLicensingServer:
     required: false
     default: ''
     description: 'Url to a unity license server for acquiring floating licenses.'
+  containerRegistryRepository:
+    required: false
+    default: 'unityci/editor'
+    description: 'Container registry and repository to pull image from. Only applicable if customImage is not set.'
+  containerRegistryImageVersion:
+    required: false
+    default: '3'
+    description: 'Container registry image version. Only applicable if customImage is not set.'
+  runAsHostUser:
+    required: false
+    default: 'false'
+    description:
+      'Whether to run as a user that matches the host system or the default root container user. Only applicable to
+      Linux hosts and containers. This is useful for fixing permission errors on Self-Hosted runners.'
 outputs:
   artifactsPath:
     description: 'Path where the artifacts are stored.'
@@ -65,6 +113,6 @@ branding:
   icon: 'box'
   color: 'gray-dark'
 runs:
-  using: 'node16'
+  using: 'node24'
   main: 'dist/main.js'
   post: 'dist/post.js'
