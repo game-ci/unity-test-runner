@@ -30,7 +30,7 @@
     ".github/workflows/*.@(yml|yaml)": "actionlint"
   },
   "dependencies": {
-    "@game-ci/unity-engine-core": "game-ci/cli#commit=f637feffca9dcfec58b06b2d25938e52971b99c9&workspace=@game-ci/unity-engine-core"
+    "@game-ci/unity-engine-core": "game-ci/cli#commit=757d85f9ef857eda62558958eaab5acf9d9fec12&workspace=@game-ci/unity-engine-core"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",
