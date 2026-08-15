@@ -3630,6 +3630,39 @@ exports["default"] = Action;
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -3638,6 +3671,7 @@ const image_environment_factory_1 = __importDefault(__nccwpck_require__(1611));
 const fs_1 = __nccwpck_require__(7147);
 const licensing_server_setup_1 = __importDefault(__nccwpck_require__(9935));
 const exec_1 = __nccwpck_require__(1514);
+const core = __importStar(__nccwpck_require__(2186));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 /**
  * Build a path for a docker --cidfile parameter. Docker will store the the created container.
@@ -3658,8 +3692,17 @@ const Docker = {
             return;
         }
         const container = (0, fs_1.readFileSync)(cidfile, 'ascii').trim();
-        await (0, exec_1.exec)(`docker`, ['rm', '--force', '--volumes', container], { silent: true });
-        (0, fs_1.rmSync)(cidfile);
+        try {
+            if (container !== '') {
+                await (0, exec_1.exec)(`docker`, ['rm', '--force', '--volumes', container], { silent: true });
+            }
+        }
+        finally {
+            // Always drop the cidfile, even if `docker rm` failed or there was nothing to
+            // remove (a docker run that failed before writing a container ID still creates
+            // the file - `--cidfile` refuses to run again while a stale file is present).
+            (0, fs_1.rmSync)(cidfile);
+        }
     },
     async run(image, parameters, silent = false) {
         let runCommand = '';
@@ -3676,7 +3719,34 @@ const Docker = {
             default:
                 throw new Error(`Operation system, ${process.platform}, is not supported yet.`);
         }
-        await (0, exec_1.exec)(runCommand, undefined, { silent });
+        // With a githubToken set, the container runs with USE_EXIT_CODE=false (see
+        // getLinuxCommand/getWindowsCommand) - test results are reported through GitHub
+        // Checks, not the process exit code, so in that mode a nonzero exit here can only
+        // mean the docker/container launch itself failed (e.g. the intermittent Windows
+        // runner "docker.exe failed with exit code 1" flake - unity-test-runner#314),
+        // never a real test failure. Retrying is only safe in that mode: without a token,
+        // USE_EXIT_CODE=true and a nonzero exit IS how test failures are signaled, so a
+        // retry there would silently re-run (and could mask) a real failure.
+        const launchFailuresAreRetryable = Boolean(parameters.githubToken);
+        const maxAttempts = launchFailuresAreRetryable ? 3 : 1;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            try {
+                await (0, exec_1.exec)(runCommand, undefined, { silent });
+                return;
+            }
+            catch (error) {
+                if (attempt === maxAttempts)
+                    throw error;
+                core.warning(`Docker run failed (attempt ${attempt}/${maxAttempts}): ${error instanceof Error ? error.message : String(error)}. Retrying...`);
+                try {
+                    await this.ensureContainerRemoval(parameters);
+                }
+                catch (cleanupError) {
+                    core.warning(`Cleanup before retry failed, continuing anyway: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`);
+                }
+                await new Promise((resolve) => setTimeout(resolve, 5000));
+            }
+        }
     },
     getLinuxCommand(image, parameters) {
         const { actionFolder, workspace, testMode, useHostNetwork, sshAgent, sshPublicKeysDirectoryPath, githubToken, runnerTemporaryPath, dockerCpuLimit, dockerMemoryLimit, } = parameters;
