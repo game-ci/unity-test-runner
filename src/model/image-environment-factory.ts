@@ -22,6 +22,8 @@ class ImageEnvironmentFactory {
     let environmentVariables = [
       { name: 'UNITY_EMAIL', value: process.env.UNITY_EMAIL },
       { name: 'UNITY_PASSWORD', value: process.env.UNITY_PASSWORD },
+      { name: 'UNITY_LICENSE', value: process.env.UNITY_LICENSE },
+      { name: 'UNITY_LICENSE_FILE', value: process.env.UNITY_LICENSE_FILE },
       { name: 'UNITY_SERIAL', value: parameters.unitySerial },
       {
         name: 'UNITY_LICENSING_SERVER',
