@@ -5,7 +5,17 @@ inputs:
   unityVersion:
     required: false
     default: 'auto'
-    description: 'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt. ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto".'
+    description:
+      'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt.
+      ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto". A value other than "auto" for
+      a full project is currently ignored - the underlying game-ci CLI always detects the version from the checked-out
+      project and has no override flag yet.'
+  cliVersion:
+    required: false
+    default: 'latest'
+    description:
+      'Release tag of the game-ci/cli binary to install and run (e.g. "v0.1.0"). Defaults to the latest release; pin
+      this for reproducible test runs.'
   customImage:
     required: false
     default: ''
@@ -24,6 +34,13 @@ inputs:
     required: false
     default: 'generateAdditionalMetrics;generateHtmlReport;generateBadgeReport;dontClear'
     description: 'Optional coverage parameters for the -coverageOptions argument. To get coverage in Package Mode, pass assemblies from the package you want covered to the assemblyFilters option.'
+  coverageEnabled:
+    required: false
+    default: true
+    description:
+      'Enable Unity code coverage instrumentation during the test run. Some Unity versions/configurations fail or
+      crash with this on - see #302, #306, #301. Set to false to omit -enableCodeCoverage/-coverageOptions/
+      -coverageResultsPath entirely.'
   artifactsPath:
     required: false
     default: 'artifacts'
@@ -114,5 +131,4 @@ branding:
   color: 'gray-dark'
 runs:
   using: 'node24'
-  main: 'dist/main.js'
-  post: 'dist/post.js'
+  main: 'dist/index.js'

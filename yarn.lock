@@ -5,6 +5,23 @@ __metadata:
   version: 9
   cacheKey: 10
 
+"@actions/cache@npm:^3.2.4":
+  version: 3.3.0
+  resolution: "@actions/cache@npm:3.3.0"
+  dependencies:
+    "@actions/core": "npm:^1.11.1"
+    "@actions/exec": "npm:^1.0.1"
+    "@actions/glob": "npm:^0.1.0"
+    "@actions/http-client": "npm:^2.1.1"
+    "@actions/io": "npm:^1.0.1"
+    "@azure/abort-controller": "npm:^1.1.0"
+    "@azure/ms-rest-js": "npm:^2.6.0"
+    "@azure/storage-blob": "npm:^12.13.0"
+    semver: "npm:^6.3.1"
+  checksum: 10/b3e31b9204ee690187b4cfbcf98e85b12ed0f769f2dc824d0122c0ff1f37f7bb847a07f9437db3496d459bde99d26d5383789b76236ca10a11e39cc4e7f23f2d
+  languageName: node
+  linkType: hard
+
 "@actions/cache@npm:^4.1.0":
   version: 4.1.0
   resolution: "@actions/cache@npm:4.1.0"
@@ -33,7 +50,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/exec@npm:^1.0.1, @actions/exec@npm:^1.1.1":
+"@actions/exec@npm:^1.0.0, @actions/exec@npm:^1.0.1, @actions/exec@npm:^1.1.1":
   version: 1.1.1
   resolution: "@actions/exec@npm:1.1.1"
   dependencies:
@@ -77,10 +94,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@actions/io@npm:^1.0.1":
+"@actions/io@npm:^1.0.1, @actions/io@npm:^1.1.1":
   version: 1.1.3
   resolution: "@actions/io@npm:1.1.3"
   checksum: 10/4de44e8d428ba9f20049c844b37ecd486b589ed201f8cc8c5b550a9e4c72d1f594271ee2a7a6cfe8a42ebfb5dd527ef65016454656db391a353d41eab4f147e1
+  languageName: node
+  linkType: hard
+
+"@actions/tool-cache@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "@actions/tool-cache@npm:2.0.2"
+  dependencies:
+    "@actions/core": "npm:^1.11.1"
+    "@actions/exec": "npm:^1.0.0"
+    "@actions/http-client": "npm:^2.0.1"
+    "@actions/io": "npm:^1.1.1"
+    semver: "npm:^6.1.0"
+  checksum: 10/87ec7fef40a2ad606c4a8b47833c1818ddb42e009bd0434b49dfc8c8bd4de6b67b4edafae599e76869d923a2f940f223866012b0179dcbb172c784d90da3c3a9
   languageName: node
   linkType: hard
 
@@ -4016,7 +4046,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^6.3.1":
+"semver@npm:^6.1.0, semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
   bin:
@@ -4336,6 +4366,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "unity-test-runner@workspace:."
   dependencies:
+    "@actions/cache": "npm:^3.2.4"
+    "@actions/core": "npm:^1.11.1"
+    "@actions/exec": "npm:^1.1.1"
+    "@actions/tool-cache": "npm:^2.0.1"
     "@game-ci/unity-engine-core": "game-ci/cli#commit=5f7ffc7b7e1a7e782c7846309435f5cfad4c78c4&workspace=@game-ci/unity-engine-core"
     "@types/node": "npm:^20.8.10"
     "@types/semver": "npm:^7.3.5"
