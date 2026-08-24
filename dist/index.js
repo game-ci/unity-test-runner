@@ -43,6 +43,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.assetNameFor = assetNameFor;
 exports.binaryNameFor = binaryNameFor;
 exports.downloadCli = downloadCli;
+exports.resolveLatestTag = resolveLatestTag;
 const fs = __importStar(__nccwpck_require__(93977));
 const os = __importStar(__nccwpck_require__(70612));
 const path = __importStar(__nccwpck_require__(49411));
@@ -78,29 +79,26 @@ function binaryNameFor(platform) {
  * aren't embedded in the compiled binary itself. dist/ ships as the
  * binary's sibling inside the archive - see game-ci/cli#73.
  *
- * Pinned versions are cached via @actions/cache (GitHub's cache service),
- * so repeat jobs on ephemeral, GitHub-hosted runners skip the download
- * entirely - @actions/tool-cache alone only survives for the life of one
- * runner's disk, which GitHub-hosted runners don't persist between jobs.
- * "latest" is intentionally never persisted this way: caching a moving
- * target under a fixed key would silently pin every job to whatever
- * version happened to be "latest" on the first cache write.
+ * Cached via @actions/cache (GitHub's cache service), keyed by the
+ * resolved release tag, so repeat jobs on ephemeral, GitHub-hosted
+ * runners skip the download entirely - @actions/tool-cache alone only
+ * survives for the life of one runner's disk, which GitHub-hosted
+ * runners don't persist between jobs. "latest" is resolved to its
+ * concrete tag first (via the GitHub Releases API) so it still hits the
+ * cache without ever pinning a job to a stale version: a fresh release
+ * resolves to a new tag, and the cache simply misses once for it.
  *
  * @param version A release tag (e.g. "v0.1.0"), or "latest".
  */
 async function downloadCli(version) {
     const asset = assetNameFor(process.platform, process.arch);
     const binaryName = binaryNameFor(process.platform);
-    const isPinned = version !== 'latest';
-    if (isPinned) {
-        const cached = await restoreFromCache(version, binaryName);
-        if (cached)
-            return cached;
-    }
-    const url = isPinned
-        ? `https://github.com/${CLI_REPO}/releases/download/${version}/${asset}`
-        : `https://github.com/${CLI_REPO}/releases/latest/download/${asset}`;
-    core.info(`Downloading game-ci CLI (${version}) from ${url}`);
+    const resolvedVersion = version === 'latest' ? await resolveLatestTag() : version;
+    const cached = await restoreFromCache(resolvedVersion, binaryName);
+    if (cached)
+        return cached;
+    const url = `https://github.com/${CLI_REPO}/releases/download/${resolvedVersion}/${asset}`;
+    core.info(`Downloading game-ci CLI ${resolvedVersion} from ${url}`);
     const archivePath = await tc.downloadTool(url);
     const extractedDir = process.platform === 'win32'
         ? await tc.extractZip(archivePath)
@@ -109,10 +107,22 @@ async function downloadCli(version) {
     if (process.platform !== 'win32') {
         await fs.chmod(binaryPath, 0o755);
     }
-    if (isPinned) {
-        await saveToCache(version, binaryName, extractedDir);
-    }
+    await saveToCache(resolvedVersion, binaryName, extractedDir);
     return binaryPath;
+}
+/** Resolves "latest" to its concrete release tag so it can be cached like any other version. */
+async function resolveLatestTag(fetchFn = fetch) {
+    const response = await fetchFn(`https://api.github.com/repos/${CLI_REPO}/releases/latest`, {
+        headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to resolve the latest game-ci CLI release: GitHub API returned ${response.status}.`);
+    }
+    const body = (await response.json());
+    if (!body.tag_name) {
+        throw new Error('Failed to resolve the latest game-ci CLI release: response had no tag_name.');
+    }
+    return body.tag_name;
 }
 function cacheDirFor(version) {
     return path.join(os.tmpdir(), 'game-ci-cli-cache', version);
@@ -239,6 +249,15 @@ async function run() {
         const checkName = core.getInput('checkName') || 'Test Results';
         let exitCode;
         try {
+            // CodeQL flags this line (js/command-line-injection) since args
+            // ultimately derives from Action inputs. Verified false positive:
+            // args is an array of discrete argv entries, not a concatenated
+            // shell string, and @actions/exec's toolrunner.js passes it
+            // straight to child_process.spawn(fileName, args, options) - never
+            // a shell string, never shell-parsed. This comment does not
+            // suppress the alert (no inline-suppression mechanism exists in
+            // GitHub Code Scanning's default setup); dismiss via the Security
+            // tab/API instead.
             exitCode = await exec.exec(cliPath, args, { ignoreReturnCode: true });
         }
         finally {

@@ -45,6 +45,15 @@ export async function run() {
 
     let exitCode: number;
     try {
+      // CodeQL flags this line (js/command-line-injection) since args
+      // ultimately derives from Action inputs. Verified false positive:
+      // args is an array of discrete argv entries, not a concatenated
+      // shell string, and @actions/exec's toolrunner.js passes it
+      // straight to child_process.spawn(fileName, args, options) - never
+      // a shell string, never shell-parsed. This comment does not
+      // suppress the alert (no inline-suppression mechanism exists in
+      // GitHub Code Scanning's default setup); dismiss via the Security
+      // tab/API instead.
       exitCode = await exec.exec(cliPath, args, { ignoreReturnCode: true });
     } finally {
       core.setOutput('artifactsPath', artifactsPath);
