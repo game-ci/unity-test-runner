@@ -235,12 +235,6 @@ const download_cli_1 = __nccwpck_require__(83431);
 const model_1 = __nccwpck_require__(72854);
 async function run() {
     try {
-        const unityVersion = core.getInput('unityVersion') || 'auto';
-        if (unityVersion !== 'auto') {
-            core.warning(`unityVersion="${unityVersion}" is ignored: the underlying game-ci CLI always detects the Unity ` +
-                "version from the checked-out project's ProjectSettings/ProjectVersion.txt and has no flag to " +
-                'override it yet.');
-        }
         const cliVersion = core.getInput('cliVersion') || 'latest';
         const cliPath = await (0, download_cli_1.downloadCli)(cliVersion);
         const args = (0, test_args_1.testCliArgs)({ getInput: (name) => core.getInput(name) });
@@ -348,8 +342,6 @@ const fs = __importStar(__nccwpck_require__(87561));
  * implementation this is modeled on.
  *
  * Deliberate omissions:
- *  - unityVersion (except "auto"): same CLI limitation as build/activate -
- *    no override flag exists yet.
  *  - unityLicense/unitySerial/unityEmail/unityPassword/unityLicensingServer:
  *    read by the CLI from its own process environment (inherited from this
  *    action's child_process spawn), never passed as args - avoids leaking
@@ -429,9 +421,21 @@ function testCliArgs({ getInput }) {
         throw new Error(`Invalid testMode "${testMode}"`);
     }
     args.push(`--testPlatforms=${testPlatformsFor(testMode)}`);
+    // Mapped to --engineVersion, which game-ci/cli's engineDetection
+    // middleware treats as an explicit override rather than clobbering it -
+    // see project-options.ts and game-ci/cli#154 (added for unity-builder's
+    // own matching build-args.ts mapping, this is the sibling wrapper's copy
+    // of it). Without this, package-mode projects (no ProjectSettings/
+    // ProjectVersion.txt to auto-detect from at all) failed outright with
+    // "Engine not detected from projectPath", and a CI matrix testing one
+    // fixture project against several Unity versions pulled the wrong editor
+    // image for every non-default version.
+    const unityVersion = getInput('unityVersion') || 'auto';
+    if (unityVersion !== 'auto') {
+        args.push(`--engineVersion=${unityVersion}`);
+    }
     const packageMode = isTruthy(getInput('packageMode') || 'false');
     if (packageMode) {
-        const unityVersion = getInput('unityVersion') || 'auto';
         if (unityVersion === 'auto') {
             throw new Error('Package Mode is enabled, but unityVersion is set to "auto". unityVersion must manually be set in Package Mode.');
         }
