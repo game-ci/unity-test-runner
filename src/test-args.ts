@@ -91,7 +91,15 @@ export interface TestArgsOptions {
 }
 
 export function testCliArgs({ getInput }: TestArgsOptions): string[] {
-  const args: string[] = ['test', '--docker', '--dockerShmSize=1025m'];
+  // Always Unity - this wrapper has no other engine to detect. Passing
+  // --engine=unity explicitly (not just --engineVersion below) matters
+  // specifically for packageMode: game-ci/cli's engineDetection middleware
+  // still calls its project-path detector to resolve `engine` whenever it's
+  // unset, even when --engineVersion was already given explicitly - and a
+  // bare UPM package directory has no ProjectSettings/ProjectVersion.txt for
+  // that detector to find, so every package-mode run failed outright with
+  // "Engine not detected from projectPath" regardless of --engineVersion.
+  const args: string[] = ['test', '--docker', '--dockerShmSize=1025m', '--engine=unity'];
 
   const projectPath = getInput('projectPath').replace(/\/$/, '');
   if (projectPath) args.push(projectPath);

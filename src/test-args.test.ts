@@ -9,18 +9,29 @@ function inputsOf(values: Record<string, string>) {
 }
 
 describe('testCliArgs', () => {
-  it('builds the minimal command with the docker flag and hardcoded shm size', () => {
+  it('builds the minimal command with the docker flag, hardcoded shm size, and engine=unity', () => {
     expect(testCliArgs(inputsOf({}))).toStrictEqual([
       'test',
       '--docker',
       '--dockerShmSize=1025m',
+      '--engine=unity',
       '--testPlatforms=playmode;editmode;COMBINE_RESULTS',
     ]);
   });
 
   it('puts projectPath as the positional argument right after the docker flags', () => {
     const args = testCliArgs(inputsOf({ projectPath: 'game' }));
-    expect(args.slice(0, 4)).toStrictEqual(['test', '--docker', '--dockerShmSize=1025m', 'game']);
+    expect(args.slice(0, 5)).toStrictEqual([
+      'test',
+      '--docker',
+      '--dockerShmSize=1025m',
+      '--engine=unity',
+      'game',
+    ]);
+  });
+
+  it('always passes --engine=unity, even without packageMode - the project-path engine detector has no ProjectSettings to find in a bare package directory', () => {
+    expect(testCliArgs(inputsOf({}))).toContain('--engine=unity');
   });
 
   it('rejects an invalid testMode', () => {
