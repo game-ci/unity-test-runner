@@ -6,8 +6,6 @@ import * as fs from 'node:fs';
  * implementation this is modeled on.
  *
  * Deliberate omissions:
- *  - unityVersion (except "auto"): same CLI limitation as build/activate -
- *    no override flag exists yet.
  *  - unityLicense/unitySerial/unityEmail/unityPassword/unityLicensingServer:
  *    read by the CLI from its own process environment (inherited from this
  *    action's child_process spawn), never passed as args - avoids leaking
@@ -104,9 +102,22 @@ export function testCliArgs({ getInput }: TestArgsOptions): string[] {
   }
   args.push(`--testPlatforms=${testPlatformsFor(testMode)}`);
 
+  // Mapped to --engineVersion, which game-ci/cli's engineDetection
+  // middleware treats as an explicit override rather than clobbering it -
+  // see project-options.ts and game-ci/cli#154 (added for unity-builder's
+  // own matching build-args.ts mapping, this is the sibling wrapper's copy
+  // of it). Without this, package-mode projects (no ProjectSettings/
+  // ProjectVersion.txt to auto-detect from at all) failed outright with
+  // "Engine not detected from projectPath", and a CI matrix testing one
+  // fixture project against several Unity versions pulled the wrong editor
+  // image for every non-default version.
+  const unityVersion = getInput('unityVersion') || 'auto';
+  if (unityVersion !== 'auto') {
+    args.push(`--engineVersion=${unityVersion}`);
+  }
+
   const packageMode = isTruthy(getInput('packageMode') || 'false');
   if (packageMode) {
-    const unityVersion = getInput('unityVersion') || 'auto';
     if (unityVersion === 'auto') {
       throw new Error(
         'Package Mode is enabled, but unityVersion is set to "auto". unityVersion must manually be set in Package Mode.',

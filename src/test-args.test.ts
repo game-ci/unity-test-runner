@@ -81,6 +81,19 @@ describe('testCliArgs', () => {
     );
   });
 
+  describe('unityVersion', () => {
+    it('maps to --engineVersion when set to something other than "auto"', () => {
+      const args = testCliArgs(inputsOf({ unityVersion: '2022.3.7f1' }));
+      expect(args).toContain('--engineVersion=2022.3.7f1');
+    });
+
+    it('omits --engineVersion when unset or "auto" (CLI auto-detects from ProjectVersion.txt)', () => {
+      const hasEngineVersionFlag = (args: string[]) => args.some((arg) => arg.startsWith('--engineVersion='));
+      expect(hasEngineVersionFlag(testCliArgs(inputsOf({})))).toBe(false);
+      expect(hasEngineVersionFlag(testCliArgs(inputsOf({ unityVersion: 'auto' })))).toBe(false);
+    });
+  });
+
   describe('packageMode', () => {
     let tempDir: string;
 
