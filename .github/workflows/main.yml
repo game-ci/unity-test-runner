@@ -11,6 +11,13 @@ env:
   UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  # UNITY_SERIAL was never wired in here even after the repo secret itself
+  # was synced from unity-builder (game-ci/unity-builder#844's
+  # sync-secrets.yml) - so it stayed empty in every job's actual environment
+  # regardless, and activation kept falling through to the personal-license
+  # path, which fails on Windows with "Machine bindings don't match" (see
+  # game-ci/cli#204/#206's investigation).
+  UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
 
 jobs:
   tests:
