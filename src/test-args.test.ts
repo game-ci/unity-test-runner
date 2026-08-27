@@ -88,7 +88,8 @@ describe('testCliArgs', () => {
     });
 
     it('omits --engineVersion when unset or "auto" (CLI auto-detects from ProjectVersion.txt)', () => {
-      const hasEngineVersionFlag = (args: string[]) => args.some((arg) => arg.startsWith('--engineVersion='));
+      const hasEngineVersionFlag = (args: string[]) =>
+        args.some((arg) => arg.startsWith('--engineVersion='));
       expect(hasEngineVersionFlag(testCliArgs(inputsOf({})))).toBe(false);
       expect(hasEngineVersionFlag(testCliArgs(inputsOf({ unityVersion: 'auto' })))).toBe(false);
     });
