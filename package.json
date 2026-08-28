@@ -34,7 +34,7 @@
     "@actions/core": "^1.11.1",
     "@actions/exec": "^1.1.1",
     "@actions/tool-cache": "^2.0.1",
-    "@game-ci/unity-engine-core": "game-ci/cli#commit=5f7ffc7b7e1a7e782c7846309435f5cfad4c78c4&workspace=@game-ci/unity-engine-core"
+    "@game-ci/unity-engine-core": "game-ci/cli#commit=6003d282cabf350d64b0eb9e09e8c1ac4ee61736&workspace=@game-ci/unity-engine-core"
   },
   "devDependencies": {
     "@types/node": "^20.8.10",

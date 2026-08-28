@@ -11280,6 +11280,56 @@ exports["default"] = Platform;
 
 /***/ }),
 
+/***/ 83453:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.RESULTS_CHECK_DETAILS_TEMPLATE = exports.RESULTS_CHECK_SUMMARY_TEMPLATE = void 0;
+// Source of truth is ../views/*.hbs — keep both in sync if the templates change.
+// Inlined (rather than read from disk via Action.actionFolder) because these
+// two tiny templates have no reason to depend on runtime path resolution: a
+// bundled/compiled game-ci binary doesn't preserve the plugin's own
+// src/**/dist/ staging layout that Action.actionFolder assumes, so a
+// filesystem lookup for them is fragile in exactly the context these run in
+// (see game-ci/unity-test-runner#310's CI - all matrix jobs failed with an
+// ENOENT for results-check-summary.hbs once the wrapper stopped shipping its
+// own dist/ alongside the compiled action code).
+exports.RESULTS_CHECK_SUMMARY_TEMPLATE = `{{#runs}}
+  ###
+  {{summary}}
+{{/runs}}
+`;
+exports.RESULTS_CHECK_DETAILS_TEMPLATE = `{{#runs}}
+
+  <details><summary>{{summary}}</summary>
+
+    {{#suites}}
+      *
+      {{summary}}
+      {{#tests}}
+        *
+        {{summary}}
+        {{#if annotation}}
+          {{#if annotation.message}}
+            {{indent annotation.message}}
+          {{/if}}
+          {{#if annotation.raw_details}}
+            {{indent annotation.raw_details}}
+          {{/if}}
+        {{/if}}
+      {{/tests}}
+    {{/suites}}
+
+  </details>
+
+{{/runs}}
+`;
+
+
+/***/ }),
+
 /***/ 84498:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -11329,7 +11379,7 @@ const handlebars_1 = __importDefault(__nccwpck_require__(97492));
 const results_parser_1 = __importDefault(__nccwpck_require__(45404));
 const results_meta_1 = __nccwpck_require__(55147);
 const path_1 = __importDefault(__nccwpck_require__(71017));
-const action_1 = __importDefault(__nccwpck_require__(73955));
+const results_check_templates_1 = __nccwpck_require__(83453);
 const ResultsCheck = {
     async createCheck(artifactsPath, githubToken, checkName) {
         // Validate input
@@ -11420,17 +11470,16 @@ const ResultsCheck = {
         await octokit.rest.checks.create(createCheckRequest);
     },
     async renderSummary(runMetas) {
-        return ResultsCheck.render(`${action_1.default.actionFolder}/results-check-summary.hbs`, runMetas);
+        return ResultsCheck.render(results_check_templates_1.RESULTS_CHECK_SUMMARY_TEMPLATE, runMetas);
     },
     async renderDetails(runMetas) {
-        return ResultsCheck.render(`${action_1.default.actionFolder}/results-check-details.hbs`, runMetas);
+        return ResultsCheck.render(results_check_templates_1.RESULTS_CHECK_DETAILS_TEMPLATE, runMetas);
     },
-    async render(viewPath, runMetas) {
+    async render(source, runMetas) {
         handlebars_1.default.registerHelper('indent', (toIndent) => toIndent
             .split('\n')
             .map((s) => `        ${s.replace('/github/workspace/', '')}`)
             .join('\n'));
-        const source = await fs.promises.readFile(viewPath, 'utf8');
         const template = handlebars_1.default.compile(source);
         return template({ runs: runMetas }, {
             allowProtoMethodsByDefault: true,
