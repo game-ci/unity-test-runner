@@ -18,6 +18,12 @@ env:
   # path, which fails on Windows with "Machine bindings don't match" (see
   # game-ci/cli#204/#206's investigation).
   UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+  # Lets download-cli.ts's resolveLatestTag() authenticate its GitHub API
+  # call - unauthenticated calls share a 60 req/hour-per-IP limit across
+  # every job on this shared runner pool, which this repo's large test
+  # matrix (85+ jobs) blows through when every job resolves "latest"
+  # around the same time, failing with "GitHub API returned 403".
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   tests:

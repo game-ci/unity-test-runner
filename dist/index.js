@@ -112,8 +112,21 @@ async function downloadCli(version) {
 }
 /** Resolves "latest" to its concrete release tag so it can be cached like any other version. */
 async function resolveLatestTag(fetchFn = fetch) {
+    const headers = { Accept: 'application/vnd.github+json' };
+    // Actions runners share IPs across many concurrent jobs from unrelated
+    // repos/orgs, so the unauthenticated rate limit (60 req/hour per IP) gets
+    // exhausted by traffic this job never generated - confirmed live via this
+    // repo's own large test matrix (85 jobs), which failed widely with
+    // "GitHub API returned 403" once every job resolved "latest"
+    // simultaneously. The default GITHUB_TOKEN reads public repo data
+    // (game-ci/cli's releases) fine regardless of which repo the workflow
+    // runs in, and lifts the limit to 5000 req/hour - same fix already
+    // shipped in unity-builder's copy of this file.
+    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+    if (token)
+        headers.Authorization = `Bearer ${token}`;
     const response = await fetchFn(`https://api.github.com/repos/${CLI_REPO}/releases/latest`, {
-        headers: { Accept: 'application/vnd.github+json' },
+        headers,
     });
     if (!response.ok) {
         throw new Error(`Failed to resolve the latest game-ci CLI release: GitHub API returned ${response.status}.`);
