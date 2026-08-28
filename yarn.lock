@@ -5,24 +5,7 @@ __metadata:
   version: 9
   cacheKey: 10
 
-"@actions/cache@npm:^3.2.4":
-  version: 3.3.0
-  resolution: "@actions/cache@npm:3.3.0"
-  dependencies:
-    "@actions/core": "npm:^1.11.1"
-    "@actions/exec": "npm:^1.0.1"
-    "@actions/glob": "npm:^0.1.0"
-    "@actions/http-client": "npm:^2.1.1"
-    "@actions/io": "npm:^1.0.1"
-    "@azure/abort-controller": "npm:^1.1.0"
-    "@azure/ms-rest-js": "npm:^2.6.0"
-    "@azure/storage-blob": "npm:^12.13.0"
-    semver: "npm:^6.3.1"
-  checksum: 10/b3e31b9204ee690187b4cfbcf98e85b12ed0f769f2dc824d0122c0ff1f37f7bb847a07f9437db3496d459bde99d26d5383789b76236ca10a11e39cc4e7f23f2d
-  languageName: node
-  linkType: hard
-
-"@actions/cache@npm:^4.1.0":
+"@actions/cache@npm:^4.0.0, @actions/cache@npm:^4.1.0":
   version: 4.1.0
   resolution: "@actions/cache@npm:4.1.0"
   dependencies:
@@ -4366,7 +4349,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "unity-test-runner@workspace:."
   dependencies:
-    "@actions/cache": "npm:^3.2.4"
+    "@actions/cache": "npm:^4.0.0"
     "@actions/core": "npm:^1.11.1"
     "@actions/exec": "npm:^1.1.1"
     "@actions/tool-cache": "npm:^2.0.1"
