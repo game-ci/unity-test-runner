@@ -750,9 +750,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@game-ci/unity-engine-core@game-ci/cli#commit=6003d282cabf350d64b0eb9e09e8c1ac4ee61736&workspace=@game-ci/unity-engine-core":
+"@game-ci/unity-engine-core@game-ci/cli#commit=a9d35fd6cfae06bc130dcd49a48ccb8509197e38&workspace=@game-ci/unity-engine-core":
   version: 0.1.0
-  resolution: "@game-ci/unity-engine-core@https://github.com/game-ci/cli.git#workspace=%40game-ci%2Funity-engine-core&commit=6003d282cabf350d64b0eb9e09e8c1ac4ee61736"
+  resolution: "@game-ci/unity-engine-core@https://github.com/game-ci/cli.git#workspace=%40game-ci%2Funity-engine-core&commit=a9d35fd6cfae06bc130dcd49a48ccb8509197e38"
   dependencies:
     "@actions/cache": "npm:^4.1.0"
     "@actions/core": "npm:^1.11.1"
@@ -766,7 +766,7 @@ __metadata:
     unity-changeset: "npm:^3.1.0"
     xml-js: "npm:^1.6.11"
     yaml: "npm:^2.8.4"
-  checksum: 10/0193738ad8ed1fec30c1e121a0eb20a3c9c4acaba8c820ce19a65dd028ee881802398f16c6b969b71f1deb1b8a674892d7f579b328740d77a95bbc474d4c77ca
+  checksum: 10/95359f1a0dbffd4d2d9578135d696dd3ed3b0c6321a50db6bce1897c46a68c2de28bf56eb772529863a42c014567bfa50b03f6f0fecb21d7c43ad49ab98d15f3
   languageName: node
   linkType: hard
 
@@ -4353,7 +4353,7 @@ __metadata:
     "@actions/core": "npm:^1.11.1"
     "@actions/exec": "npm:^1.1.1"
     "@actions/tool-cache": "npm:^2.0.1"
-    "@game-ci/unity-engine-core": "game-ci/cli#commit=6003d282cabf350d64b0eb9e09e8c1ac4ee61736&workspace=@game-ci/unity-engine-core"
+    "@game-ci/unity-engine-core": "game-ci/cli#commit=a9d35fd6cfae06bc130dcd49a48ccb8509197e38&workspace=@game-ci/unity-engine-core"
     "@types/node": "npm:^20.8.10"
     "@types/semver": "npm:^7.3.5"
     "@typescript/native-preview": "npm:^7.0.0-dev.20260505.1"
