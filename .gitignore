@@ -3,6 +3,12 @@ node_modules
 coverage/
 lib/
 
+# Test run output - never source, and a stale committed copy here (removed
+# in this same change) was silently getting read as real results on
+# Windows's "Test all modes" jobs when the fresh write didn't land in time -
+# see the removal commit for the full story.
+artifacts/
+
 # Yarn 4 (Berry)
 .yarn/*
 !.yarn/patches
