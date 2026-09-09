@@ -8,8 +8,9 @@ inputs:
     description:
       'Version of unity to use for testing the project. Use "auto" to get from your ProjectSettings/ProjectVersion.txt.
       ⚠️ If testing a Unity Package, this field is required and cannot be set to "auto". A value other than "auto" for
-      a full project is currently ignored - the underlying game-ci CLI always detects the version from the checked-out
-      project and has no override flag yet.'
+      a full project is passed to the underlying game-ci CLI as an explicit --engineVersion override, taking
+      precedence over the version detected from the checked-out project - useful for testing one project against
+      several Unity versions in a matrix.'
   cliVersion:
     required: false
     default: 'latest'
