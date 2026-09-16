@@ -90,10 +90,10 @@ function binaryNameFor(platform) {
  *
  * @param version A release tag (e.g. "v0.1.0"), or "latest".
  */
-async function downloadCli(version) {
+async function downloadCli(version, githubToken) {
     const asset = assetNameFor(process.platform, process.arch);
     const binaryName = binaryNameFor(process.platform);
-    const resolvedVersion = version === 'latest' ? await resolveLatestTag() : version;
+    const resolvedVersion = version === 'latest' ? await resolveLatestTag(fetch, githubToken) : version;
     const cached = await restoreFromCache(resolvedVersion, binaryName);
     if (cached)
         return cached;
@@ -111,18 +111,31 @@ async function downloadCli(version) {
     return binaryPath;
 }
 /** Resolves "latest" to its concrete release tag so it can be cached like any other version. */
-async function resolveLatestTag(fetchFn = fetch) {
+async function resolveLatestTag(fetchFn = fetch, githubToken) {
     const headers = { Accept: 'application/vnd.github+json' };
     // Actions runners share IPs across many concurrent jobs from unrelated
     // repos/orgs, so the unauthenticated rate limit (60 req/hour per IP) gets
     // exhausted by traffic this job never generated - confirmed live via this
     // repo's own large test matrix (85 jobs), which failed widely with
-    // "GitHub API returned 403" once every job resolved "latest"
-    // simultaneously. The default GITHUB_TOKEN reads public repo data
-    // (game-ci/cli's releases) fine regardless of which repo the workflow
-    // runs in, and lifts the limit to 5000 req/hour - same fix already
-    // shipped in unity-builder's copy of this file.
-    const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+    // "GitHub API returned 403" once every job resolved "latest", and again
+    // live on a consumer's matrix (game-ci/unity-test-runner#328).
+    //
+    // The first fix here checked process.env.GITHUB_TOKEN/GH_TOKEN, believing
+    // that covered it. It does not: GitHub Actions does not inject GITHUB_TOKEN
+    // into a JS action's process environment automatically - a calling
+    // workflow has to set it explicitly via env:, which #328's reporter's
+    // workflow (and, realistically, most consumers') never had reason to do.
+    // So this was unauthenticated for effectively every consumer, not just the
+    // rare ones under heavy load.
+    //
+    // The githubToken *input* is different: it defaults to `${{ github.token
+    // }}`, which GitHub Actions populates on every run whether or not the
+    // workflow author does anything - so passing it here is the one path that
+    // actually reaches "authenticated by default" instead of "authenticated
+    // only for workflows that happen to also set GITHUB_TOKEN for some other
+    // reason". The env vars stay as a fallback for the CLI/install.sh path,
+    // which has no Action input to read from.
+    const token = githubToken || process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
     if (token)
         headers.Authorization = `Bearer ${token}`;
     const response = await fetchFn(`https://api.github.com/repos/${CLI_REPO}/releases/latest`, {
@@ -249,10 +262,14 @@ const model_1 = __nccwpck_require__(72854);
 async function run() {
     try {
         const cliVersion = core.getInput('cliVersion') || 'latest';
-        const cliPath = await (0, download_cli_1.downloadCli)(cliVersion);
+        // Read before downloadCli so "latest" resolution can use it too - it
+        // defaults to ${{ github.token }}, always populated by Actions, and is
+        // the only reliable way this process sees a token at all (GITHUB_TOKEN
+        // is not auto-injected into a JS action's env - see download-cli.ts).
+        const githubToken = core.getInput('githubToken') || '';
+        const cliPath = await (0, download_cli_1.downloadCli)(cliVersion, githubToken);
         const args = (0, test_args_1.testCliArgs)({ getInput: (name) => core.getInput(name) });
         const artifactsPath = core.getInput('artifactsPath') || 'artifacts';
-        const githubToken = core.getInput('githubToken') || '';
         const checkName = core.getInput('checkName') || 'Test Results';
         let exitCode;
         try {

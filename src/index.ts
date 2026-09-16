@@ -26,12 +26,16 @@ import { ResultsCheck } from '@game-ci/unity-engine-core/dist/unity-test-runner/
 export async function run() {
   try {
     const cliVersion = core.getInput('cliVersion') || 'latest';
-    const cliPath = await downloadCli(cliVersion);
+    // Read before downloadCli so "latest" resolution can use it too - it
+    // defaults to ${{ github.token }}, always populated by Actions, and is
+    // the only reliable way this process sees a token at all (GITHUB_TOKEN
+    // is not auto-injected into a JS action's env - see download-cli.ts).
+    const githubToken = core.getInput('githubToken') || '';
+    const cliPath = await downloadCli(cliVersion, githubToken);
 
     const args = testCliArgs({ getInput: (name) => core.getInput(name) });
 
     const artifactsPath = core.getInput('artifactsPath') || 'artifacts';
-    const githubToken = core.getInput('githubToken') || '';
     const checkName = core.getInput('checkName') || 'Test Results';
 
     let exitCode: number;
