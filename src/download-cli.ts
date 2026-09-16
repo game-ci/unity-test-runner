@@ -54,7 +54,8 @@ export function binaryNameFor(platform: NodeJS.Platform): string {
 export async function downloadCli(version: string, githubToken?: string): Promise<string> {
   const asset = assetNameFor(process.platform, process.arch);
   const binaryName = binaryNameFor(process.platform);
-  const resolvedVersion = version === 'latest' ? await resolveLatestTag(fetch, githubToken) : version;
+  const resolvedVersion =
+    version === 'latest' ? await resolveLatestTag(fetch, githubToken) : version;
 
   const cached = await restoreFromCache(resolvedVersion, binaryName);
   if (cached) return cached;

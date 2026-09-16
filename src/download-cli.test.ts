@@ -66,8 +66,6 @@ describe('resolveLatestTag', () => {
   it('surfaces the response status when GitHub rejects the request', async () => {
     const fetchFn = vi.fn().mockResolvedValue({ ok: false, status: 403 });
 
-    await expect(resolveLatestTag(fetchFn as any)).rejects.toThrow(
-      /GitHub API returned 403/,
-    );
+    await expect(resolveLatestTag(fetchFn as any)).rejects.toThrow(/GitHub API returned 403/);
   });
 });
