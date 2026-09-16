@@ -156,7 +156,7 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Test results for ${{ matrix.testMode }} (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.tests.outputs.artifactsPath }}
@@ -237,7 +237,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.artifactsPath }}
@@ -245,7 +245,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.coveragePath }}
@@ -329,7 +329,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.artifactsPath }}
@@ -337,7 +337,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.coveragePath }}
@@ -417,7 +417,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.artifactsPath }}
@@ -425,7 +425,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.coveragePath }}
@@ -505,7 +505,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode standalone) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
@@ -593,7 +593,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode standalone il2cpp) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
@@ -690,7 +690,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (combined sequential) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: artifacts/
@@ -731,7 +731,7 @@ jobs:
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
           packageMode: true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Package test results for ${{ matrix.testMode }} (${{ matrix.unityVersion }})
           path: ${{ steps.packageTests.outputs.artifactsPath }}
@@ -771,7 +771,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -779,7 +779,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
@@ -819,7 +819,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.artifactsPath }}
@@ -827,7 +827,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.coveragePath }}
@@ -867,7 +867,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
@@ -875,7 +875,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.coveragePath }}
@@ -923,7 +923,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (combined sequential) (${{ matrix.unityVersion }})
           path: packageArtifacts/
@@ -965,7 +965,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -973,7 +973,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
@@ -1015,7 +1015,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (Multi Scope Regristy) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -1023,7 +1023,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (Multi Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
