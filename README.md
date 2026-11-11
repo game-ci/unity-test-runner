@@ -21,6 +21,23 @@ Find the
 on the GameCI
 [documentation website](https://game.ci/docs).
 
+## Test results report
+
+The runner saves the Unity test results (NUnit XML) and logs to the
+`artifactsPath` folder (`artifacts` by default). To produce a browsable
+HTML report, upload those artifacts and run a results-reporter action on
+them after this action:
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: Test results
+    path: artifacts
+```
+
+See the [docs](https://game.ci/docs/github/test-runner) for the currently
+recommended reporter.
+
 ## Related actions
 
 Visit the
