@@ -82,8 +82,33 @@ jobs:
       - name: Build
         run: yarn build || { echo 'build command should always succeed'; exit 61; }
 
+  # Every job below activates a real Unity licence. Runs that GitHub starts
+  # without Actions secrets (Dependabot pushes) would fail all of them at
+  # activation with "Licensing method: <none>", so they are skipped there and
+  # a maintainer can run them on the branch with "Run workflow" instead.
+  unityCredentials:
+    name: Unity credentials
+    runs-on: ubuntu-latest
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - name: Check that a Unity licence can be activated
+        id: check
+        run: |
+          if [ -n "$UNITY_LICENSE" ] || { [ -n "$UNITY_EMAIL" ] && [ -n "$UNITY_PASSWORD" ]; }; then
+            echo 'Unity credentials are available; running the Unity test jobs.'
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          else
+            message="No Unity credentials in this run (triggered by ${GITHUB_ACTOR}); skipping the Unity test jobs. A maintainer can run them on ${GITHUB_REF_NAME} via Run workflow."
+            echo "::notice title=Unity test jobs skipped::${message}"
+            echo "$message" >> "$GITHUB_STEP_SUMMARY"
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+          fi
+
   testAllModesLikeInTheReadme:
     name: Test in ${{ matrix.testMode }} of version ${{ matrix.unityVersion }} on ${{ matrix.baseRunner }}
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -164,6 +189,8 @@ jobs:
 
   testRunnerInAllModes:
     name: Test all modes ✨
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -253,6 +280,8 @@ jobs:
 
   testRunnerInEditMode:
     name: Test edit mode 📝
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -345,6 +374,8 @@ jobs:
 
   testRunnerInPlayMode:
     name: Test play mode 📺
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -433,6 +464,8 @@ jobs:
 
   testRunnerInStandalone:
     name: Test standalone 📺
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -513,6 +546,8 @@ jobs:
 
   testRunnerInStandaloneWithIL2CPP:
     name: Test standalone with IL2CPP 📺
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -601,6 +636,8 @@ jobs:
 
   testEachModeSequentially:
     name: Test each mode sequentially 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ${{ matrix.baseRunner }}
     strategy:
       fail-fast: false
@@ -698,6 +735,8 @@ jobs:
 
   testAllPackageModesLikeInTheReadme:
     name: Test package mode 📦 in ${{ matrix.testMode }} on version ${{ matrix.unityVersion }}
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -739,6 +778,8 @@ jobs:
 
   testPackageRunnerInAllModes:
     name: Test package mode in all modes 📦✨
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -787,6 +828,8 @@ jobs:
 
   testPackageRunnerInEditMode:
     name: Test package mode in edit mode 📦📝
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -835,6 +878,8 @@ jobs:
 
   testPackageRunnerInPlayMode:
     name: Test package mode in play mode 📦📺
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -883,6 +928,8 @@ jobs:
 
   testPackageModeEachModeSequentially:
     name: Test package mode in each mode sequentially 📦 👩‍👩‍👧‍👦 # don't try this at home (it's much slower)
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -931,6 +978,8 @@ jobs:
 
   testPackageRunnerWithScopeRegistry:
     name: Test package mode in all modes with Scoped Registry 📦✨
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -981,6 +1030,8 @@ jobs:
 
   testPackageRunnerWithScopeRegistryAndMultipleScopes:
     name: Test package mode in all modes with Scoped Registry and Multiple Scopes 🔎📦✨
+    needs: unityCredentials
+    if: needs.unityCredentials.outputs.available == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
