@@ -64,10 +64,10 @@ function getPackageNameFromPackageJson(packagePath: string): string {
     throw new Error(`Invalid projectPath - Cannot find package.json at ${packageJsonPath}`);
   }
 
-  let packageJson: any;
+  let packageJson: unknown;
   try {
     packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString());
-  } catch (error: any) {
+  } catch (error) {
     if (error instanceof SyntaxError) {
       throw new SyntaxError(`Unable to parse package.json contents as JSON - ${error.message}`);
     }
@@ -76,7 +76,10 @@ function getPackageNameFromPackageJson(packagePath: string): string {
     });
   }
 
-  const rawPackageName = packageJson.name;
+  const rawPackageName =
+    typeof packageJson === 'object' && packageJson !== null && 'name' in packageJson
+      ? packageJson.name
+      : undefined;
   if (typeof rawPackageName !== 'string' || rawPackageName.length === 0) {
     throw new TypeError(
       `Unable to parse package name from package.json - expected a non-empty string`,

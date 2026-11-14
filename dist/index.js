@@ -172,7 +172,7 @@ async function restoreFromCache(version, binaryName) {
         return binaryPath;
     }
     catch (error) {
-        core.warning(`Failed to restore game-ci CLI from cache: ${error.message}`);
+        core.warning(`Failed to restore game-ci CLI from cache: ${error instanceof Error ? error.message : String(error)}`);
         return null;
     }
 }
@@ -188,7 +188,7 @@ async function saveToCache(version, binaryName, extractedDir) {
     catch (error) {
         // A cache miss on save (e.g. another concurrent job already saved this
         // key) isn't fatal - the download itself already succeeded.
-        core.warning(`Failed to save game-ci CLI to cache: ${error.message}`);
+        core.warning(`Failed to save game-ci CLI to cache: ${error instanceof Error ? error.message : String(error)}`);
     }
 }
 
@@ -315,7 +315,7 @@ async function run() {
         }
     }
     catch (error) {
-        core.setFailed(error.message);
+        core.setFailed(error instanceof Error ? error.message : String(error));
     }
 }
 if (process.env.NODE_ENV !== 'test') {
@@ -435,7 +435,9 @@ function getPackageNameFromPackageJson(packagePath) {
             cause: error,
         });
     }
-    const rawPackageName = packageJson.name;
+    const rawPackageName = typeof packageJson === 'object' && packageJson !== null && 'name' in packageJson
+        ? packageJson.name
+        : undefined;
     if (typeof rawPackageName !== 'string' || rawPackageName.length === 0) {
         throw new TypeError(`Unable to parse package name from package.json - expected a non-empty string`);
     }
