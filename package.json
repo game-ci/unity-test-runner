@@ -41,13 +41,13 @@
     "@types/semver": "^7.3.5",
     "@typescript/native-preview": "^7.0.0-dev.20260505.1",
     "@vercel/ncc": "^0.33.1",
-    "@vitest/coverage-istanbul": "^4.1.5",
+    "@vitest/coverage-istanbul": "^4.1.12",
     "eslint": "^10.3.0",
     "eslint-plugin-unicorn": "^64.0.0",
     "husky": "9",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^3.15.2",
     "lint-staged": "^16",
-    "oxfmt": "^0.48.0",
+    "oxfmt": "^0.78.0",
     "oxlint": "^1.63.0",
     "typescript": "^5",
     "vite": "^7",
@@ -55,6 +55,6 @@
   },
   "packageManager": "yarn@4.14.1",
   "resolutions": {
-    "undici": "^6.24.0"
+    "undici": "^6.28.1"
   }
 }
