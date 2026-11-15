@@ -30,7 +30,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Read Node version from mise.toml
         id: node
@@ -41,7 +41,7 @@ jobs:
           corepack enable
           corepack install
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ steps.node.outputs.version }}
 
@@ -50,7 +50,7 @@ jobs:
         run: echo "cacheFolder=$(yarn config get cacheFolder)" >> "$GITHUB_OUTPUT"
 
       - name: Restore yarn install cache (node_modules + cacheFolder + install-state)
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             node_modules
@@ -131,14 +131,14 @@ jobs:
       #         Checkout        #
       ###########################
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -181,7 +181,7 @@ jobs:
           testMode: ${{ matrix.testMode }}
           artifactsPath: ${{ matrix.testMode }}-artifacts
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Test results for ${{ matrix.testMode }} (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.tests.outputs.artifactsPath }}
@@ -208,14 +208,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -264,7 +264,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.artifactsPath }}
@@ -272,7 +272,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (all) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.allTests.outputs.coveragePath }}
@@ -302,14 +302,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -358,7 +358,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.artifactsPath }}
@@ -366,7 +366,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (edit mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }}, ${{ matrix.runAsHostUser }})
           path: ${{ steps.editMode.outputs.coveragePath }}
@@ -393,14 +393,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -448,7 +448,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.artifactsPath }}
@@ -456,7 +456,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Coverage results (play mode) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.playMode.outputs.coveragePath }}
@@ -483,14 +483,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -538,7 +538,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode standalone) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
@@ -565,14 +565,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -628,7 +628,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (play mode standalone il2cpp) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: ${{ steps.standalone.outputs.artifactsPath }}
@@ -655,14 +655,14 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
       ###########################
       #          Cache          #
       ###########################
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.baseRunner }}-${{ matrix.projectPath }}
@@ -727,7 +727,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Test results (combined sequential) (${{ matrix.baseRunner }}, ${{ matrix.unityVersion }})
           path: artifacts/
@@ -756,7 +756,7 @@ jobs:
       #         Checkout        #
       ###########################
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -770,7 +770,7 @@ jobs:
           customParameters: -profile SomeProfile -someBoolean -someValue exampleValue
           packageMode: true
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: Package test results for ${{ matrix.testMode }} (${{ matrix.unityVersion }})
           path: ${{ steps.packageTests.outputs.artifactsPath }}
@@ -794,7 +794,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -812,7 +812,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -820,7 +820,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (all) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
@@ -844,7 +844,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -862,7 +862,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.artifactsPath }}
@@ -870,7 +870,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (edit mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packageEditMode.outputs.coveragePath }}
@@ -894,7 +894,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -912,7 +912,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.artifactsPath }}
@@ -920,7 +920,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (play mode) (${{ matrix.unityVersion }})
           path: ${{ steps.packagePlayMode.outputs.coveragePath }}
@@ -944,7 +944,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -970,7 +970,7 @@ jobs:
 
       # Upload combined artifacts
       - name: Upload combined test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (combined sequential) (${{ matrix.unityVersion }})
           path: packageArtifacts/
@@ -994,7 +994,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -1014,7 +1014,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -1022,7 +1022,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}
@@ -1046,7 +1046,7 @@ jobs:
       ###########################
       #         Checkout        #
       ###########################
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           lfs: true
 
@@ -1066,7 +1066,7 @@ jobs:
 
       # Upload artifacts
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package test results (Multi Scope Regristy) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.artifactsPath }}
@@ -1074,7 +1074,7 @@ jobs:
 
       # Upload coverage
       - name: Upload coverage results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Package Coverage results (Multi Scope Registry) (${{ matrix.unityVersion }})
           path: ${{ steps.packageAllTests.outputs.coveragePath }}

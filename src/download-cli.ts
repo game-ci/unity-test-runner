@@ -147,8 +147,10 @@ async function restoreFromCache(version: string, binaryName: string): Promise<st
 
     core.info(`Restored game-ci CLI ${version} from cache`);
     return binaryPath;
-  } catch (error: any) {
-    core.warning(`Failed to restore game-ci CLI from cache: ${error.message}`);
+  } catch (error) {
+    core.warning(
+      `Failed to restore game-ci CLI from cache: ${error instanceof Error ? error.message : String(error)}`,
+    );
     return null;
   }
 }
@@ -165,9 +167,11 @@ async function saveToCache(
     await fs.mkdir(path.dirname(cacheDir), { recursive: true });
     await fs.cp(extractedDir, cacheDir, { recursive: true });
     await cache.saveCache([cacheDir], cacheKeyFor(version, binaryName));
-  } catch (error: any) {
+  } catch (error) {
     // A cache miss on save (e.g. another concurrent job already saved this
     // key) isn't fatal - the download itself already succeeded.
-    core.warning(`Failed to save game-ci CLI to cache: ${error.message}`);
+    core.warning(
+      `Failed to save game-ci CLI to cache: ${error instanceof Error ? error.message : String(error)}`,
+    );
   }
 }

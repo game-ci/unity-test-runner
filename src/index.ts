@@ -79,8 +79,8 @@ export async function run() {
     } else if (exitCode !== 0) {
       core.setFailed(`Test run failed with exit code ${exitCode}`);
     }
-  } catch (error: any) {
-    core.setFailed(error.message);
+  } catch (error) {
+    core.setFailed(error instanceof Error ? error.message : String(error));
   }
 }
 
