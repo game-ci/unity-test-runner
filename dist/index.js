@@ -407,6 +407,7 @@ const STRING_FLAGS = [
 const BOOLEAN_FLAGS = [
     ['useHostNetwork', 'useHostNetwork'],
     ['runAsHostUser', 'runAsHostUser'],
+    ['runAsHostUserReuseExisting', 'runAsHostUserReuseExisting'],
 ];
 const TEST_MODES = ['all', 'playmode', 'editmode', 'standalone'];
 function isTruthy(value) {
