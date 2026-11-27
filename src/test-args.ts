@@ -43,6 +43,7 @@ const STRING_FLAGS: Array<[input: string, flag: string]> = [
 const BOOLEAN_FLAGS: Array<[input: string, flag: string]> = [
   ['useHostNetwork', 'useHostNetwork'],
   ['runAsHostUser', 'runAsHostUser'],
+  ['runAsHostUserReuseExisting', 'runAsHostUserReuseExisting'],
 ];
 
 const TEST_MODES = ['all', 'playmode', 'editmode', 'standalone'];
