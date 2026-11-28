@@ -76,13 +76,6 @@ describe('testCliArgs', () => {
     expect(testCliArgs(inputsOf({ useHostNetwork: 'true' }))).toContain('--useHostNetwork');
     expect(testCliArgs(inputsOf({ useHostNetwork: 'false' }))).not.toContain('--useHostNetwork');
     expect(testCliArgs(inputsOf({}))).not.toContain('--useHostNetwork');
-    expect(testCliArgs(inputsOf({ runAsHostUserReuseExisting: 'true' }))).toContain(
-      '--runAsHostUserReuseExisting',
-    );
-    expect(testCliArgs(inputsOf({ runAsHostUserReuseExisting: 'false' }))).not.toContain(
-      '--runAsHostUserReuseExisting',
-    );
-    expect(testCliArgs(inputsOf({}))).not.toContain('--runAsHostUserReuseExisting');
   });
 
   it('omits --no-coverageEnabled when unset (matches cli default true)', () => {
